@@ -4,7 +4,7 @@ import java.util.ArrayList;
  * Elevator subsystem and back again.
  * 
  * @author Aaron Gabor
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class Scheduler extends Thread implements Runnable {
 	private Network network;
@@ -31,8 +31,9 @@ public class Scheduler extends Thread implements Runnable {
 			this.elevatorRequests.add(this.network.floorSystemToSched(null, 1));
 			while(this.elevatorRequests.size() > 0)
 			{
-				this.network.schedToFloorSystem(this.elevatorRequests.get(0), 1);
 				handleElevatorEvent();
+				this.network.schedToFloorSystem(this.elevatorRequests.get(0), 1);
+				this.elevatorRequests.remove(0);
 			}
 		}
 	}
@@ -46,6 +47,7 @@ public class Scheduler extends Thread implements Runnable {
 	{
 		this.network.schedToElevatorSystem(this.elevatorRequests.get(0), 1);
 		this.elevatorRequests.remove(0);
+		this.elevatorRequests.add(this.network.elevatorSystemToSched(null, 1));
 	}
 	
 }
