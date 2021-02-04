@@ -1,4 +1,8 @@
-
+/**
+ * 
+ * @author Marc Angers
+ * @version 1.0.0
+ */
 public class FloorButton extends Button {
 	private Direction direction;
 	

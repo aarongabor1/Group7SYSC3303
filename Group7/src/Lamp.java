@@ -1,4 +1,8 @@
-
+/**
+ * 
+ * @author Marc Angers
+ * @version 1.0.0
+ */
 public abstract class Lamp {
 	private boolean isOn = false;
 	
