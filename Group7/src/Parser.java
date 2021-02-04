@@ -1,5 +1,8 @@
-package sysc3303proj;
-
+/***
+ * @author lynnmehyou
+ * This class takes in the file and uses the text to fill out the variable needed to
+ * generate a floor event, time, current floor, direction and car button.
+ */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DateFormat;
@@ -10,12 +13,19 @@ import java.sql.Time;
 public class Parser {
 	private File file;
 	private FloorEvent fe ;
-	
+	/***
+	 * Takes in the file that has the data
+	 */
 	public Parser() {
 		file = new File("text.txt");
-		
 	}
-	
+	/***
+	 * Assigns the file input text to the correct variables. Changes their type from string to the type they should have to satisfy the 
+	 * FloorEvent method.
+	 * @return 
+	 * @return a floor event object 
+	 * @throws ParseException
+	 */
 	public FloorEvent parseFile() throws ParseException {
 		
 		Scanner scanner;
@@ -42,14 +52,16 @@ public class Parser {
 				direction1 = Boolean.valueOf(direction);
 				carButton1 = Integer.parseInt(carButton);
 				fe = new FloorEvent(time1, currentFloor1, direction1, carButton1);
+				
 			}
 			scanner.close();
+			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.print("Error file not found");
 			e.printStackTrace();
 		}
-		return fe;
 		
+		return fe;
 		
 	}
 	
