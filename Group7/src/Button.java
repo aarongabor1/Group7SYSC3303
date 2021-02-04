@@ -1,4 +1,8 @@
-
+/**
+ * 
+ * @author Marc Angers
+ * @version 1.0.0
+ */
 public abstract class Button {
 	private boolean isPressed = false;
 	private Lamp buttonLamp;
