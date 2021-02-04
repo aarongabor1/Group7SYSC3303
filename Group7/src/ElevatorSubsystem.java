@@ -23,6 +23,11 @@ public class ElevatorSubsystem implements Runnable{
 			network.elevatorSystemToSched(fe, 2);
 			System.out.println("Sent to Scheduler");
 			
+			 try { 
+	            	Thread.sleep(500);
+	            } catch (InterruptedException e){
+	            	
+	            }
 		}
 		
 	}
