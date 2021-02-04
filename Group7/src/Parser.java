@@ -38,7 +38,7 @@ public class Parser {
 			String carButton;
 			Time time1;
 			int currentFloor1;
-			boolean direction1;
+			Direction direction1;
 			int carButton1;
 			DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.mmm");
 			while(scanner.hasNext()) {
@@ -49,7 +49,7 @@ public class Parser {
 				long ms = dateFormat.parse(time).getTime();
 				time1 = new Time(ms);
 				currentFloor1 = Integer.parseInt(currentFloor);
-				direction1 = Boolean.valueOf(direction);
+				direction1 = Direction.valueOf(direction);
 				carButton1 = Integer.parseInt(carButton);
 				fe = new FloorEvent(time1, currentFloor1, direction1, carButton1);
 				
