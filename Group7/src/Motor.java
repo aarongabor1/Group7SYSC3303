@@ -5,11 +5,14 @@
  * @version 02 February 2021
  */
 public class Motor {
+	private Direction state;
+	
 	/**
 	 * Constructor method for Motor class
 	 */
-	public Motor()
+	public Motor(Direction direction)
 	{
+		this.state = direction;
 		System.out.println("motor constructed");
 	}
 	
@@ -20,6 +23,7 @@ public class Motor {
 	public void moveElevator(Direction direction)
 	{
 		System.out.println("Elevator going " + direction);
+		state = direction;
 	}
 	
 	/**
@@ -28,5 +32,10 @@ public class Motor {
 	public void stopElevator()
 	{
 		System.out.println("Start deaccelerating the elevator");
+		// state = Direction.STATIONARY;
+	}
+	
+	public Direction getState() {
+		return state;
 	}
 }

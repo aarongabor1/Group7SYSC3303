@@ -50,4 +50,11 @@ public class Scheduler extends Thread implements Runnable {
 		this.elevatorRequests.add(this.network.elevatorSystemToSched(null, 1));
 	}
 	
+	public boolean isElevatorRequestsEmpty() {
+		if (elevatorRequests.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+	
 }
