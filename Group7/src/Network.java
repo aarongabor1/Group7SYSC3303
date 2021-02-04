@@ -8,7 +8,7 @@
  *  	2 = Elevator Subsystem 
  * 
  * @author Aaron Gabor
- * @version 1.1.0
+ * @version 1.1.1
  */
 public class Network {
 	private FloorEvent floorEvent;
@@ -54,6 +54,7 @@ public class Network {
 		{
 			this.needToWait1 = true;
 			this.floorEvent = floorEvent;
+			notifyAll();
 			return null;
 		}
 		//Runs if the Floor subsystem entered this method
@@ -62,8 +63,10 @@ public class Network {
 			this.needToWait1 = false;
 			FloorEvent newFloorEvent = this.floorEvent;
 			this.floorEvent = null;
+			notifyAll();
 			return newFloorEvent;
 		}
+		notifyAll();
 		return null;
 	}
 	
@@ -93,6 +96,7 @@ public class Network {
 		{
 			this.needToWait2 = true;
 			this.floorEvent = floorEvent;
+			notifyAll();
 			return null;
 		}
 		//Runs if the Scheduler subsystem entered this method
@@ -101,8 +105,10 @@ public class Network {
 			this.needToWait2 = false;
 			FloorEvent newFloorEvent = this.floorEvent;
 			this.floorEvent = null;
+			notifyAll();
 			return newFloorEvent;
 		}
+		notifyAll();
 		return null;
 	}
 	
@@ -132,6 +138,7 @@ public class Network {
 		{
 			this.needToWait3 = true;
 			this.floorEvent = floorEvent;
+			notifyAll();
 			return null;
 		}
 		//Runs if the Elevator subsystem entered this method
@@ -140,8 +147,10 @@ public class Network {
 			this.needToWait3 = false;
 			FloorEvent newFloorEvent = this.floorEvent;
 			this.floorEvent = null;
+			notifyAll();
 			return newFloorEvent;
 		}
+		notifyAll();
 		return null;
 	}
 	
@@ -171,6 +180,7 @@ public class Network {
 		{
 			this.needToWait4 = true;
 			this.floorEvent = floorEvent;
+			notifyAll();
 			return null;
 		}
 		//Runs if the Scheduler subsystem entered this method
@@ -179,8 +189,10 @@ public class Network {
 			this.needToWait4 = false;
 			FloorEvent newFloorEvent = this.floorEvent;
 			this.floorEvent = null;
+			notifyAll();
 			return newFloorEvent;
 		}
+		notifyAll();
 		return null;
 	}
 	
@@ -210,6 +222,7 @@ public class Network {
 		{
 			this.needToWait5 = true;
 			this.floor = floor;
+			notifyAll();
 			return -1;
 		}
 		//Runs if the Elevator subsystem entered this method
@@ -218,8 +231,10 @@ public class Network {
 			this.needToWait5 = false;
 			int newFloorEvent = this.floor;
 			this.floor = -1;
+			notifyAll();
 			return newFloorEvent;
 		}
+		notifyAll();
 		return -1;
 	}
 }
