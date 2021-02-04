@@ -1,27 +1,27 @@
 
 public class ElevatorSubsystem implements Runnable{
 	private Network network;
-	private Scheduler scheduler;
 	private Elevator elevator;
 	private int destinationFloor;
 	private Direction elevatorState; // May be unnecessary because of elevator state enum
 	
-	public ElevatorSubsystem(Elevator elevator, Scheduler scheduler, Network network) {
+	public ElevatorSubsystem(Elevator elevator, Network network) {
 		this.network = network;
 		this.elevator = elevator;
-		this.scheduler = scheduler;
 	}
 
 	@Override
 	public void run() {
-		while(!scheduler.isElevatorRequestsEmpty()) {
-			// int destinatonFloor = network.floorToElevator() should return the targeted floor
-			// int serviceFloor = 
-			// while (currentFloor!=destinationFloor)
-			// if currentFloor is above destinationFloor -> move elevator up, otherwise move down
-			// moveElevator()
-			// elevatorScheduler(currentFloor, elevatorState)
-			// if currentFloor is at destinationFloor -> stop motor, open doors	
+		while(true) {
+			
+			FloorEvent fe = network.schedToElevatorSystem(null, 2);
+			System.out.println("Received from Scheduler");
+			
+			int destinationFloor = network.floorToElevatorSystem(0, 2); // 0 is just a random number that is not being sent in
+			
+			
+			network.elevatorSystemToSched(fe, 2);
+			System.out.println("Sent to Scheduler");
 			
 		}
 		
@@ -54,8 +54,9 @@ public class ElevatorSubsystem implements Runnable{
 		} else {
 			elevator.getDoor().openDoor();
 		}
-		
 	}
+	
+	
 	
 	
 }

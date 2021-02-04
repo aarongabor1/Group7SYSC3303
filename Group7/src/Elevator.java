@@ -2,6 +2,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Elevator {
+	public static final int MINIMUM_FLOOR_NUM = 1;
+	
 	private List<ElevatorButton> elevatorButtons;
 	private Motor motor;
 	private Door door;
@@ -13,7 +15,7 @@ public class Elevator {
 		this.elevatorButtons = new LinkedList<>();
 		this.motor = new Motor(Direction.STATIONARY);
 		this.door = new Door(DoorPosition.CLOSED);
-		this.currentFloor = 1;
+		this.currentFloor = MINIMUM_FLOOR_NUM;
 		generateElevatorButtons();
 	}
 	
