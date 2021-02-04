@@ -11,7 +11,7 @@ public class Elevator {
 	public Elevator(int numberOfFloors) {
 		this.numberOfFloors = numberOfFloors;
 		this.elevatorButtons = new LinkedList<>();
-		this.motor = new Motor();
+		this.motor = new Motor(Direction.STATIONARY);
 		this.door = new Door(DoorPosition.CLOSED);
 		this.currentFloor = 1;
 		generateElevatorButtons();

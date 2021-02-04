@@ -23,7 +23,6 @@ public class ElevatorSubsystem implements Runnable{
 			// elevatorScheduler(currentFloor, elevatorState)
 			// if currentFloor is at destinationFloor -> stop motor, open doors	
 			
-			
 		}
 		
 	}
