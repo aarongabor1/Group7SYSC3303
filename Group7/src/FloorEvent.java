@@ -9,7 +9,7 @@ import java.sql.Time;
 class FloorEvent {
 	private Time time;
 	private int currentFloor;
-	private boolean direction; //True = Up | False = Down
+	private Direction direction;
 	private int carButton;
 	
 	/**
@@ -21,7 +21,7 @@ class FloorEvent {
 	 * elevator needs to go up or down, carButton is an integer value for the floor 
 	 * where the user would like to travel to.
 	 */
-	public FloorEvent(Time time, int currentFloor, boolean direction, int carButton)
+	public FloorEvent(Time time, int currentFloor, Direction direction, int carButton)
 	{
 		this.time = time;
 		this.currentFloor = currentFloor;
@@ -57,7 +57,7 @@ class FloorEvent {
 	 * 
 	 * @return returns a boolean value of the direction variable
 	 */
-	public boolean getDirection()
+	public Direction getDirection()
 	{
 		return this.direction;
 	}
