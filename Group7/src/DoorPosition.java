@@ -1,4 +1,4 @@
 
-public class DoorPosition extends FloorEvent {
-
+public enum DoorPosition {
+	OPENED, CLOSED
 }

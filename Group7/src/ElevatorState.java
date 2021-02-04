@@ -1,4 +1,4 @@
 
-public class ElevatorState extends FloorButton {
-
+public enum ElevatorState{
+	GOING_UP, GOING_DOWN, STATIONARY
 }
