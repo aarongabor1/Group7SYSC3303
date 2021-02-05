@@ -70,7 +70,7 @@ public class Elevator {
 	}
 	
 	/**
-	 * Retruns elevator's motor
+	 * Returns elevator's motor
 	 * @return
 	 */
 	public Motor getMotor() {
