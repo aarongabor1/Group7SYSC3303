@@ -1,5 +1,9 @@
-
-public class ElevatorSubsystem implements Runnable{
+/**
+ * 
+ * @author Diana Miraflor, Marc Angers
+ *
+ */
+public class ElevatorSubsystem implements Runnable {
 	private Network network;
 	private Elevator elevator;
 	private int destinationFloor;
@@ -13,21 +17,31 @@ public class ElevatorSubsystem implements Runnable{
 	@Override
 	public void run() {
 		while(true) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			
-			FloorEvent fe = network.schedToElevatorSystem(null, 2);
-			System.out.println("Received from Scheduler");
+			FloorEvent floorEvent = network.getSchedulerSystemEvent();
+			System.out.println("Elevator received FloorEvent from Scheduler");			
 			
-			int destinationFloor = network.floorToElevatorSystem(0, 2); // 0 is just a random number that is not being sent in
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			
+			// Will most likely be a different kind of event with different information in the future, but for now just return the original floor event
+			network.putElevatorSystemEvent(floorEvent);
+			System.out.println("Elevator sent FloorEvent to Scheduler");
 			
-			network.elevatorSystemToSched(fe, 2);
-			System.out.println("Sent to Scheduler");
-			
-			 try { 
-	            	Thread.sleep(500);
-	            } catch (InterruptedException e){
-	            	
-	            }
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
 		}
 		
 	}

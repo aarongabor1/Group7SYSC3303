@@ -2,72 +2,25 @@
  * Network class is the connection point of the whole project. All of the information that each
  * subsystem would like to send to another subsystem comes across the Network class. 
  *  
- *  Key for the systemNumber variable: 
- *  	0 = Floor Subsystem
- *  	1 = Scheduler Subsystem
- *  	2 = Elevator Subsystem 
  * 
- * @author Aaron Gabor
+ * @author Aaron Gabor, Marc Angers
  * @version 1.1.1
  */
 public class Network {
-	private FloorEvent floorEvent;
-	private boolean needToWait1, needToWait2, needToWait3, needToWait4, needToWait5; //Allows the correct method to be triggered
-	private int floor;
+	private FloorEvent floorSystemEvent, schedulerSystemEvent, elevatorSystemEvent;
+	private boolean containsFloorSystemEvent, containsSchedulerSystemEvent, containsElevatorSystemEvent;
 	
 	/**
 	 * Constructor that will create the Network object.
 	 */
 	public Network()
 	{
-		this.needToWait1 = false;
-		this.needToWait2 = false;
-		this.needToWait3 = false;
-		this.needToWait4 = false;
-		this.needToWait5 = false;
-	}
-	
-	/** 
-	 * schedToFloorSystem is a method to transfer a FloorEvent object from the Scheduler subsystem
-	 * and the Floor subsystem. 
-	 *
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
-	 * @return Either the FloorEvent object that needs to be transfered or null
-	 */
-	public synchronized FloorEvent schedToFloorSystem(FloorEvent floorEvent, int systemNumber)
-	{
-		//Waits if this in not the method that should have been entered
-		while(this.needToWait2 || this.needToWait3 || this.needToWait4 || this.needToWait5)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		//Runs if the Scheduler subsystem entered this method
-		if(systemNumber == 1)
-		{
-			this.needToWait1 = true;
-			this.floorEvent = floorEvent;
-			notifyAll();
-			return null;
-		}
-		//Runs if the Floor subsystem entered this method
-		else if(systemNumber == 0)
-		{
-			this.needToWait1 = false;
-			FloorEvent newFloorEvent = this.floorEvent;
-			this.floorEvent = null;
-			notifyAll();
-			return newFloorEvent;
-		}
-		notifyAll();
-		return null;
+		this.floorSystemEvent = null;
+		this.schedulerSystemEvent = null;
+		this.elevatorSystemEvent = null;
+		this.containsFloorSystemEvent = false;
+		this.containsSchedulerSystemEvent = false;
+		this.containsElevatorSystemEvent = false;
 	}
 	
 	/** 
@@ -78,9 +31,9 @@ public class Network {
 	 * @param systemNumber the designated system number for the subsystem check key in class comment
 	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
-	public synchronized FloorEvent floorSystemToSched(FloorEvent floorEvent, int systemNumber)
+	public synchronized void putFloorSystemEvent(FloorEvent floorEvent)
 	{
-		while(this.needToWait1 || this.needToWait3 || this.needToWait4 || this.needToWait5)
+		while(this.containsFloorSystemEvent)
 		{
 			try
 			{
@@ -91,23 +44,130 @@ public class Network {
 				System.err.print(e);
 			}
 		}
-		//Runs if the Floor subsystem entered this method
-		if(systemNumber == 0)
+
+		this.containsFloorSystemEvent = true;
+		this.floorSystemEvent = floorEvent;
+		System.out.println("Floor system event added to the network");
+		notifyAll();
+	}
+	
+	/** 
+	 * schedToFloorSystem is a method to transfer a FloorEvent object from the Scheduler subsystem
+	 * and the Floor subsystem. 
+	 *
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 * @param systemNumber the designated system number for the subsystem check key in class comment
+	 * @return Either the FloorEvent object that needs to be transfered or null
+	 */
+	public synchronized FloorEvent getFloorSystemEvent()
+	{
+		//Waits if this in not the method that should have been entered
+		while(!this.containsFloorSystemEvent)
 		{
-			this.needToWait2 = true;
-			this.floorEvent = floorEvent;
-			notifyAll();
-			return null;
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
 		}
-		//Runs if the Scheduler subsystem entered this method
-		else if(systemNumber == 1)
+
+		this.containsFloorSystemEvent = false;
+		FloorEvent event = this.floorSystemEvent;
+		this.floorSystemEvent = null;
+		System.out.println("Floor system event retreived from network");
+		notifyAll();
+		
+		return event;
+	}
+	
+	/** 
+	 * floorSystemToSched is a method to transfer a FloorEvent object from the Floor subsystem to
+	 * the Scheduler subsystem.
+	 * 
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 * @param systemNumber the designated system number for the subsystem check key in class comment
+	 * @return Either the FloorEvent object that needs to be transfered or null
+	 */
+	public synchronized void putSchedulerSystemEvent(FloorEvent floorEvent)
+	{
+		while(this.containsSchedulerSystemEvent)
 		{
-			this.needToWait2 = false;
-			FloorEvent newFloorEvent = this.floorEvent;
-			this.floorEvent = null;
-			notifyAll();
-			return newFloorEvent;
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
 		}
+
+		this.containsSchedulerSystemEvent = true;
+		this.schedulerSystemEvent = floorEvent;
+		System.out.println("Scheduler system event added to the network");
+		notifyAll();
+	}
+	
+	/** 
+	 * schedToFloorSystem is a method to transfer a FloorEvent object from the Scheduler subsystem
+	 * and the Floor subsystem. 
+	 *
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 * @param systemNumber the designated system number for the subsystem check key in class comment
+	 * @return Either the FloorEvent object that needs to be transfered or null
+	 */
+	public synchronized FloorEvent getSchedulerSystemEvent()
+	{
+		//Waits if this in not the method that should have been entered
+		while(!this.containsSchedulerSystemEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+
+		this.containsSchedulerSystemEvent = false;
+		FloorEvent event = this.schedulerSystemEvent;
+		this.floorSystemEvent = null;
+		System.out.println("Scheduler system event retreived from network");
+		notifyAll();
+		
+		return event;
+	}
+
+	/**
+	 * elevatorSystemToSched is a method that transfers a FloorEvent object from the Elevator
+	 * subsystem to the Scheduler subsystem.
+	 * 
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 * @param systemNumber the designated system number for the subsystem check key in class comment
+	 * @return Either the FloorEvent object that needs to be transfered or null
+	 */
+	public synchronized FloorEvent putElevatorSystemEvent(FloorEvent floorEvent)
+	{
+		while(this.containsElevatorSystemEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		this.containsElevatorSystemEvent = true;
+		this.elevatorSystemEvent = floorEvent;
+		System.out.println("Elevator system event added to network");
 		notifyAll();
 		return null;
 	}
@@ -120,9 +180,9 @@ public class Network {
 	 * @param systemNumber the designated system number for the subsystem check key in class comment
 	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
-	public synchronized FloorEvent schedToElevatorSystem(FloorEvent floorEvent, int systemNumber)
+	public synchronized FloorEvent getElevatorSystemEvent()
 	{
-		while(this.needToWait1 || this.needToWait2 || this.needToWait4 || this.needToWait5)
+		while(!this.containsElevatorSystemEvent)
 		{
 			try
 			{
@@ -133,108 +193,13 @@ public class Network {
 				System.err.print(e);
 			}
 		}
-		//Runs if the Floor subsystem entered this method
-		if(systemNumber == 1)
-		{
-			this.needToWait3 = true;
-			this.floorEvent = floorEvent;
-			notifyAll();
-			return null;
-		}
-		//Runs if the Elevator subsystem entered this method
-		else if(systemNumber == 2)
-		{
-			this.needToWait3 = false;
-			FloorEvent newFloorEvent = this.floorEvent;
-			this.floorEvent = null;
-			notifyAll();
-			return newFloorEvent;
-		}
+
+		FloorEvent event = this.elevatorSystemEvent;
+		this.elevatorSystemEvent = null;
+		this.containsElevatorSystemEvent = false;
+		System.out.println("Elevator system event retreived from network");
 		notifyAll();
-		return null;
-	}
-	
-	/**
-	 * elevatorSystemToSched is a method that transfers a FloorEvent object from the Elevator
-	 * subsystem to the Scheduler subsystem.
-	 * 
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
-	 * @return Either the FloorEvent object that needs to be transfered or null
-	 */
-	public synchronized FloorEvent elevatorSystemToSched(FloorEvent floorEvent, int systemNumber)
-	{
-		while(this.needToWait1 || this.needToWait2 || this.needToWait3 || this.needToWait5)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		//Runs if the Elevator subsystem entered this method
-		if(systemNumber == 2)
-		{
-			this.needToWait4 = true;
-			this.floorEvent = floorEvent;
-			notifyAll();
-			return null;
-		}
-		//Runs if the Scheduler subsystem entered this method
-		else if(systemNumber == 1)
-		{
-			this.needToWait4 = false;
-			FloorEvent newFloorEvent = this.floorEvent;
-			this.floorEvent = null;
-			notifyAll();
-			return newFloorEvent;
-		}
-		notifyAll();
-		return null;
-	}
-	
-	/**
-	 * floorToElevatorSystem is a method that transfers an floor number from the Floor subsystem to
-	 * the Elevator subsystem.
-	 * 
-	 * @param floor the floor number that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
-	 * @return Either the floor number that needs to be transfered or -1
-	 */
-	public synchronized int floorToElevatorSystem(int floor, int systemNumber)
-	{
-		while(this.needToWait1 || this.needToWait2 || this.needToWait3 || this.needToWait4)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		//Runs if the Floor subsystem entered this method
-		if(systemNumber == 0)
-		{
-			this.needToWait5 = true;
-			this.floor = floor;
-			notifyAll();
-			return -1;
-		}
-		//Runs if the Elevator subsystem entered this method
-		else if(systemNumber == 2)
-		{
-			this.needToWait5 = false;
-			int newFloorEvent = this.floor;
-			this.floor = -1;
-			notifyAll();
-			return newFloorEvent;
-		}
-		notifyAll();
-		return -1;
+		
+		return event;
 	}
 }

@@ -1,7 +1,7 @@
 /***
  * The Floor Subsystem is responsible for reading the requests from
- *a textfile and sending these requests to the network.
- * @author lynnmehyou
+ * a textfile and sending these requests to the network.
+ * @author lynnmehyou, Marc Angers
  */
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ public class FloorSubsystem implements Runnable{
 	private Network network;
 	private List<Floor> floors;
 	private Parser p;
+	
 	/***
 	 * FloorSubsytem constructor
 	 * @param numberOfFloors
@@ -29,25 +30,40 @@ public class FloorSubsystem implements Runnable{
 		this.floors = new ArrayList<Floor>(numberOfFloors);
 	}
 	
-	
-	public synchronized void run() {
+	@Override
+	public void run() {
+		FloorEvent floorEvent;
+		
 		while(true) {
 			try {
-				network.schedToFloorSystem(generateFloorEvent(), 1);
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				network.putFloorSystemEvent(generateFloorEvent());
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			floorEvent = network.getSchedulerSystemEvent();
+			System.out.println("Floor event " + floorEvent + "Received by the floor subsystem.");
 		}
 	}
 	
 	/***
 	 * generates floor events using the parser file.
-	 * @return
+	 * @return the parsed floor event from the text file
 	 * @throws ParseException
 	 */
-
 	public FloorEvent generateFloorEvent() throws ParseException {
-		return p.parseFile();
-		
+		return p.parseFile();	
 	}
 }
