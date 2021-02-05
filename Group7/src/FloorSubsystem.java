@@ -34,6 +34,7 @@ public class FloorSubsystem implements Runnable{
 		while(true) {
 			try {
 				network.schedToFloorSystem(generateFloorEvent(), 1);
+				System.out.println("FloorSystem sent to Scheduler");
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
