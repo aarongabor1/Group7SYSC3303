@@ -13,7 +13,6 @@ public class Motor {
 	public Motor(Direction direction)
 	{
 		this.state = direction;
-		System.out.println("motor constructed");
 	}
 	
 	/**

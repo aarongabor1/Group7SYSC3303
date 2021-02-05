@@ -19,6 +19,7 @@ public class FloorSubsystem implements Runnable{
 	public FloorSubsystem(int numberOfFloors, Network network) {
 		this.network = network;
 		this.floors = new ArrayList<Floor>(numberOfFloors);
+		this.p = new Parser();
 	}
 	/***
 	 * generates floors depending on the floor number 

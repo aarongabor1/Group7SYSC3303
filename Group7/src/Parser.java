@@ -31,7 +31,7 @@ public class Parser {
 		Scanner scanner;
 		try {
 			scanner = new Scanner(file);
-			scanner.useDelimiter(",");
+			scanner.useDelimiter(" ");
 			String time;
 			String currentFloor;
 			String direction;
@@ -49,7 +49,7 @@ public class Parser {
 				long ms = dateFormat.parse(time).getTime();
 				time1 = new Time(ms);
 				currentFloor1 = Integer.parseInt(currentFloor);
-				direction1 = Direction.valueOf(direction);
+				direction1 = Direction.valueOf(direction.toUpperCase());
 				carButton1 = Integer.parseInt(carButton);
 				fe = new FloorEvent(time1, currentFloor1, direction1, carButton1);
 				
