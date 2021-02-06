@@ -26,8 +26,6 @@ public class Scheduler extends Thread implements Runnable {
 	 */
 	public void run()
 	{
-		FloorEvent floorEvent;
-		
 		while(true)
 		{
 			try {
