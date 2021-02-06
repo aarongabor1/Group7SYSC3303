@@ -44,7 +44,7 @@ public class Network {
 
 		this.containsFloorSystemEvent = true;
 		this.floorSystemEvent = floorEvent;
-		System.out.println("Floor system event added to the network");
+		System.out.println("Floor system event: (" + floorSystemEvent + ") added to the network");
 		notifyAll();
 	}
 	
@@ -72,7 +72,7 @@ public class Network {
 		this.containsFloorSystemEvent = false;
 		FloorEvent event = this.floorSystemEvent;
 		this.floorSystemEvent = null;
-		System.out.println("Floor system event retreived from network");
+		System.out.println("Floor system event: (" + event + ") retrieved from network by Scheduler");
 		notifyAll();
 		
 		return event;
@@ -100,7 +100,7 @@ public class Network {
 
 		this.containsSchedulerSystemEvent = true;
 		this.schedulerSystemEvent = floorEvent;
-		System.out.println("Scheduler system event added to the network");
+		System.out.println("Event: (" + schedulerSystemEvent + ") Scheduler sent floor event to the network");
 		notifyAll();
 	}
 	
@@ -128,7 +128,7 @@ public class Network {
 		this.containsSchedulerSystemEvent = false;
 		FloorEvent event = this.schedulerSystemEvent;
 		this.floorSystemEvent = null;
-		System.out.println("Scheduler system event retreived from network");
+		System.out.println("Event: (" + event + ") Network retrieved floor event from Scheduler");
 		notifyAll();
 		
 		return event;
@@ -157,16 +157,16 @@ public class Network {
 		
 		this.containsElevatorSystemEvent = true;
 		this.elevatorSystemEvent = floorEvent;
-		System.out.println("Elevator system event added to network");
+		System.out.println("Event: (" + elevatorSystemEvent + ") Elevator system event added to network");
 		notifyAll();
 		return null;
 	}
 	
 	/**
-	 * getElevatorSystemEvent is a method where the Elevator system can recieve a FloorEvent object
+	 * getElevatorSystemEvent is a method where the Elevator system can receive a FloorEvent object
 	 * from another system.
 	 * 
-	 * @return Either the FloorEvent object that needs to be transfered or null
+	 * @return Either the FloorEvent object that needs to be transfered or nullyjky6
 	 */
 	public synchronized FloorEvent getElevatorSystemEvent()
 	{
@@ -185,7 +185,7 @@ public class Network {
 		FloorEvent event = this.elevatorSystemEvent;
 		this.elevatorSystemEvent = null;
 		this.containsElevatorSystemEvent = false;
-		System.out.println("Elevator system event retreived from network");
+		System.out.println("Event: (" + event + ")Elevator system event retreived from network");
 		notifyAll();
 		
 		return event;

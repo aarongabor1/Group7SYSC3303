@@ -72,4 +72,8 @@ class FloorEvent {
 	{
 		return this.carButton;
 	}
+	
+	public String toString() {
+		return time.toString() + ": " + currentFloor + " " + direction + " " + carButton;
+	}
 }

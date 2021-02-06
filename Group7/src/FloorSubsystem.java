@@ -16,8 +16,9 @@ public class FloorSubsystem implements Runnable{
 	 * FloorSubsytem constructor
 	 * @param numberOfFloors
 	 * @param network
+	 * @throws ParseException 
 	 */
-	public FloorSubsystem(int numberOfFloors, Network network) {
+	public FloorSubsystem(int numberOfFloors, Network network) throws ParseException {
 		this.network = network;
 		this.floors = new ArrayList<Floor>(numberOfFloors);
 		this.p = new Parser();
@@ -35,6 +36,7 @@ public class FloorSubsystem implements Runnable{
 		FloorEvent floorEvent;
 		
 		while(true) {
+		
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -43,8 +45,9 @@ public class FloorSubsystem implements Runnable{
 			
 			try {
 				network.putFloorSystemEvent(generateFloorEvent());
-			} catch (ParseException e) {
-				e.printStackTrace();
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 			
 			try {
@@ -54,16 +57,21 @@ public class FloorSubsystem implements Runnable{
 			}
 			
 			floorEvent = network.getSchedulerSystemEvent();
-			System.out.println("Floor event " + floorEvent + "Received by the floor subsystem.");
+			System.out.println("Floor event (" + floorEvent + ") received by the floor subsystem.");
+		
 		}
 	}
 	
+	/*
 	/***
 	 * generates floor events using the parser file.
 	 * @return the parsed floor event from the text file
 	 * @throws ParseException
-	 */
 	public FloorEvent generateFloorEvent() throws ParseException {
 		return p.parseFile();	
+	}*/
+	
+	public FloorEvent generateFloorEvent() throws ParseException {
+		return p.parseFile();
 	}
 }

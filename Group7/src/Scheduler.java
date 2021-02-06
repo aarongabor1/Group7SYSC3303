@@ -66,8 +66,9 @@ public class Scheduler extends Thread implements Runnable {
 	{
 		FloorEvent floorEvent = this.network.getElevatorSystemEvent();
 		this.elevatorRequests.add(floorEvent);
-		System.out.println("Event added to scheduler queue");
+		System.out.println("Elevator event added to scheduler queue");
 		
 		this.network.putSchedulerSystemEvent(floorEvent);
 	}
+	
 }

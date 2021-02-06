@@ -31,7 +31,7 @@ public class ElevatorSubsystem implements Runnable{
 			}
 			
 			FloorEvent floorEvent = network.getSchedulerSystemEvent();
-			System.out.println("Elevator received FloorEvent from Scheduler");			
+			System.out.println("Event: (" + floorEvent + ") Elevator received FloorEvent from Scheduler");			
 			
 			try {
 				Thread.sleep(500);
