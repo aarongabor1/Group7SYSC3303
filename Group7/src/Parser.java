@@ -1,7 +1,8 @@
 /***
- * @author lynnmehyou
  * This class takes in the file and uses the text to fill out the variable needed to
  * generate a floor event, time, current floor, direction and car button.
+ * 
+ * @author lynnmehyou, Aaron Gabor
  */
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,25 +10,34 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
+
+import javax.swing.JFileChooser;
+
 import java.sql.Time;
 public class Parser {
 	private File file;
 	private FloorEvent fe ;
 	/***
-	 * Takes in the file that has the data
+	 * Asks user to pick the text file that condenses the floor events then stores it in a File object.
 	 */
 	public Parser() {
-		file = new File("text.txt");
+		//Start of code from https://www.codejava.net/java-se/swing/show-simple-open-file-dialog-using-jfilechooser
+		JFileChooser fileChooser = new JFileChooser();
+	    int result = fileChooser.showOpenDialog(null);
+	    if (result == JFileChooser.APPROVE_OPTION) 
+	    {
+	      this.file = fileChooser.getSelectedFile();
+	    }
+	    //end of code from https://www.codejava.net/java-se/swing/show-simple-open-file-dialog-using-jfilechooser
 	}
 	/***
 	 * Assigns the file input text to the correct variables. Changes their type from string to the type they should have to satisfy the 
 	 * FloorEvent method.
-	 * @return 
+	 * 
 	 * @return a floor event object 
 	 * @throws ParseException
 	 */
 	public FloorEvent parseFile() throws ParseException {
-		
 		Scanner scanner;
 		try {
 			scanner = new Scanner(file);
@@ -64,6 +74,5 @@ public class Parser {
 		return fe;
 		
 	}
-	
 	
 }
