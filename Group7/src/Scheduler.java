@@ -47,9 +47,8 @@ public class Scheduler extends Thread implements Runnable {
 	}
  
 	/**
-	 * handleElevatorEvent is a method that will tell the Elevator subsystem that 
-	 * there is work to be done and then will remove the FloorEvent object from the
-	 * ArrayList.
+	 * handleFloorSystemEvent is a method that will receive a FloorEvent object from the Floor system
+	 * then will added it to an ArrayList and then will send it back to the Floor system.
 	 */
 	public void handleFloorSystemEvent()
 	{
