@@ -2,7 +2,6 @@
  * Network class is the connection point of the whole project. All of the information that each
  * subsystem would like to send to another subsystem comes across the Network class. 
  *  
- * 
  * @author Aaron Gabor, Marc Angers
  * @version 1.1.1
  */
@@ -24,12 +23,10 @@ public class Network {
 	}
 	
 	/** 
-	 * floorSystemToSched is a method to transfer a FloorEvent object from the Floor subsystem to
-	 * the Scheduler subsystem.
+	 * putFloorSystemEvent is a method that it receive a FloorEvent object that the Floor System
+	 * wants to send.
 	 * 
 	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
-	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
 	public synchronized void putFloorSystemEvent(FloorEvent floorEvent)
 	{
@@ -52,11 +49,9 @@ public class Network {
 	}
 	
 	/** 
-	 * schedToFloorSystem is a method to transfer a FloorEvent object from the Scheduler subsystem
-	 * and the Floor subsystem. 
+	 * getFloorSystemEvent is a method where the Floor system can get a FloorEvent object from another
+	 * system.
 	 *
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
 	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
 	public synchronized FloorEvent getFloorSystemEvent()
@@ -84,12 +79,10 @@ public class Network {
 	}
 	
 	/** 
-	 * floorSystemToSched is a method to transfer a FloorEvent object from the Floor subsystem to
-	 * the Scheduler subsystem.
+	 * putSchedulerSystemEvent is a method where the Scheduler system can send a FloorEvent object
+	 * to another system
 	 * 
 	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
-	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
 	public synchronized void putSchedulerSystemEvent(FloorEvent floorEvent)
 	{
@@ -112,12 +105,10 @@ public class Network {
 	}
 	
 	/** 
-	 * schedToFloorSystem is a method to transfer a FloorEvent object from the Scheduler subsystem
-	 * and the Floor subsystem. 
+	 * getSchedulerSystemEvent is a method that the Scheduler system can receive a FloorEvent object
+	 * from another system.
 	 *
 	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
-	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
 	public synchronized FloorEvent getSchedulerSystemEvent()
 	{
@@ -144,12 +135,11 @@ public class Network {
 	}
 
 	/**
-	 * elevatorSystemToSched is a method that transfers a FloorEvent object from the Elevator
-	 * subsystem to the Scheduler subsystem.
+	 * putElevatorSystemEvent is a method that the Elevator system can send a FloorEvent object
+	 * to another system.
 	 * 
 	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
-	 * @return Either the FloorEvent object that needs to be transfered or null
+	 * @return null
 	 */
 	public synchronized FloorEvent putElevatorSystemEvent(FloorEvent floorEvent)
 	{
@@ -173,11 +163,9 @@ public class Network {
 	}
 	
 	/**
-	 * schedToElevatorSystem is a method that transfers a FloorEvent object from the Scheduler
-	 * subsystem to the Elevator subsystem.
+	 * getElevatorSystemEvent is a method where the Elevator system can recieve a FloorEvent object
+	 * from another system.
 	 * 
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 * @param systemNumber the designated system number for the subsystem check key in class comment
 	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
 	public synchronized FloorEvent getElevatorSystemEvent()
