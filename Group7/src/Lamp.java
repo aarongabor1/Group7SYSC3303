@@ -6,10 +6,11 @@
 public abstract class Lamp {
 	private boolean isOn = false;
 	
-	public void turnOn() {
-		isOn = true;
+	public void switchLamp() {
+		isOn = !isOn;
 	}
-	public void turnOff() {
-		isOn = false;
+	
+	public boolean isOn() {
+		return this.isOn;
 	}
 }

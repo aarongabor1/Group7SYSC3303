@@ -39,7 +39,8 @@ public class ElevatorSubsystem implements Runnable{
 				e.printStackTrace();
 			}
 			
-			// Will most likely be a different kind of event with different information in the future, but for now just return the original floor event
+			// Will most likely be a different kind of event with different information in the future, 
+			// but for now just return the original floor event
 			network.putElevatorSystemEvent(floorEvent);
 			System.out.println("Elevator sent FloorEvent to Scheduler");
 			
