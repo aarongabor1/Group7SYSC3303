@@ -18,7 +18,7 @@ public class FloorSubsystem implements Runnable{
 	 * @param network
 	 * @throws ParseException 
 	 */
-	public FloorSubsystem(int numberOfFloors, Network network) throws ParseException {
+	public FloorSubsystem(int numberOfFloors, Network network) {
 		this.network = network;
 		this.floors = new ArrayList<Floor>(numberOfFloors);
 		this.p = new Parser();
@@ -62,15 +62,11 @@ public class FloorSubsystem implements Runnable{
 		}
 	}
 	
-	/*
-	/***
+	/**
 	 * generates floor events using the parser file.
 	 * @return the parsed floor event from the text file
 	 * @throws ParseException
-	public FloorEvent generateFloorEvent() throws ParseException {
-		return p.parseFile();	
-	}*/
-	
+	 */
 	public FloorEvent generateFloorEvent() throws ParseException {
 		return p.parseFile();
 	}

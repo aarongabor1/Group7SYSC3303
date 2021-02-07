@@ -73,6 +73,11 @@ class FloorEvent {
 		return this.carButton;
 	}
 	
+	/**
+	 * toString returns the a string version of all information stored in the FloorEvent object.
+	 * 
+	 * @return string containing all information.
+	 */
 	public String toString() {
 		return time.toString() + ": " + currentFloor + " " + direction + " " + carButton;
 	}

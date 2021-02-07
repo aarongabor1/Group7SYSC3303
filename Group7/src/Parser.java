@@ -10,10 +10,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
-
 import javax.swing.JFileChooser;
-
 import java.sql.Time;
+
 public class Parser {
 	private File file;
 	private FloorEvent fe ;
