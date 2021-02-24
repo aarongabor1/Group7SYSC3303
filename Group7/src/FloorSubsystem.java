@@ -5,22 +5,23 @@
  */
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FloorSubsystem implements Runnable{
 	private Network network;
-	private List<Floor> floors;
+	private Map<Integer, Floor> floors;
 	private Parser p;
 	
 	/***
 	 * FloorSubsytem constructor
 	 * @param numberOfFloors
 	 * @param network
-	 * @throws ParseException 
 	 */
-	public FloorSubsystem(int numberOfFloors, Network network) {
+	public FloorSubsystem (int numberOfFloors, Network network) {
 		this.network = network;
-		this.floors = new ArrayList<Floor>(numberOfFloors);
+		this.floors = new HashMap<Integer, Floor>();
 		this.p = new Parser();
 	}
 	/***
@@ -28,7 +29,10 @@ public class FloorSubsystem implements Runnable{
 	 * @param numberOfFloors
 	 */
 	public void generateFloors(int numberOfFloors) {
-		this.floors = new ArrayList<Floor>(numberOfFloors);
+		for (int i = 1; i <= numberOfFloors; i++) {
+			Floor tempFloor = new Floor(i);
+			floors.put(i, tempFloor);
+		}
 	}
 	
 	@Override
@@ -44,9 +48,11 @@ public class FloorSubsystem implements Runnable{
 			}
 			
 			try {
-				network.putFloorSystemEvent(generateFloorEvent());
+				floorEvent = generateFloorEvent();
+				
+				floors.get(floorEvent.getFloor()).turnOnLamp(floorEvent.getDirection());
+				network.putFloorSystemEvent(floorEvent);
 			} catch (ParseException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			

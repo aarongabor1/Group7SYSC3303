@@ -10,11 +10,11 @@ public class Start {
 		Thread floorSubsystem, elevatorSubsystem, scheduler;
 		
 		network = new Network();
-		elevator = new Elevator(6);
+		elevator = new Elevator(network, 6);
 		
 		// Generate threads for each subsystem
 		floorSubsystem = new Thread(new FloorSubsystem(6, network), "Floor Subsystem");
-		elevatorSubsystem = new Thread(new ElevatorSubsystem(elevator, network), "Elevator Subsystem");
+		elevatorSubsystem = new Thread(elevator.getElevatorSubsystem(), "Elevator Subsystem");
 		scheduler = new Thread(new Scheduler(network), "Scheduler");
 		
 		floorSubsystem.start();

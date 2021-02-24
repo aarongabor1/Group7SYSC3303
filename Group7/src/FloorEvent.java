@@ -46,7 +46,7 @@ class FloorEvent {
 	 * 
 	 * @return returns a integer value of the currentFloor
 	 */
-	public int getCurrentFloor()
+	public int getFloor()
 	{
 		return this.currentFloor;
 	}
@@ -66,7 +66,7 @@ class FloorEvent {
 	 * getCarButton is a method where the carButton variable stored in the 
 	 * FloorEvent object is sent to different class.
 	 * 
-	 * @return returns a integer value of where the elevator wants to go
+	 * @return returns an integer value of where the elevator wants to go
 	 */
 	public int getCarButton()
 	{

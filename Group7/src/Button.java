@@ -11,6 +11,16 @@ public abstract class Button {
 		this.buttonLamp = buttonLamp;
 	}
 	
+	public void press() {
+		isPressed = true;
+		buttonLamp.turnOn();
+	}
+	
+	public void unPress() {
+		isPressed = false;
+		buttonLamp.turnOff();
+	}
+	
 	public void switchButton() {
 		isPressed = !isPressed;
 		buttonLamp.switchLamp();

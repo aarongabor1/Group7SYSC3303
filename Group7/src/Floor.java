@@ -4,8 +4,13 @@
  */
 
 public class Floor {
+	public static final int MINIMUM_FLOOR_NUM = 1;
+	public static final int MAXIMUM_FLOOR_NUMBER = 6;
+	
 	private int floorNumber;
-	private boolean maxFloor;
+	private FloorButton upButton;
+	private FloorButton downButton;
+	
 	private boolean isElevatorApproaching;
 	private boolean isElevatorAtFloor;
 	private FloorEvent fe;
@@ -14,27 +19,43 @@ public class Floor {
 	 * @param floorNumber
 	 * @param maxFloor
 	 */
-	public Floor(int floorNumber, boolean maxFloor) {
+	public Floor(int floorNumber) {
 		this.floorNumber= floorNumber;
-		this.maxFloor = maxFloor;
-	}
-	public int getFloorID() {
 		
-		return floorNumber;
-		
+		if (floorNumber < MAXIMUM_FLOOR_NUMBER)
+			this.upButton = new FloorButton(new FloorLamp(), Direction.UP);
+		if (floorNumber > 1)
+			this.downButton = new FloorButton(new FloorLamp(), Direction.DOWN);
 	}
-	/***
-	 * Returns true if it is the maximum floor number which is 6.
+	
+	/**
+	 * Returns the floor number.
 	 * @return
 	 */
-	public boolean isMax() {
-		if(floorNumber == 6) {
-			maxFloor = true;
-		}
-		else {
-			maxFloor = false;
-		}
-		return maxFloor;	
+	public int getFloorNumber() {
+		return floorNumber;
+	}
+	
+	/**
+	 * Turn on the lamp for the button corresponding to the given direction.
+	 * @param direction
+	 */
+	public void turnOnLamp(Direction direction) {
+		if (direction == Direction.UP) 
+			upButton.press();
+		if (direction == Direction.DOWN)
+			downButton.press();
+	}
+	
+	/**
+	 * Turn off the lamp for the button corresponding to the given direction.
+	 * @param direction
+	 */
+	public void turnOffLamp(Direction direction) {
+		if (direction == Direction.UP) 
+			upButton.unPress();
+		if (direction == Direction.DOWN)
+			downButton.unPress();
 	}
 
 	/***
@@ -42,7 +63,7 @@ public class Floor {
 	 * @return
 	 */
 	public boolean elevatorApproachingFloor() {
-		if (fe.getCurrentFloor() == fe.getCarButton()+1 || fe.getCurrentFloor() == fe.getCarButton()-1) {
+		if (fe.getFloor() == fe.getCarButton()+1 || fe.getFloor() == fe.getCarButton()-1) {
 			isElevatorApproaching = true;
 		}
 		else {
@@ -57,7 +78,7 @@ public class Floor {
 	 */
 	
 	public boolean elevatorAtFloor() {
-		if(fe.getCurrentFloor() == fe.getCarButton()) {
+		if(fe.getFloor() == fe.getCarButton()) {
 			isElevatorAtFloor = true;
 		}
 		else {

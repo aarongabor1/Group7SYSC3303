@@ -16,6 +16,7 @@ import java.sql.Time;
 public class Parser {
 	private File file;
 	private FloorEvent fe ;
+	
 	/***
 	 * Asks user to pick the text file that condenses the floor events then stores it in a File object.
 	 */

@@ -5,14 +5,16 @@
  * @version 02 February 2021
  */
 public class Motor {
+	private Elevator parentElevator;
 	private Direction state;
 	
 	/**
 	 * Constructor method for Motor class
 	 */
-	public Motor(Direction direction)
+	public Motor(Elevator parent)
 	{
-		this.state = direction;
+		this.parentElevator = parent;
+		this.state = Direction.STATIONARY;
 	}
 	
 	/**
@@ -23,6 +25,13 @@ public class Motor {
 	{
 		System.out.println("Elevator going " + direction);
 		state = direction;
+		parentElevator.changeDirection(direction);
+		try {
+			Thread.sleep(6000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		parentElevator.moveUp();
 	}
 	
 	/**
@@ -30,8 +39,9 @@ public class Motor {
 	 */
 	public void stopElevator()
 	{
-		System.out.println("Start deaccelerating the elevator");
-		// state = Direction.STATIONARY;
+		System.out.println("Elevator Stopping");
+		state = Direction.STATIONARY;
+		parentElevator.changeDirection(Direction.STATIONARY);
 	}
 	
 	public Direction getState() {

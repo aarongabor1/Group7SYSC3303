@@ -8,36 +8,36 @@ import java.util.List;
  * @version 1.0
  *
  */
-public class Elevator {
-	public static final int MINIMUM_FLOOR_NUM = 1;
-	
-	private List<ElevatorButton> elevatorButtons;
+public class Elevator {	
+	private ElevatorSubsystem elevatorSubsystem;
 	private Motor motor;
 	private Door door;
-	private int numberOfFloors;
 	private int currentFloor;
+	private Direction currentDirection;
 	
 	/**
 	 * Constructs a new Elevator object
 	 * 
 	 * @param numberOfFloors
 	 */
-	public Elevator(int numberOfFloors) {
-		this.numberOfFloors = numberOfFloors;
-		this.elevatorButtons = new LinkedList<>();
-		this.motor = new Motor(Direction.STATIONARY);
+	public Elevator(Network network, int numberOfFloors) {
+		if (numberOfFloors <= Floor.MINIMUM_FLOOR_NUM)
+			throw new IllegalArgumentException("Your building must have more than 1 floor to use an elevator!");
+		
+		this.motor = new Motor(this);
 		this.door = new Door(DoorPosition.CLOSED);
-		this.currentFloor = MINIMUM_FLOOR_NUM;
-		generateElevatorButtons();
+		this.currentFloor = Floor.MINIMUM_FLOOR_NUM;
+		this.currentDirection = Direction.STATIONARY;
+		
+		this.elevatorSubsystem = new ElevatorSubsystem(network, this);
 	}
 	
 	/**
-	 * Creates the elevator's floor buttons
+	 * Changes the direction the elevator is currently traveling.
+	 * @param direction
 	 */
-	public void generateElevatorButtons() {
-		for (int i = 1; i <= numberOfFloors; i++) {
-			elevatorButtons.add(new ElevatorButton(new ElevatorLamp(), i));
-		}
+	public void changeDirection(Direction direction) {
+		currentDirection = direction;
 	}
 	
 	/**
@@ -75,6 +75,14 @@ public class Elevator {
 	 */
 	public Motor getMotor() {
 		return motor;
+	}
+	
+	/**
+	 * Returns the elevator subsystem for the elevator
+	 * @return
+	 */
+	public ElevatorSubsystem getElevatorSubsystem() {
+		return elevatorSubsystem;
 	}
 	
 	

@@ -1,14 +1,19 @@
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * ElevatorSubsystem is a class that controls one elevator
  * 
  * @author Diana Miraflor, Marc Angers
  * @version 1.0
  */
-public class ElevatorSubsystem implements Runnable{
+public class ElevatorSubsystem implements Runnable {
 	private Network network;
-	private Elevator elevator;
-	private int destinationFloor;
-	private Direction elevatorState; // May be unnecessary because of elevator state enum
+	private Elevator parentElevator;
+	private int numberOfFloors;
+	private List<ElevatorButton> elevatorButtons;
+	
+	private int currentDestination;
 	
 	/**
 	 * Constructor for a new ElevatorSubsytem
@@ -16,9 +21,23 @@ public class ElevatorSubsystem implements Runnable{
 	 * @param elevator
 	 * @param network
 	 */
-	public ElevatorSubsystem(Elevator elevator, Network network) {
+	public ElevatorSubsystem(Network network, Elevator parent) {
 		this.network = network;
-		this.elevator = elevator;
+		this.parentElevator = parent;
+		
+		this.elevatorButtons = new LinkedList<>();
+		this.numberOfFloors = numberOfFloors;
+
+		generateElevatorButtons();
+	}
+	
+	/**
+	 * Creates the elevator's floor buttons
+	 */
+	public void generateElevatorButtons() {
+		for (int i = 1; i <= numberOfFloors; i++) {
+			elevatorButtons.add(new ElevatorButton(new ElevatorLamp(), i));
+		}
 	}
 
 	@Override
@@ -55,39 +74,33 @@ public class ElevatorSubsystem implements Runnable{
 	}
 	
 	/**
-	 * Returns the destination floor the user wants to go to
-	 * 
-	 * @return
-	 */
-	public int getDestinationFloor() {
-		return destinationFloor;
-	}
-	
-	/**
 	 * Moves motor, closes doors and moves elevator up or down according to the targeted floor.
 	 * 
 	 * @param direction
 	 */
 	public void moveElevator(Direction direction) {
+		handleDoor(DoorPosition.CLOSED);
 		handleMotor(direction);
-		handleDoor(true);
-		
-		elevatorState = direction;
-		
-		if (direction == Direction.UP) {
-			elevator.moveUp();
-		} else if (direction == Direction.DOWN) {
-			elevator.moveDown();
-		}
 	}
 	
 	/**
-	 * Moves elevator to the according direction
+	 * Moves motor, stops elevator and opens doors.
+	 */
+	public void stopElevator() {
+		handleMotor(Direction.STATIONARY);
+		handleDoor(DoorPosition.OPEN);
+	}
+	
+	/**
+	 * Moves elevator in the appropriate direction
 	 * 
-	 * @param direction
+	 * @param direction, the direction to move the elevator
 	 */
 	public void handleMotor(Direction direction) {
-		elevator.getMotor().moveElevator(direction);
+		if (direction == Direction.STATIONARY)
+			parentElevator.getMotor().stopElevator();
+		else
+			parentElevator.getMotor().moveElevator(direction);
 	}
 	
 	/**
@@ -95,11 +108,11 @@ public class ElevatorSubsystem implements Runnable{
 	 * 
 	 * @param isMoving
 	 */
-	public void handleDoor(boolean isMoving) {
-		if (isMoving) {
-			elevator.getDoor().closeDoor();
+	public void handleDoor(DoorPosition desiredPosition) {
+		if (desiredPosition == DoorPosition.CLOSED) {
+			parentElevator.getDoor().closeDoor();
 		} else {
-			elevator.getDoor().openDoor();
+			parentElevator.getDoor().openDoor();
 		}
 	}
 		
