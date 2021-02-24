@@ -20,7 +20,7 @@ public class Elevator {
 	 * 
 	 * @param numberOfFloors
 	 */
-	public Elevator(Network network, int numberOfFloors) {
+	public Elevator(Scheduler network, int numberOfFloors) {
 		if (numberOfFloors <= Floor.MINIMUM_FLOOR_NUM)
 			throw new IllegalArgumentException("Your building must have more than 1 floor to use an elevator!");
 		

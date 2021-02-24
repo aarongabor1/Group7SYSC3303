@@ -5,20 +5,20 @@
   */
 public class Start {
 	public static void main(String[] args) {
-		Network network;
+		Scheduler scheduler;
 		Elevator elevator;
-		Thread floorSubsystem, elevatorSubsystem, scheduler;
+		Thread floorSubsystem, elevatorSubsystem;
 		
-		network = new Network();
-		elevator = new Elevator(network, 6);
+		scheduler = new Scheduler();
+		elevator = new Elevator(scheduler, 6);
 		
 		// Generate threads for each subsystem
-		floorSubsystem = new Thread(new FloorSubsystem(6, network), "Floor Subsystem");
+		floorSubsystem = new Thread(new FloorSubsystem(6, scheduler), "Floor Subsystem");
 		elevatorSubsystem = new Thread(elevator.getElevatorSubsystem(), "Elevator Subsystem");
-		scheduler = new Thread(new Scheduler(network), "Scheduler");
+		//scheduler = new Thread(new Scheduler(network), "Scheduler");
 		
 		floorSubsystem.start();
 		elevatorSubsystem.start();
-		scheduler.start();
+		//scheduler.start();
 	}
 }

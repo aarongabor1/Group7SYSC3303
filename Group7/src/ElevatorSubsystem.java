@@ -8,7 +8,7 @@ import java.util.List;
  * @version 1.0
  */
 public class ElevatorSubsystem implements Runnable {
-	private Network network;
+	private Scheduler scheduler;
 	private Elevator parentElevator;
 	private int numberOfFloors;
 	private List<ElevatorButton> elevatorButtons;
@@ -21,8 +21,8 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param elevator
 	 * @param network
 	 */
-	public ElevatorSubsystem(Network network, Elevator parent) {
-		this.network = network;
+	public ElevatorSubsystem(Scheduler scheduler, Elevator parent) {
+		this.scheduler = scheduler;
 		this.parentElevator = parent;
 		
 		this.elevatorButtons = new LinkedList<>();
@@ -49,7 +49,7 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 			
-			FloorEvent floorEvent = network.getSchedulerSystemEvent();
+			FloorEvent floorEvent = scheduler.getFloorSystemEvent();
 			System.out.println("Event: (" + floorEvent + ") Elevator received FloorEvent from Scheduler");			
 			
 			try {
@@ -60,7 +60,7 @@ public class ElevatorSubsystem implements Runnable {
 			
 			// Will most likely be a different kind of event with different information in the future, 
 			// but for now just return the original floor event
-			network.putElevatorSystemEvent(floorEvent);
+			scheduler.putElevatorSystemEvent(floorEvent);
 			System.out.println("Elevator sent FloorEvent to Scheduler");
 			
 			try {

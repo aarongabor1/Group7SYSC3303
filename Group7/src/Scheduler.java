@@ -1,74 +1,193 @@
-import java.util.ArrayList;
-/**
- * Scheduler class is a connection point that connects the Floor subsystem to the 
- * Elevator subsystem and back again.
- * 
+/** 
+ * Network class is the connection point of the whole project. All of the information that each
+ * subsystem would like to send to another subsystem comes across the Network class. 
+ *  
  * @author Aaron Gabor, Marc Angers
- * @version 1.0.2
+ * @version 1.1.1
  */
-public class Scheduler extends Thread implements Runnable {
-	private Network network;
-	private ArrayList<FloorEvent> elevatorRequests;
- 
+public class Scheduler {
+	private FloorEvent floorSystemEvent, schedulerSystemEvent, elevatorSystemEvent;
+	private boolean containsFloorSystemEvent, containsSchedulerSystemEvent, containsElevatorSystemEvent;
+	
 	/**
-	 * Scheduler is a constructor that creates the thread.
+	 * Constructor that will create the Network object.
+	 */
+	public Scheduler()
+	{
+		this.floorSystemEvent = null;
+		this.schedulerSystemEvent = null;
+		this.elevatorSystemEvent = null;
+		this.containsFloorSystemEvent = false;
+		this.containsSchedulerSystemEvent = false;
+		this.containsElevatorSystemEvent = false;
+	}
+	
+	/** 
+	 * putFloorSystemEvent is a method that it receive a FloorEvent object that the Floor System
+	 * wants to send.
 	 * 
-	 * @param network a Network object used to connect all variable together
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
 	 */
-	public Scheduler(Network network)
+	public synchronized void putFloorSystemEvent(FloorEvent floorEvent)
 	{
-		this.network = network;
-		this.elevatorRequests = new ArrayList<FloorEvent>();
-	}
- 
-	/**
-	 * run is a method that will run the thread.
-	 */
-	public void run()
-	{
-		while(true)
+		while(this.containsFloorSystemEvent)
 		{
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			try
+			{
+				wait();
 			}
-			handleFloorSystemEvent();
-			
-			try {
-				Thread.sleep(1500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
 			}
-			handleElevatorSystemEvent();
 		}
+
+		this.containsFloorSystemEvent = true;
+		this.floorSystemEvent = floorEvent;
+		System.out.println("Floor system event: (" + floorSystemEvent + ") added to the network");
+		notifyAll();
 	}
- 
-	/**
-	 * handleFloorSystemEvent is a method that will receive a FloorEvent object from the Floor system
-	 * then will added it to an ArrayList and then will send it back to the Floor system.
+	
+	/** 
+	 * getFloorSystemEvent is a method where the Floor system can get a FloorEvent object from another
+	 * system.
+	 *
+	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
-	public void handleFloorSystemEvent()
+	public synchronized FloorEvent getFloorSystemEvent()
 	{
-		FloorEvent floorEvent = this.network.getFloorSystemEvent();
-		this.elevatorRequests.add(floorEvent);
-		System.out.println("Event added to scheduler queue");
+		//Waits if this in not the method that should have been entered
+		while(!this.containsFloorSystemEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+
+		this.containsFloorSystemEvent = false;
+		FloorEvent event = this.floorSystemEvent;
+		this.floorSystemEvent = null;
+		System.out.println("Floor system event: (" + event + ") retrieved by Scheduler");
+		notifyAll();
 		
-		this.network.putSchedulerSystemEvent(floorEvent);
+		return event;
+	}
+	
+	/** 
+	 * putSchedulerSystemEvent is a method where the Scheduler system can send a FloorEvent object
+	 * to another system
+	 * 
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 */
+	public synchronized void putSchedulerSystemEvent(FloorEvent floorEvent)
+	{
+		while(this.containsSchedulerSystemEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+
+		this.containsSchedulerSystemEvent = true;
+		this.schedulerSystemEvent = floorEvent;
+		System.out.println("Event: (" + schedulerSystemEvent + ") Scheduler sent floor event to the network");
+		notifyAll();
+	}
+	
+	/** 
+	 * getSchedulerSystemEvent is a method that the Scheduler system can receive a FloorEvent object
+	 * from another system.
+	 *
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 */
+	public synchronized FloorEvent getSchedulerSystemEvent()
+	{
+		//Waits if this in not the method that should have been entered
+		while(!this.containsSchedulerSystemEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+
+		this.containsSchedulerSystemEvent = false;
+		FloorEvent event = this.schedulerSystemEvent;
+		this.floorSystemEvent = null;
+		System.out.println("Event: (" + event + ") Network retrieved floor event from Scheduler");
+		notifyAll();
+		
+		return event;
+	}
+
+	/**
+	 * putElevatorSystemEvent is a method that the Elevator system can send a FloorEvent object
+	 * to another system.
+	 * 
+	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 * @return null
+	 */
+	public synchronized FloorEvent putElevatorSystemEvent(FloorEvent floorEvent)
+	{
+		while(this.containsElevatorSystemEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		this.containsElevatorSystemEvent = true;
+		this.elevatorSystemEvent = floorEvent;
+		System.out.println("Event: (" + elevatorSystemEvent + ") Elevator system event sent to Scheduler");
+		notifyAll();
+		return null;
 	}
 	
 	/**
-	 * handleElevatorEvent is a method that will tell the Elevator subsystem that 
-	 * there is work to be done and then will remove the FloorEvent object from the
-	 * ArrayList.
+	 * getElevatorSystemEvent is a method where the Elevator system can receive a FloorEvent object
+	 * from another system.
+	 * 
+	 * @return Either the FloorEvent object that needs to be transfered or nullyjky6
 	 */
-	public void handleElevatorSystemEvent()
+	public synchronized FloorEvent getElevatorSystemEvent()
 	{
-		FloorEvent floorEvent = this.network.getElevatorSystemEvent();
-		this.elevatorRequests.add(floorEvent);
-		System.out.println("Elevator event added to scheduler queue");
+		while(!this.containsElevatorSystemEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+
+		FloorEvent event = this.elevatorSystemEvent;
+		this.elevatorSystemEvent = null;
+		this.containsElevatorSystemEvent = false;
+		System.out.println("Event: (" + event + " )Elevator system event retreived by Scheduler");
+		notifyAll();
 		
-		this.network.putSchedulerSystemEvent(floorEvent);
+		return event;
 	}
-	
 }

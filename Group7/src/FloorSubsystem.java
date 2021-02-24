@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FloorSubsystem implements Runnable{
-	private Network network;
+	private Scheduler scheduler;
 	private Map<Integer, Floor> floors;
 	private Parser p;
 	
@@ -19,8 +19,8 @@ public class FloorSubsystem implements Runnable{
 	 * @param numberOfFloors
 	 * @param network
 	 */
-	public FloorSubsystem (int numberOfFloors, Network network) {
-		this.network = network;
+	public FloorSubsystem (int numberOfFloors, Scheduler scheduler) {
+		this.scheduler = scheduler;
 		this.floors = new HashMap<Integer, Floor>();
 		this.p = new Parser();
 	}
@@ -50,8 +50,8 @@ public class FloorSubsystem implements Runnable{
 			try {
 				floorEvent = generateFloorEvent();
 				
-				floors.get(floorEvent.getFloor()).turnOnLamp(floorEvent.getDirection());
-				network.putFloorSystemEvent(floorEvent);
+				//floors.get(floorEvent.getFloor()).turnOnLamp(floorEvent.getDirection());
+				scheduler.putFloorSystemEvent(floorEvent);
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -62,8 +62,8 @@ public class FloorSubsystem implements Runnable{
 				e.printStackTrace();
 			}
 			
-			floorEvent = network.getSchedulerSystemEvent();
-			System.out.println("Floor event (" + floorEvent + ") received by the floor subsystem.");
+			floorEvent = scheduler.getElevatorSystemEvent();
+			System.out.println("Elevator event (" + floorEvent + ") received by floor subsystem.");
 		
 		}
 	}
