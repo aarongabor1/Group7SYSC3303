@@ -9,12 +9,12 @@ import java.text.ParseException;
  */
 public class FloorEventGenerator implements Runnable {
 	private FloorSubsystem parent;
-	private Network network;
+	private Scheduler scheduler;
 	
 	private Parser parser;
 	
-	public FloorEventGenerator(Network network) {
-		this.network = network;
+	public FloorEventGenerator(Scheduler scheduler) {
+		this.scheduler = scheduler;
 		
 		this.parser = new Parser();
 	}
@@ -27,7 +27,7 @@ public class FloorEventGenerator implements Runnable {
 				floorEvent = generateFloorEvent();
 				
 				parent.turnOnLampForFloor(floorEvent.getFloor(), floorEvent.getDirection());
-				network.putFloorSystemEvent(floorEvent);
+				scheduler.putFloorSystemEvent(floorEvent);
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}

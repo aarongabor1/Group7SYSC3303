@@ -23,7 +23,7 @@ public class FloorSubsystem implements Runnable{
 	public FloorSubsystem (int numberOfFloors, Scheduler scheduler) {
 		this.scheduler = scheduler;
 		this.floors = new HashMap<Integer, Floor>();
-		floorEventGenerator = new Thread(new FloorEventGenerator(network), "Floor Event Generator");
+		floorEventGenerator = new Thread(new FloorEventGenerator(scheduler), "Floor Event Generator");
 	}
 	/***
 	 * generates floors depending on the floor number 
