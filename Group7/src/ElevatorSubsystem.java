@@ -1,5 +1,7 @@
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ElevatorSubsystem is a class that controls one elevator
@@ -11,7 +13,7 @@ public class ElevatorSubsystem implements Runnable {
 	private Scheduler scheduler;
 	private Elevator parentElevator;
 	private int numberOfFloors;
-	private List<ElevatorButton> elevatorButtons;
+	private Map<Integer, ElevatorButton> elevatorButtons;
 	
 	private int currentDestination;
 	
@@ -25,7 +27,7 @@ public class ElevatorSubsystem implements Runnable {
 		this.scheduler = scheduler;
 		this.parentElevator = parent;
 		
-		this.elevatorButtons = new LinkedList<>();
+		this.elevatorButtons = new HashMap<Integer, ElevatorButton>();
 		this.numberOfFloors = numberOfFloors;
 
 		generateElevatorButtons();
@@ -36,7 +38,7 @@ public class ElevatorSubsystem implements Runnable {
 	 */
 	public void generateElevatorButtons() {
 		for (int i = 1; i <= numberOfFloors; i++) {
-			elevatorButtons.add(new ElevatorButton(new ElevatorLamp(), i));
+			elevatorButtons.put(i, new ElevatorButton(new ElevatorLamp(), i));
 		}
 	}
 
@@ -99,8 +101,12 @@ public class ElevatorSubsystem implements Runnable {
 	public void handleMotor(Direction direction) {
 		if (direction == Direction.STATIONARY)
 			parentElevator.getMotor().stopElevator();
-		else
-			parentElevator.getMotor().moveElevator(direction);
+		else {
+			if (!parentElevator.getDoor().isOpen())
+				parentElevator.getMotor().moveElevator(direction);
+			else
+				; // Will need to throw some sort of error here! Do not want the elevator to start moving if the doors are open!
+		}
 	}
 	
 	/**

@@ -5,7 +5,6 @@
 
 public class Floor {
 	public static final int MINIMUM_FLOOR_NUM = 1;
-	public static final int MAXIMUM_FLOOR_NUMBER = 6;
 	
 	private int floorNumber;
 	private FloorButton upButton;
@@ -22,7 +21,7 @@ public class Floor {
 	public Floor(int floorNumber) {
 		this.floorNumber= floorNumber;
 		
-		if (floorNumber < MAXIMUM_FLOOR_NUMBER)
+		if (floorNumber < Settings.NUMBER_OF_FLOORS)
 			this.upButton = new FloorButton(new FloorLamp(), Direction.UP);
 		if (floorNumber > 1)
 			this.downButton = new FloorButton(new FloorLamp(), Direction.DOWN);

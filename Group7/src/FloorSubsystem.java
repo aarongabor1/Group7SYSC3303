@@ -12,7 +12,8 @@ import java.util.Map;
 public class FloorSubsystem implements Runnable{
 	private Scheduler scheduler;
 	private Map<Integer, Floor> floors;
-	private Parser p;
+	
+	private Thread floorEventGenerator;
 	
 	/***
 	 * FloorSubsytem constructor
@@ -22,58 +23,39 @@ public class FloorSubsystem implements Runnable{
 	public FloorSubsystem (int numberOfFloors, Scheduler scheduler) {
 		this.scheduler = scheduler;
 		this.floors = new HashMap<Integer, Floor>();
-		this.p = new Parser();
+		floorEventGenerator = new Thread(new FloorEventGenerator(network), "Floor Event Generator");
 	}
 	/***
 	 * generates floors depending on the floor number 
 	 * @param numberOfFloors
 	 */
-	public void generateFloors(int numberOfFloors) {
-		for (int i = 1; i <= numberOfFloors; i++) {
+	public void generateFloors() {
+		for (int i = 1; i <= Settings.NUMBER_OF_FLOORS; i++) {
 			Floor tempFloor = new Floor(i);
 			floors.put(i, tempFloor);
 		}
 	}
 	
-	@Override
-	public void run() {
-		FloorEvent floorEvent;
-		
-		while(true) {
-		
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			try {
-				floorEvent = generateFloorEvent();
-				
-				//floors.get(floorEvent.getFloor()).turnOnLamp(floorEvent.getDirection());
-				scheduler.putFloorSystemEvent(floorEvent);
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-			}
-			
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			floorEvent = scheduler.getElevatorSystemEvent();
-			System.out.println("Elevator event (" + floorEvent + ") received by floor subsystem.");
-		
-		}
+	/**
+	 * Function to turn on the lamp for a button on a floor
+	 * @param floor
+	 * @param direction
+	 */
+	public void turnOnLampForFloor(int floor, Direction direction) {
+		floors.get(floor).turnOnLamp(direction);
 	}
 	
 	/**
-	 * generates floor events using the parser file.
-	 * @return the parsed floor event from the text file
-	 * @throws ParseException
+	 * Function to turn off the lamp for a button on a floor
+	 * @param floor
+	 * @param direction
 	 */
-	public FloorEvent generateFloorEvent() throws ParseException {
-		return p.parseFile();
+	public void turnOffLampForFloor(int floor, Direction direction) {
+		floors.get(floor).turnOffLamp(direction);
+	}
+	
+	@Override
+	public void run() {
+		floorEventGenerator.start();
 	}
 }

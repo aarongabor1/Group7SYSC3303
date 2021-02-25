@@ -14,7 +14,7 @@ public class Door {
 	 */
 	public Door(DoorPosition startingPosition)
 	{
-		this.position = startingPosition;
+		position = startingPosition;
 	}
 	
 	/**
@@ -22,7 +22,12 @@ public class Door {
 	 */
 	public void closeDoor()
 	{
-		System.out.println(DoorPosition.CLOSED);
+		try {
+			Thread.sleep(Settings.TIME_TO_OPEN_OR_CLOSE_DOORS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		position = DoorPosition.CLOSED;
 	}
 	
 	/**
@@ -30,6 +35,19 @@ public class Door {
 	 */
 	public void openDoor()
 	{	
-		System.out.println(DoorPosition.OPEN);
+		try {
+			Thread.sleep(Settings.TIME_TO_OPEN_OR_CLOSE_DOORS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		position = DoorPosition.OPEN;
+	}
+	
+	/**
+	 * Method to tell if the door is currently open
+	 * @return
+	 */
+	public boolean isOpen() {
+		return position == DoorPosition.OPEN;
 	}
 }

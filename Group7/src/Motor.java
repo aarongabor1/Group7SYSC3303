@@ -27,7 +27,7 @@ public class Motor {
 		state = direction;
 		parentElevator.changeDirection(direction);
 		try {
-			Thread.sleep(6000);
+			Thread.sleep(Settings.TIME_TO_TRAVEL_BETWEEN_FLOORS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
