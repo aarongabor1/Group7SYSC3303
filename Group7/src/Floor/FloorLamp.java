@@ -1,3 +1,7 @@
+package Floor;
+
+import Utilities.*;
+
 /**
  * 
  * @author Marc Angers

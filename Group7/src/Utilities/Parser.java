@@ -1,3 +1,5 @@
+package Utilities;
+
 /***
  * This class takes in the file and uses the text to fill out the variable needed to
  * generate a floor event, time, current floor, direction and car button.

@@ -1,3 +1,7 @@
+package Elevator;
+
+import Utilities.*;
+
 /**
  * A lamp for each of the buttons in the elevator
  * 

@@ -1,3 +1,5 @@
+package Utilities;
+
 /**
  * Class to contain all of the configurable values for the elevator simulation system.
  * 

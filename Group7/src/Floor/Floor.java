@@ -1,8 +1,12 @@
+package Floor;
+
+import Utilities.*;
+import Floor.*;
+
 /***
  * @author lynnmehyou
  * Floor class 
  */
-
 public class Floor {
 	public static final int MINIMUM_FLOOR_NUM = 1;
 	

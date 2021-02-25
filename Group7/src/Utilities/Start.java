@@ -1,4 +1,9 @@
- /**
+package Utilities; 
+
+import Elevator.*;
+import Floor.*;
+
+/**
   * 
   * @author Marc Angers
   *	@version 1.0.0

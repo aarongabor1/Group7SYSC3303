@@ -1,3 +1,7 @@
+package Elevator;
+
+import Utilities.*;
+
 /**
  * 
  * @author Marc Angers

@@ -1,3 +1,7 @@
+package Elevator;
+
+import Utilities.*;
+import Floor.Floor;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +13,7 @@ import java.util.List;
  *
  */
 public class Elevator {	
+	public int ID;
 	private ElevatorSubsystem elevatorSubsystem;
 	private Motor motor;
 	private Door door;

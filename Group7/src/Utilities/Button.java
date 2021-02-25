@@ -1,3 +1,5 @@
+package Utilities;
+
 /**
  * 
  * @author Marc Angers
@@ -30,3 +32,4 @@ public abstract class Button {
 		return this.isPressed;
 	}
 }
+
