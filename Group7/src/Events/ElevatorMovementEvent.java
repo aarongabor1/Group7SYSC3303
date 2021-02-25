@@ -12,9 +12,15 @@ public class ElevatorMovementEvent {
 	public Time time;
 	public int elevatorID;
 	public Direction direction;
+	public int currentFloor;
 	
-	public ElevatorMovementEvent(int elevator, Direction direction) {
+	public ElevatorMovementEvent(int elevator, Direction direction, int currentFloor) {
 		elevatorID = elevator;
 		this.direction = direction;
+		this.currentFloor = currentFloor;
+	}
+
+	public int getCurrentFloor() {
+		return currentFloor;
 	}
 }

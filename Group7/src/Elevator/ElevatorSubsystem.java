@@ -6,6 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import Events.DestinationUpdateEvent;
+import Events.ElevatorMovementEvent;
+import Floor.FloorEvent;
+
 /**
  * ElevatorSubsystem is a class that controls one elevator
  * 
@@ -17,8 +21,7 @@ public class ElevatorSubsystem implements Runnable {
 	private Elevator parentElevator;
 	private int numberOfFloors;
 	private Map<Integer, ElevatorButton> elevatorButtons;
-	
-	private int currentDestination;
+
 	
 	/**
 	 * Constructor for a new ElevatorSubsytem
@@ -54,8 +57,20 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 			
-			FloorEvent floorEvent = scheduler.getFloorSystemEvent();
-			System.out.println("Event: (" + floorEvent + ") Elevator received FloorEvent from Scheduler");			
+			// New destination request has been received.
+			if (parentElevator.getCurrentDirection() == Direction.STATIONARY) {
+				FloorEvent floorEvent = scheduler.getFloorSystemEvent(); // FloorEvent -> DestinationUpdateEvent ?
+				System.out.println("Event: (" + floorEvent + ") Elevator received FloorEvent from Scheduler");
+				
+				if (parentElevator.getCurrentFloor() > floorEvent.getCarButton()) {
+					parentElevator.changeDirection(Direction.DOWN);
+				} else {
+					parentElevator.changeDirection(Direction.UP);
+				}
+			} else {
+				// Information received by Scheduler while elevator is moving to its target floor.
+			}
+			
 			
 			try {
 				Thread.sleep(500);
@@ -63,10 +78,24 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 			
-			// Will most likely be a different kind of event with different information in the future, 
-			// but for now just return the original floor event
-			scheduler.putElevatorSystemEvent(floorEvent);
-			System.out.println("Elevator sent FloorEvent to Scheduler");
+			switch (parentElevator.getCurrentDirection()) {
+				case UP:
+					handleDoor(DoorPosition.CLOSED);
+					handleMotor(Direction.UP);
+				case DOWN:
+					handleDoor(DoorPosition.CLOSED);
+					handleMotor(Direction.DOWN);
+				case STATIONARY:
+					handleDoor(DoorPosition.OPEN);
+					handleMotor(Direction.STATIONARY);
+				default:
+					break;
+			}
+			
+			// Sends Scheduler info about Elevator's location
+			ElevatorMovementEvent elevatorEvent = new ElevatorMovementEvent(parentElevator.getElevatorID(), parentElevator.getCurrentDirection(), parentElevator.getCurrentFloor());
+			scheduler.putElevatorSystemEvent(elevatorEvent);
+			System.out.println("Elevator sent Elevator Event to Scheduler");
 			
 			try {
 				Thread.sleep(500);

@@ -21,4 +21,8 @@ public class DestinationUpdateEvent {
 		elevatorID = id;
 		destinationFloor = destination;
 	}
+	
+	public int getDestinationFloor() {
+		return destinationFloor;
+	}
 }

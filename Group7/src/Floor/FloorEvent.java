@@ -10,7 +10,7 @@ import Utilities.*;
  * @author Aaron Gabor
  * @version 1.0.1
  */
-class FloorEvent {
+public class FloorEvent {
 	private Time time;
 	private int currentFloor;
 	private Direction direction;

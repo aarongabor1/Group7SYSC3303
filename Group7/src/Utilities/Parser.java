@@ -13,6 +13,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
+
+import Floor.FloorEvent;
+
 import java.sql.Time;
 
 public class Parser {

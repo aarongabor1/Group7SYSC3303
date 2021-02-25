@@ -13,7 +13,7 @@ import java.util.List;
  *
  */
 public class Elevator {	
-	public int ID;
+	public int ID; // Initialize this somewhere
 	private ElevatorSubsystem elevatorSubsystem;
 	private Motor motor;
 	private Door door;
@@ -90,5 +90,12 @@ public class Elevator {
 		return elevatorSubsystem;
 	}
 	
+	public Direction getCurrentDirection() {
+		return currentDirection;
+	}
+	
+	public int getElevatorID() {
+		return ID;
+	}
 	
 }

@@ -1,5 +1,8 @@
 package Utilities;
 
+import Events.ElevatorMovementEvent;
+import Floor.FloorEvent;
+
 /** 
  * Network class is the connection point of the whole project. All of the information that each
  * subsystem would like to send to another subsystem comes across the Network class. 
@@ -8,7 +11,8 @@ package Utilities;
  * @version 1.1.1
  */
 public class Scheduler {
-	private FloorEvent floorSystemEvent, schedulerSystemEvent, elevatorSystemEvent;
+	private FloorEvent floorSystemEvent, schedulerSystemEvent;
+	private ElevatorMovementEvent elevatorSystemEvent;
 	private boolean containsFloorSystemEvent, containsSchedulerSystemEvent, containsElevatorSystemEvent;
 	
 	/**
@@ -81,32 +85,8 @@ public class Scheduler {
 	}
 	
 	/** 
-	 * putSchedulerSystemEvent is a method where the Scheduler system can send a FloorEvent object
-	 * to another system
+	 * NOT USED
 	 * 
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 */
-	public synchronized void putSchedulerSystemEvent(FloorEvent floorEvent)
-	{
-		while(this.containsSchedulerSystemEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-
-		this.containsSchedulerSystemEvent = true;
-		this.schedulerSystemEvent = floorEvent;
-		System.out.println("Event: (" + schedulerSystemEvent + ") Scheduler sent floor event to the network");
-		notifyAll();
-	}
-	
-	/** 
 	 * getSchedulerSystemEvent is a method that the Scheduler system can receive a FloorEvent object
 	 * from another system.
 	 *
@@ -140,10 +120,10 @@ public class Scheduler {
 	 * putElevatorSystemEvent is a method that the Elevator system can send a FloorEvent object
 	 * to another system.
 	 * 
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 * @param elevatorEvent is the FloorEvent object that needs to be transfered
 	 * @return null
 	 */
-	public synchronized FloorEvent putElevatorSystemEvent(FloorEvent floorEvent)
+	public synchronized FloorEvent putElevatorSystemEvent(ElevatorMovementEvent elevatorEvent)
 	{
 		while(this.containsElevatorSystemEvent)
 		{
@@ -158,7 +138,7 @@ public class Scheduler {
 		}
 		
 		this.containsElevatorSystemEvent = true;
-		this.elevatorSystemEvent = floorEvent;
+		this.elevatorSystemEvent = elevatorEvent;
 		System.out.println("Event: (" + elevatorSystemEvent + ") Elevator system event sent to Scheduler");
 		notifyAll();
 		return null;
@@ -170,7 +150,7 @@ public class Scheduler {
 	 * 
 	 * @return Either the FloorEvent object that needs to be transfered or nullyjky6
 	 */
-	public synchronized FloorEvent getElevatorSystemEvent()
+	public synchronized ElevatorMovementEvent getElevatorSystemEvent()
 	{
 		while(!this.containsElevatorSystemEvent)
 		{
@@ -184,7 +164,7 @@ public class Scheduler {
 			}
 		}
 
-		FloorEvent event = this.elevatorSystemEvent;
+		ElevatorMovementEvent event = this.elevatorSystemEvent;
 		this.elevatorSystemEvent = null;
 		this.containsElevatorSystemEvent = false;
 		System.out.println("Event: (" + event + " )Elevator system event retreived by Scheduler");
