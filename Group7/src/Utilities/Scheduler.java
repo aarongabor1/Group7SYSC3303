@@ -89,12 +89,11 @@ public class Scheduler {
 
 		SchedulerToElevatorEvent se = null;
 		
-		// Handle cases:
+		// Handle cases: NOT FINISHED
 		// 1. Passenger requests an elevator. Elevator is not at the passenger's floor.
 		// 2. Passenger is in elevator. Elevator is not at target floor.
 		// 3. New elevator request while elevator is moving. (If elevator is moving from floor 4 to floor 1, and elevator is requested at floor 3)
 		// 4. Elevator drops off passenger at their target floor.
-		
 		for (FloorEvent e : requestedElevators) {
 			if (elevatorSystemEvent.getCurrentFloor() != e.getFloor()) {
 				se = new SchedulerToElevatorEvent(e.getFloor(), RequestType.NEW_ELEVATOR_REQUEST);
@@ -112,7 +111,6 @@ public class Scheduler {
 		this.floorSystemEvent = null;
 		System.out.println("Floor system event: (" + event + ") retrieved by Scheduler");
 		notifyAll();
-		
 		
 		return se;
 	}
