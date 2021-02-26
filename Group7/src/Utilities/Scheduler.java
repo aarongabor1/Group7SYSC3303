@@ -1,5 +1,8 @@
 package Utilities;
 
+import java.util.LinkedList;
+
+import Events.DestinationUpdateEvent;
 import Events.ElevatorMovementEvent;
 import Floor.FloorEvent;
 
@@ -13,7 +16,13 @@ import Floor.FloorEvent;
 public class Scheduler {
 	private FloorEvent floorSystemEvent, schedulerSystemEvent;
 	private ElevatorMovementEvent elevatorSystemEvent;
+	
 	private boolean containsFloorSystemEvent, containsSchedulerSystemEvent, containsElevatorSystemEvent;
+	
+	private LinkedList<FloorEvent> requestedElevators;
+	
+	private boolean isElevatorAtRequestedFloor;
+	private boolean isElevatorAtPassengerFloor;
 	
 	/**
 	 * Constructor that will create the Network object.
@@ -26,6 +35,9 @@ public class Scheduler {
 		this.containsFloorSystemEvent = false;
 		this.containsSchedulerSystemEvent = false;
 		this.containsElevatorSystemEvent = false;
+		this.isElevatorAtRequestedFloor = false;
+		this.isElevatorAtPassengerFloor = false;
+		this.requestedElevators = new LinkedList<>();
 	}
 	
 	/** 
@@ -47,7 +59,8 @@ public class Scheduler {
 				System.err.print(e);
 			}
 		}
-
+		
+		requestedElevators.add(floorEvent);
 		this.containsFloorSystemEvent = true;
 		this.floorSystemEvent = floorEvent;
 		System.out.println("Floor system event: (" + floorSystemEvent + ") added to the network");
@@ -60,7 +73,7 @@ public class Scheduler {
 	 *
 	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
-	public synchronized FloorEvent getFloorSystemEvent()
+	public synchronized DestinationUpdateEvent getFloorSystemEvent()
 	{
 		//Waits if this in not the method that should have been entered
 		while(!this.containsFloorSystemEvent)
@@ -74,14 +87,18 @@ public class Scheduler {
 				System.err.print(e);
 			}
 		}
-
+		
+		
 		this.containsFloorSystemEvent = false;
 		FloorEvent event = this.floorSystemEvent;
+		
+		 
+		
 		this.floorSystemEvent = null;
 		System.out.println("Floor system event: (" + event + ") retrieved by Scheduler");
 		notifyAll();
 		
-		return event;
+		return null;
 	}
 	
 	/** 
@@ -121,9 +138,10 @@ public class Scheduler {
 	 * to another system.
 	 * 
 	 * @param elevatorEvent is the FloorEvent object that needs to be transfered
+	 * @return 
 	 * @return null
 	 */
-	public synchronized FloorEvent putElevatorSystemEvent(ElevatorMovementEvent elevatorEvent)
+	public synchronized void putElevatorSystemEvent(ElevatorMovementEvent elevatorEvent)
 	{
 		while(this.containsElevatorSystemEvent)
 		{
@@ -137,11 +155,36 @@ public class Scheduler {
 			}
 		}
 		
+		monitorElevator(elevatorEvent); // Monitor elevator's location every time Scheduler receives info about it
+		
 		this.containsElevatorSystemEvent = true;
 		this.elevatorSystemEvent = elevatorEvent;
 		System.out.println("Event: (" + elevatorSystemEvent + ") Elevator system event sent to Scheduler");
 		notifyAll();
-		return null;
+	}
+	
+	/**
+	 * Keeps track of elevator's location.
+	 * 
+	 * @param ev Data sent by the Elevator Subsystem
+	 */
+	public void monitorElevator(ElevatorMovementEvent ev) {
+		System.out.println("Elevator is currently at floor " + ev.getCurrentFloor());
+		
+		for (FloorEvent e:requestedElevators) {	
+			if (e.getFloor() == ev.getCurrentFloor()) {
+				isElevatorAtRequestedFloor = true;
+				System.out.println("Elevator is at requested floor #" + ev.getCurrentFloor());
+			} else if (e.getFloor() == ev.getCurrentFloor()) {
+				isElevatorAtPassengerFloor = true;
+				System.out.println("Elevator is at floor #" + ev.getCurrentFloor());
+				requestedElevators.remove(e); // Remove elevator request from the list if it has been completed
+			} else {
+				isElevatorAtRequestedFloor = false;
+				isElevatorAtPassengerFloor = false;
+				System.out.println("Elevator is approaching floor #" + ev.getCurrentFloor());
+			}
+		}
 	}
 	
 	/**
@@ -172,4 +215,5 @@ public class Scheduler {
 		
 		return event;
 	}
+	
 }

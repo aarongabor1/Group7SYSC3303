@@ -19,6 +19,7 @@ public class Elevator {
 	private Door door;
 	private int currentFloor;
 	private Direction currentDirection;
+	private boolean isMoving;
 	
 	/**
 	 * Constructs a new Elevator object
@@ -35,6 +36,8 @@ public class Elevator {
 		this.currentDirection = Direction.STATIONARY;
 		
 		this.elevatorSubsystem = new ElevatorSubsystem(network, this);
+		
+		this.isMoving = false;
 	}
 	
 	/**
@@ -43,6 +46,12 @@ public class Elevator {
 	 */
 	public void changeDirection(Direction direction) {
 		currentDirection = direction;
+		
+		if (direction != Direction.STATIONARY) {
+			isMoving = true;
+		} else {
+			isMoving = false;
+		}
 	}
 	
 	/**
@@ -98,4 +107,7 @@ public class Elevator {
 		return ID;
 	}
 	
+	public boolean isMoving() {
+		return isMoving;
+	}
 }

@@ -57,41 +57,34 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 			
-			// New destination request has been received.
-			if (parentElevator.getCurrentDirection() == Direction.STATIONARY) {
-				FloorEvent floorEvent = scheduler.getFloorSystemEvent(); // FloorEvent -> DestinationUpdateEvent ?
-				System.out.println("Event: (" + floorEvent + ") Elevator received FloorEvent from Scheduler");
+			DestinationUpdateEvent destinationFloorUpdate = scheduler.getFloorSystemEvent(); // Instead of FloorEvent, it should DestinationUpdateEvent
+			System.out.println("Event: (" + destinationFloorUpdate + ") Elevator received FloorEvent from Scheduler");
+			
+		
+			// New destination request has been received. Tells elevator to move to a new floor.
+			if (parentElevator.getCurrentDirection() == Direction.STATIONARY) {	
+				handleDoor(DoorPosition.CLOSED); // Close doors
 				
-				if (parentElevator.getCurrentFloor() > floorEvent.getCarButton()) {
-					parentElevator.changeDirection(Direction.DOWN);
+				if (parentElevator.getCurrentFloor() > destinationFloorUpdate.getDestinationFloor()) { // The floor where the elevator was requested
+					handleMotor(Direction.UP); // Handle motor - elevator starts to go up
 				} else {
-					parentElevator.changeDirection(Direction.UP);
-				}
+					handleMotor(Direction.DOWN); // Handle motor - elevator starts to go down
+				}	
+				
 			} else {
 				// Information received by Scheduler while elevator is moving to its target floor.
+				// Elevator should be informed when it reaches a floor so it should stop.
+				if (destinationFloorUpdate.getDestinationFloor() == parentElevator.getCurrentFloor()) {
+					
+				}
 			}
-			
-			
+					
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			switch (parentElevator.getCurrentDirection()) {
-				case UP:
-					handleDoor(DoorPosition.CLOSED);
-					handleMotor(Direction.UP);
-				case DOWN:
-					handleDoor(DoorPosition.CLOSED);
-					handleMotor(Direction.DOWN);
-				case STATIONARY:
-					handleDoor(DoorPosition.OPEN);
-					handleMotor(Direction.STATIONARY);
-				default:
-					break;
-			}
-			
+					
 			// Sends Scheduler info about Elevator's location
 			ElevatorMovementEvent elevatorEvent = new ElevatorMovementEvent(parentElevator.getElevatorID(), parentElevator.getCurrentDirection(), parentElevator.getCurrentFloor());
 			scheduler.putElevatorSystemEvent(elevatorEvent);
@@ -108,6 +101,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
+	 * DELETE
+	 * 
 	 * Moves motor, closes doors and moves elevator up or down according to the targeted floor.
 	 * 
 	 * @param direction
@@ -118,6 +113,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	/**
+	 * DELETE
+	 * 
 	 * Moves motor, stops elevator and opens doors.
 	 */
 	public void stopElevator() {

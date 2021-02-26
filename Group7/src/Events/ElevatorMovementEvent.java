@@ -23,4 +23,8 @@ public class ElevatorMovementEvent {
 	public int getCurrentFloor() {
 		return currentFloor;
 	}
+	
+	public Direction getDirection() {
+		return direction;
+	}
 }
