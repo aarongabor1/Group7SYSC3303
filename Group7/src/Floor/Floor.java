@@ -16,7 +16,7 @@ public class Floor {
 	
 	private boolean isElevatorApproaching;
 	private boolean isElevatorAtFloor;
-	private FloorEvent fe;
+	private FormattedEvent fe;
 	/***
 	 * Floor constructor.
 	 * @param floorNumber

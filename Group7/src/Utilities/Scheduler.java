@@ -6,7 +6,7 @@ import Events.DestinationUpdateEvent;
 import Events.ElevatorMovementEvent;
 import Events.SchedulerToElevatorEvent;
 import Events.SchedulerToElevatorEvent.RequestType;
-import Floor.FloorEvent;
+import Events.FormattedEvent;
 
 /** 
  * Network class is the connection point of the whole project. All of the information that each
@@ -16,12 +16,12 @@ import Floor.FloorEvent;
  * @version 1.1.1
  */
 public class Scheduler {
-	private FloorEvent floorSystemEvent, schedulerSystemEvent;
+	private FormattedEvent floorSystemEvent, schedulerSystemEvent;
 	private ElevatorMovementEvent elevatorSystemEvent;
 	
 	private boolean containsFloorSystemEvent, containsSchedulerSystemEvent, containsElevatorSystemEvent;
 	
-	private LinkedList<FloorEvent> requestedElevators;
+	private LinkedList<FormattedEvent> requestedElevators;
 	
 	/**
 	 * Constructor that will create the Network object.
@@ -44,7 +44,7 @@ public class Scheduler {
 	 * 
 	 * @param floorEvent is the FloorEvent object that needs to be transfered
 	 */
-	public synchronized void putFloorSystemEvent(FloorEvent floorEvent)
+	public synchronized void putFloorSystemEvent(FormattedEvent floorEvent)
 	{
 		while(this.containsFloorSystemEvent)
 		{
@@ -107,7 +107,7 @@ public class Scheduler {
 		
 		// Should this be here?
 		this.containsFloorSystemEvent = false;
-		FloorEvent event = this.floorSystemEvent; 
+		FormattedEvent event = this.floorSystemEvent;
 		this.floorSystemEvent = null;
 		System.out.println("Floor system event: (" + event + ") retrieved by Scheduler");
 		notifyAll();
@@ -123,7 +123,7 @@ public class Scheduler {
 	 *
 	 * @param floorEvent is the FloorEvent object that needs to be transfered
 	 */
-	public synchronized FloorEvent getSchedulerSystemEvent()
+	public synchronized FormattedEvent getSchedulerSystemEvent()
 	{
 		//Waits if this in not the method that should have been entered
 		while(!this.containsSchedulerSystemEvent)
@@ -139,7 +139,7 @@ public class Scheduler {
 		}
 		
 		this.containsSchedulerSystemEvent = false;
-		FloorEvent event = this.schedulerSystemEvent;
+		FormattedEvent event = this.schedulerSystemEvent;
 		this.floorSystemEvent = null;
 		System.out.println("Event: (" + event + ") Network retrieved floor event from Scheduler");
 		notifyAll();

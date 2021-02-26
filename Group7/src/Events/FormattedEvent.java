@@ -1,4 +1,4 @@
-package Floor;
+package Events;
 
 import java.sql.Time;
 import Utilities.*;
@@ -10,7 +10,7 @@ import Utilities.*;
  * @author Aaron Gabor
  * @version 1.0.1
  */
-public class FloorEvent {
+public class FormattedEvent {
 	private Time time;
 	private int currentFloor;
 	private Direction direction;
@@ -25,7 +25,7 @@ public class FloorEvent {
 	 * elevator needs to go up or down, carButton is an integer value for the floor 
 	 * where the user would like to travel to.
 	 */
-	public FloorEvent(Time time, int currentFloor, Direction direction, int carButton)
+	public FormattedEvent(Time time, int currentFloor, Direction direction, int carButton)
 	{
 		this.time = time;
 		this.currentFloor = currentFloor;

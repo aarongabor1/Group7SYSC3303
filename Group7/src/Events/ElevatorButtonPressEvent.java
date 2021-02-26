@@ -14,10 +14,11 @@ public class ElevatorButtonPressEvent {
 	public int elevatorID;
 	public int buttonNumber;
 	
-	public ElevatorButtonPressEvent(int elevator, int button) {
+	public ElevatorButtonPressEvent(Time time, int elevator, int button) {
 		if (button < Floor.MINIMUM_FLOOR_NUM || button > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("Cannot press an elevator button that does not exist!");
 		
+		this.time = time;
 		elevatorID = elevator;
 		buttonNumber = button;
 	}

@@ -15,10 +15,11 @@ public class ElevatorArrivalEvent {
 	public int floorNumber;
 	public Direction fromDirection;
 	
-	public ElevatorArrivalEvent(int floor, Direction direction) {
+	public ElevatorArrivalEvent(Time time, int floor, Direction direction) {
 		if (floor < Floor.MINIMUM_FLOOR_NUM || floor > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("An elevator cannot arrive at an invalid floor!");
 		
+		this.time = time;
 		floorNumber = floor;
 		fromDirection = direction;
 	}

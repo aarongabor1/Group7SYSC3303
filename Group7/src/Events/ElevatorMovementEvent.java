@@ -15,7 +15,8 @@ public class ElevatorMovementEvent {
 	public int currentFloor;
 	public boolean isMoving;
 	
-	public ElevatorMovementEvent(int elevator, Direction direction, int currentFloor, boolean isMoving) {
+	public ElevatorMovementEvent(Time time, int elevator, Direction direction, int currentFloor, boolean isMoving) {
+		this.time = time;
 		elevatorID = elevator;
 		this.direction = direction;
 		this.currentFloor = currentFloor;

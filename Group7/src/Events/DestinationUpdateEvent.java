@@ -14,10 +14,11 @@ public class DestinationUpdateEvent {
 	public int elevatorID;
 	public int destinationFloor;
 	
-	public DestinationUpdateEvent(int id, int destination) {
+	public DestinationUpdateEvent(Time time, int id, int destination) {
 		if (destination < Floor.MINIMUM_FLOOR_NUM || destination > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("The destination floor cannot be outside of the building!");
 		
+		this.time = time;
 		elevatorID = id;
 		destinationFloor = destination;
 	}

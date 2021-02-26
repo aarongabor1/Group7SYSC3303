@@ -23,7 +23,7 @@ public class FloorEventGenerator implements Runnable {
 	}
 	
 	public void run() {
-		FloorEvent floorEvent;
+		FormattedEvent floorEvent;
 		
 		while(true) {			
 			try {
@@ -46,7 +46,7 @@ public class FloorEventGenerator implements Runnable {
 	 * @return the parsed floor event from the text file
 	 * @throws ParseException
 	 */
-	public FloorEvent generateFloorEvent() throws ParseException {
+	public FormattedEvent generateFloorEvent() throws ParseException {
 		return parser.parseFile();
 	}
 }

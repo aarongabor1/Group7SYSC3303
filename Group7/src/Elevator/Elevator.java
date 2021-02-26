@@ -13,11 +13,11 @@ import java.util.List;
  *
  */
 public class Elevator {	
-	public int ID; // Initialize this somewhere
+	public int ID;
+	private int currentFloor;
 	private ElevatorSubsystem elevatorSubsystem;
 	private Motor motor;
 	private Door door;
-	private int currentFloor;
 	private Direction currentDirection;
 	private boolean isMoving;
 	

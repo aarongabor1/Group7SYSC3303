@@ -15,10 +15,11 @@ public class FloorButtonPressEvent {
 	public int floor;
 	public Direction direction;
 	
-	public FloorButtonPressEvent(int floor, Direction direction) {
+	public FloorButtonPressEvent(Time time, int floor, Direction direction) {
 		if (floor < Floor.MINIMUM_FLOOR_NUM || floor > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("A button cannot be pressed on a floor that doesn't exist!");
 		
+		this.time = time;
 		this.floor = floor;
 		this.direction = direction;
 	}
