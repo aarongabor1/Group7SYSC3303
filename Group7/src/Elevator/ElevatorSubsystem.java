@@ -60,9 +60,8 @@ public class ElevatorSubsystem implements Runnable {
 			DestinationUpdateEvent destinationFloorUpdate = scheduler.getFloorSystemEvent(); // Instead of FloorEvent, it should DestinationUpdateEvent
 			System.out.println("Event: (" + destinationFloorUpdate + ") Elevator received FloorEvent from Scheduler");
 			
-		
 			// New destination request has been received. Tells elevator to move to a new floor.
-			if (parentElevator.getCurrentDirection() == Direction.STATIONARY) {	
+			if (parentElevator.getCurrentDirection() == Direction.STATIONARY && parentElevator.getCurrentFloor() != destinationFloorUpdate.getDestinationFloor()) {	
 				handleDoor(DoorPosition.CLOSED); // Close doors
 				
 				if (parentElevator.getCurrentFloor() > destinationFloorUpdate.getDestinationFloor()) { // The floor where the elevator was requested
@@ -75,7 +74,8 @@ public class ElevatorSubsystem implements Runnable {
 				// Information received by Scheduler while elevator is moving to its target floor.
 				// Elevator should be informed when it reaches a floor so it should stop.
 				if (destinationFloorUpdate.getDestinationFloor() == parentElevator.getCurrentFloor()) {
-					
+					handleMotor(Direction.STATIONARY);
+					handleDoor(DoorPosition.OPEN);
 				}
 			}
 					
