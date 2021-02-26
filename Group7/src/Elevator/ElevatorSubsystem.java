@@ -8,6 +8,7 @@ import java.util.Map;
 
 import Events.DestinationUpdateEvent;
 import Events.ElevatorMovementEvent;
+import Events.SchedulerToElevatorEvent;
 import Floor.FloorEvent;
 
 /**
@@ -21,6 +22,7 @@ public class ElevatorSubsystem implements Runnable {
 	private Elevator parentElevator;
 	private int numberOfFloors;
 	private Map<Integer, ElevatorButton> elevatorButtons;
+
 
 	
 	/**
@@ -57,28 +59,46 @@ public class ElevatorSubsystem implements Runnable {
 				e.printStackTrace();
 			}
 			
-			DestinationUpdateEvent destinationFloorUpdate = scheduler.getFloorSystemEvent(); // Instead of FloorEvent, it should DestinationUpdateEvent
-			System.out.println("Event: (" + destinationFloorUpdate + ") Elevator received FloorEvent from Scheduler");
+			SchedulerToElevatorEvent fe = scheduler.getFloorSystemEvent(); // Instead of FloorEvent, it should DestinationUpdateEvent
+			System.out.println("Event: (" + fe + ") Elevator received FloorEvent from Scheduler");
 			
-			// New destination request has been received. Tells elevator to move to a new floor.
-			if (parentElevator.getCurrentDirection() == Direction.STATIONARY && parentElevator.getCurrentFloor() != destinationFloorUpdate.getDestinationFloor()) {	
-				handleDoor(DoorPosition.CLOSED); // Close doors
-				
-				if (parentElevator.getCurrentFloor() > destinationFloorUpdate.getDestinationFloor()) { // The floor where the elevator was requested
-					handleMotor(Direction.UP); // Handle motor - elevator starts to go up
-				} else {
-					handleMotor(Direction.DOWN); // Handle motor - elevator starts to go down
-				}	
-				
-			} else {
-				// Information received by Scheduler while elevator is moving to its target floor.
-				// Elevator should be informed when it reaches a floor so it should stop.
-				if (destinationFloorUpdate.getDestinationFloor() == parentElevator.getCurrentFloor()) {
-					handleMotor(Direction.STATIONARY);
-					handleDoor(DoorPosition.OPEN);
+			ElevatorMovementEvent elevatorEvent = null;
+			
+			switch (fe.getRequest()) {
+			
+			case MOVE_ELEVATOR:
+				if (parentElevator.getCurrentDirection() == Direction.STATIONARY && parentElevator.getCurrentFloor() != fe.getTargetFloor()) {	
+					handleDoor(DoorPosition.CLOSED); // Close doors		
+					if (parentElevator.getCurrentFloor() > fe.getTargetFloor()) { // The floor where the elevator was requested
+						handleMotor(Direction.UP); // Handle motor - elevator starts to go up
+					} else {
+						handleMotor(Direction.DOWN); // Handle motor - elevator starts to go down
+					}	
 				}
-			}
+				elevatorEvent = new ElevatorMovementEvent(parentElevator.getElevatorID(), parentElevator.getCurrentDirection(), parentElevator.getCurrentFloor(), true);
+			
+			case NEW_ELEVATOR_REQUEST:
+				if (parentElevator.getCurrentDirection() == Direction.STATIONARY && parentElevator.getCurrentFloor() != fe.getPassengerFloor()) {	
+					handleDoor(DoorPosition.CLOSED); // Close doors		
 					
+					if (parentElevator.getCurrentFloor() > fe.getPassengerFloor()) { // The floor where the elevator was requested
+						handleMotor(Direction.UP); // Handle motor - elevator starts to go up
+					} else {
+						handleMotor(Direction.DOWN); // Handle motor - elevator starts to go down
+					}	
+				}
+				elevatorEvent = new ElevatorMovementEvent(parentElevator.getElevatorID(), parentElevator.getCurrentDirection(), parentElevator.getCurrentFloor(), true);
+			
+			case STOP_ELEVATOR:
+				handleMotor(Direction.STATIONARY);
+				handleDoor(DoorPosition.OPEN);
+				elevatorEvent = new ElevatorMovementEvent(parentElevator.getElevatorID(), parentElevator.getCurrentDirection(), parentElevator.getCurrentFloor(), false);
+			
+			default:
+				break;
+			
+			}
+				
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -86,7 +106,6 @@ public class ElevatorSubsystem implements Runnable {
 			}
 					
 			// Sends Scheduler info about Elevator's location
-			ElevatorMovementEvent elevatorEvent = new ElevatorMovementEvent(parentElevator.getElevatorID(), parentElevator.getCurrentDirection(), parentElevator.getCurrentFloor());
 			scheduler.putElevatorSystemEvent(elevatorEvent);
 			System.out.println("Elevator sent Elevator Event to Scheduler");
 			

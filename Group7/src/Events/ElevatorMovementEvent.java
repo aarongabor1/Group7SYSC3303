@@ -13,11 +13,13 @@ public class ElevatorMovementEvent {
 	public int elevatorID;
 	public Direction direction;
 	public int currentFloor;
+	public boolean isMoving;
 	
-	public ElevatorMovementEvent(int elevator, Direction direction, int currentFloor) {
+	public ElevatorMovementEvent(int elevator, Direction direction, int currentFloor, boolean isMoving) {
 		elevatorID = elevator;
 		this.direction = direction;
 		this.currentFloor = currentFloor;
+		this.isMoving = isMoving;
 	}
 
 	public int getCurrentFloor() {
@@ -26,5 +28,9 @@ public class ElevatorMovementEvent {
 	
 	public Direction getDirection() {
 		return direction;
+	}
+	
+	public boolean isMoving() {
+		return isMoving;
 	}
 }

@@ -4,6 +4,8 @@ import java.util.LinkedList;
 
 import Events.DestinationUpdateEvent;
 import Events.ElevatorMovementEvent;
+import Events.SchedulerToElevatorEvent;
+import Events.SchedulerToElevatorEvent.RequestType;
 import Floor.FloorEvent;
 
 /** 
@@ -21,9 +23,6 @@ public class Scheduler {
 	
 	private LinkedList<FloorEvent> requestedElevators;
 	
-	private boolean isElevatorAtRequestedFloor;
-	private boolean isElevatorAtPassengerFloor;
-	
 	/**
 	 * Constructor that will create the Network object.
 	 */
@@ -35,8 +34,7 @@ public class Scheduler {
 		this.containsFloorSystemEvent = false;
 		this.containsSchedulerSystemEvent = false;
 		this.containsElevatorSystemEvent = false;
-		this.isElevatorAtRequestedFloor = false;
-		this.isElevatorAtPassengerFloor = false;
+
 		this.requestedElevators = new LinkedList<>();
 	}
 	
@@ -73,7 +71,7 @@ public class Scheduler {
 	 *
 	 * @return Either the FloorEvent object that needs to be transfered or null
 	 */
-	public synchronized DestinationUpdateEvent getFloorSystemEvent()
+	public synchronized SchedulerToElevatorEvent getFloorSystemEvent()
 	{
 		//Waits if this in not the method that should have been entered
 		while(!this.containsFloorSystemEvent)
@@ -88,17 +86,35 @@ public class Scheduler {
 			}
 		}
 		
+
+		SchedulerToElevatorEvent se = null;
 		
+		// Handle cases:
+		// 1. Passenger requests an elevator. Elevator is not at the passenger's floor.
+		// 2. Passenger is in elevator. Elevator is not at target floor.
+		// 3. New elevator request while elevator is moving. (If elevator is moving from floor 4 to floor 1, and elevator is requested at floor 3)
+		// 4. Elevator drops off passenger at their target floor.
+		
+		for (FloorEvent e : requestedElevators) {
+			if (elevatorSystemEvent.getCurrentFloor() != e.getFloor()) {
+				se = new SchedulerToElevatorEvent(e.getFloor(), RequestType.NEW_ELEVATOR_REQUEST);
+			} else if (elevatorSystemEvent.getCurrentFloor() != e.getCarButton()) {
+				se = new SchedulerToElevatorEvent(e.getDirection(), e.getCarButton(), RequestType.MOVE_ELEVATOR);
+			} else {
+				
+			}
+		}
+		
+		
+		// Should this be here?
 		this.containsFloorSystemEvent = false;
-		FloorEvent event = this.floorSystemEvent;
-		
-		 
-		
+		FloorEvent event = this.floorSystemEvent; 
 		this.floorSystemEvent = null;
 		System.out.println("Floor system event: (" + event + ") retrieved by Scheduler");
 		notifyAll();
 		
-		return null;
+		
+		return se;
 	}
 	
 	/** 
@@ -123,7 +139,7 @@ public class Scheduler {
 				System.err.print(e);
 			}
 		}
-
+		
 		this.containsSchedulerSystemEvent = false;
 		FloorEvent event = this.schedulerSystemEvent;
 		this.floorSystemEvent = null;
@@ -155,7 +171,7 @@ public class Scheduler {
 			}
 		}
 		
-		monitorElevator(elevatorEvent); // Monitor elevator's location every time Scheduler receives info about it
+		monitorElevator(elevatorEvent); // Monitor elevator's location every time Scheduler receives info
 		
 		this.containsElevatorSystemEvent = true;
 		this.elevatorSystemEvent = elevatorEvent;
@@ -173,21 +189,22 @@ public class Scheduler {
 		
 		for (FloorEvent e:requestedElevators) {	
 			if (e.getFloor() == ev.getCurrentFloor()) {
-				isElevatorAtRequestedFloor = true;
-				System.out.println("Elevator is at requested floor #" + ev.getCurrentFloor());
+				
+				System.out.println("Elevator is picking up passenger(s) at floor #" + ev.getCurrentFloor());
 			} else if (e.getFloor() == ev.getCurrentFloor()) {
-				isElevatorAtPassengerFloor = true;
-				System.out.println("Elevator is at floor #" + ev.getCurrentFloor());
+				
+				System.out.println("Elevator is dropping off passenger(s) at floor #" + ev.getCurrentFloor());
 				requestedElevators.remove(e); // Remove elevator request from the list if it has been completed
 			} else {
-				isElevatorAtRequestedFloor = false;
-				isElevatorAtPassengerFloor = false;
+			
 				System.out.println("Elevator is approaching floor #" + ev.getCurrentFloor());
 			}
 		}
 	}
 	
 	/**
+	 * NOT USED
+	 * 
 	 * getElevatorSystemEvent is a method where the Elevator system can receive a FloorEvent object
 	 * from another system.
 	 * 
