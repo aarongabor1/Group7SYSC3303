@@ -10,6 +10,11 @@ import Elevator.ElevatorSubsystem;
 import Utilities.Direction;
 import Utilities.Scheduler;
 
+/**
+ * A test class that tests the Elevator's movement between floors
+ * @author Diana Miraflor
+ *
+ */
 class ElevatorTest {
 	Elevator elevator;
 	Scheduler scheduler;
@@ -20,18 +25,27 @@ class ElevatorTest {
 		elevator = new Elevator(scheduler);
 	}
 	
+	/**
+	 * Checks the number of the elevator's ground floor
+	 */
 	@Test
 	void testGroundFloor() {
 		assertEquals(Direction.STATIONARY, elevator.getCurrentDirection());
 		assertEquals(1, elevator.getCurrentFloor());
 	}
 	
+	/**
+	 * Tests elevator moving up one floor
+	 */
 	@Test
 	void testMoveOneFloor() {
 		elevator.moveUp();
 		assertEquals(2, elevator.getCurrentFloor());		
 	}
 	
+	/**
+	 * Tests elevator moving to destination floor
+	 */
 	@Test
 	void testMoveToDestinationFloor() {
 		elevator.updateDestination(3);

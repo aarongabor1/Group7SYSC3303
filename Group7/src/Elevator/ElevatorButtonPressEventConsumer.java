@@ -14,6 +14,9 @@ public class ElevatorButtonPressEventConsumer implements Runnable {
 		parent = elevatorSubsystem;
 	}
 	
+	/**
+	 * Method to consume the provided event.
+	 */
 	public void consume(ElevatorButtonPressEvent elevatorButtonEvent) {
 		parent.getElevator().turnOnLamp(elevatorButtonEvent.buttonNumber);
 	}
