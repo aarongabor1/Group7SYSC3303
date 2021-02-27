@@ -9,8 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 
-import Floor.FloorEvent;
-
 import java.sql.Time;
 
 /***
@@ -80,23 +78,4 @@ public class Parser {
 		
 		return fe;	
 	}
-	
-	/**
-	 * This function creates a floor button press event for an event that was retrieved from the input file.
-	 * @param fe
-	 * @return
-	 */
-	public FloorButtonPressEvent getFloorEventFromFormattedEvent(FormattedEvent fe) {
-		return new FloorButtonPressEvent(fe.getTime(), fe.getFloor(), fe.getDirection());
-	}
-	
-	/**
-	 * This function creates a floor button press event for an event that was retrieved from the input file.
-	 * @param fe
-	 * @return
-	 */
-	public ElevatorButtonPressEvent getElevatorEventFromFormattedEventForElevator(FormattedEvent fe, int elevatorID) {
-		return new ElevatorButtonPressEvent(fe.getTime(), elevatorID, fe.getCarButton());
-	}
-	
 }

@@ -2,42 +2,71 @@ package Elevator;
 
 import Utilities.*;
 import Floor.Floor;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Elevator class is for the ElevatorSubsytem class to control.
  * 
- * @author Diana Miraflor
- * @version 1.0
+ * @author Diana Miraflor, Marc Angers
+ * @version 1.1
  *
  */
 public class Elevator {	
 	public int ID;
 	private int currentFloor;
+	private Direction currentDirection;
+	private int currentDestination;
+	
 	private ElevatorSubsystem elevatorSubsystem;
 	private Motor motor;
 	private Door door;
-	private Direction currentDirection;
-	private boolean isMoving;
 	
-	/**
-	 * Constructs a new Elevator object
-	 * 
-	 * @param numberOfFloors
-	 */
-	public Elevator(Scheduler network, int numberOfFloors) {
-		if (numberOfFloors <= Floor.MINIMUM_FLOOR_NUM)
+	private Map<Integer, ElevatorButton> elevatorButtons;
+	
+	
+	
+	public Elevator(Scheduler scheduler) {
+		if (Settings.NUMBER_OF_FLOORS <= Floor.MINIMUM_FLOOR_NUM)
 			throw new IllegalArgumentException("Your building must have more than 1 floor to use an elevator!");
 		
+		this.elevatorSubsystem = new ElevatorSubsystem(scheduler, this);
 		this.motor = new Motor(this);
 		this.door = new Door(DoorPosition.CLOSED);
+		this.elevatorButtons = new HashMap<Integer, ElevatorButton>();
+		
+		generateElevatorButtons();
+
 		this.currentFloor = Floor.MINIMUM_FLOOR_NUM;
 		this.currentDirection = Direction.STATIONARY;
-		
-		this.elevatorSubsystem = new ElevatorSubsystem(network, this);
-		
-		this.isMoving = false;
+						
+		ID = 1; // While there is only one elevator in the system, it is given an ID of 1. Will change this in later iterations.
+	}
+	
+	/**
+	 * Creates the elevator's floor buttons
+	 */
+	public void generateElevatorButtons() {
+		for (int i = 1; i <= Settings.NUMBER_OF_FLOORS; i++) {
+			elevatorButtons.put(i, new ElevatorButton(new ElevatorLamp(), i));
+		}
+	}
+	
+	/**
+	 * Function to turn on a specified button lamp.
+	 * @param buttonNumber
+	 */
+	public void turnOnLamp(int buttonNumber) {
+		elevatorButtons.get(buttonNumber).unPress();
+	}
+	
+	/**
+	 * Function to turn off a specified button lamp.
+	 * @param buttonNumber
+	 */
+	public void turnOffLamp(int buttonNumber) {
+		elevatorButtons.get(buttonNumber).unPress();
 	}
 	
 	/**
@@ -46,68 +75,50 @@ public class Elevator {
 	 */
 	public void changeDirection(Direction direction) {
 		currentDirection = direction;
-		
-		if (direction != Direction.STATIONARY) {
-			isMoving = true;
-		} else {
-			isMoving = false;
-		}
 	}
 	
 	/**
-	 * Moves elevator down
+	 * Moves the elevator down
 	 */
 	public void moveDown() {
 		currentFloor--;
 	}
 	
 	/**
-	 * Moves elevator up
+	 * Moves the elevator up
 	 */
 	public void moveUp() {
 		currentFloor++;
 	}
 	
 	/**
-	 * Returns the current floor the elevator is at
+	 * Determines whether the elevator is currently moving or not.
+	 * @return
 	 */
+	public boolean isMoving() {
+		return currentDirection != Direction.STATIONARY;
+	}
+
+	// Get and set methods:
 	public int getCurrentFloor() {
 		return currentFloor;
 	}
-	
-	/**
-	 * Returns elevator's door
-	 * @return
-	 */
-	public Door getDoor() {
-		return door;
+	public int getCurrentDestination() {
+		return currentDestination;
 	}
-	
-	/**
-	 * Returns elevator's motor
-	 * @return
-	 */
-	public Motor getMotor() {
-		return motor;
-	}
-	
-	/**
-	 * Returns the elevator subsystem for the elevator
-	 * @return
-	 */
-	public ElevatorSubsystem getElevatorSubsystem() {
-		return elevatorSubsystem;
-	}
-	
 	public Direction getCurrentDirection() {
 		return currentDirection;
 	}
-	
-	public int getElevatorID() {
-		return ID;
+	public Door getDoor() {
+		return door;
 	}
-	
-	public boolean isMoving() {
-		return isMoving;
+	public Motor getMotor() {
+		return motor;
+	}
+	public ElevatorSubsystem getElevatorSubsystem() {
+		return elevatorSubsystem;
+	}
+	public void updateDestination(int newDestination) {
+		currentDestination = newDestination;
 	}
 }

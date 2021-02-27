@@ -3,18 +3,17 @@ package Utilities;
 import Elevator.*;
 
 /**
- * Class Motor is responsible for moving the elevator when the a request has been made
+ * The Motor class is responsible for moving the elevator when a request has been made
  *
- * @author Momin Mushtaha
- * @version 02 February 2021
+ * @author Momin Mushtaha, Marc Angers
+ * @version 1.1
  */
 public class Motor {
 	private Elevator parentElevator;
 	private Direction state;
 	
-	/**
-	 * Constructor method for Motor class
-	 */
+	
+	
 	public Motor(Elevator parent)
 	{
 		this.parentElevator = parent;
@@ -35,11 +34,14 @@ public class Motor {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		parentElevator.moveUp();
+		if (direction == Direction.UP)
+			parentElevator.moveUp();
+		if (direction == Direction.DOWN)
+			parentElevator.moveDown();
 	}
 	
 	/**
-	 * Starts the process of stopping/deaccelerating the elevator to stop on the next floor
+	 * Stops the elevator at the current floor.
 	 */
 	public void stopElevator()
 	{
@@ -48,6 +50,7 @@ public class Motor {
 		parentElevator.changeDirection(Direction.STATIONARY);
 	}
 	
+	// Get and set methods:
 	public Direction getState() {
 		return state;
 	}

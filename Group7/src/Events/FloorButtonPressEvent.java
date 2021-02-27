@@ -23,4 +23,10 @@ public class FloorButtonPressEvent {
 		this.floor = floor;
 		this.direction = direction;
 	}
+	
+	public FloorButtonPressEvent(FormattedEvent fe) {
+		this.time = fe.getTime();
+		this.floor = fe.getFloor();
+		this.direction = fe.getDirection();
+	}
 }

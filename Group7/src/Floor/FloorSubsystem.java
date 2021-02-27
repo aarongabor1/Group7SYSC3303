@@ -1,37 +1,36 @@
 package Floor;
 
 import Utilities.*;
-
-/***
- * The Floor Subsystem is responsible for reading the requests from
- * a textfile and sending these requests to the network.
- * @author lynnmehyou, Marc Angers
- */
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class FloorSubsystem implements Runnable{
+/***
+ * The Floor Subsystem acts as the controller for the floors of the building. Information from the scheduler is passed through this class to the individual floors.
+ * @author lynnmehyou, Marc Angers
+ * @version 1.1
+ */
+
+public class FloorSubsystem implements Runnable {
 	private Scheduler scheduler;
 	private Map<Integer, Floor> floors;
 	
-	private Thread floorEventGenerator;
+	private Thread floorButtonPressEventConsumer;
+	private Thread elevatorArrivalEventConsumer;
+		
 	
-	/***
-	 * FloorSubsytem constructor
-	 * @param numberOfFloors
-	 * @param network
-	 */
-	public FloorSubsystem (int numberOfFloors, Scheduler scheduler) {
+	
+	public FloorSubsystem (Scheduler scheduler) {
 		this.scheduler = scheduler;
-		this.floors = new HashMap<Integer, Floor>();
-		floorEventGenerator = new Thread(new FloorEventGenerator(scheduler), "Floor Event Generator");
+		floors = new HashMap<Integer, Floor>();
+		
+		floorButtonPressEventConsumer = new Thread(new FloorButtonPressEventConsumer(this), "Floor button press event consumer");
+		elevatorArrivalEventConsumer = new Thread(new ElevatorArrivalEventConsumer(this), "Elevator arrival event consumer");
+		
+		generateFloors();
 	}
-	/***
-	 * generates floors depending on the floor number 
-	 * @param numberOfFloors
+	
+	/**
+	 * generates floors depending on the number of floors specified in the settings file. 
 	 */
 	public void generateFloors() {
 		for (int i = 1; i <= Settings.NUMBER_OF_FLOORS; i++) {
@@ -60,6 +59,12 @@ public class FloorSubsystem implements Runnable{
 	
 	@Override
 	public void run() {
-		floorEventGenerator.start();
+		floorButtonPressEventConsumer.start();
+		elevatorArrivalEventConsumer.start();
+	}
+	
+	// Get and set methods:
+	public Scheduler getScheduler() {
+		return scheduler;
 	}
 }

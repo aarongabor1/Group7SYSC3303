@@ -1,11 +1,12 @@
 package Floor;
 
 import Utilities.*;
-import Floor.*;
+import Events.*;
 
-/***
- * @author lynnmehyou
- * Floor class 
+/**
+ * Class to simulate a floor of a building.
+ * @author lynnmehyou, Marc Angers
+ * @version 1.1
  */
 public class Floor {
 	public static final int MINIMUM_FLOOR_NUM = 1;
@@ -17,11 +18,9 @@ public class Floor {
 	private boolean isElevatorApproaching;
 	private boolean isElevatorAtFloor;
 	private FormattedEvent fe;
-	/***
-	 * Floor constructor.
-	 * @param floorNumber
-	 * @param maxFloor
-	 */
+	
+	
+	
 	public Floor(int floorNumber) {
 		this.floorNumber= floorNumber;
 		

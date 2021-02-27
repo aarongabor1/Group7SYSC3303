@@ -22,4 +22,10 @@ public class ElevatorButtonPressEvent {
 		elevatorID = elevator;
 		buttonNumber = button;
 	}
+	
+	public ElevatorButtonPressEvent(FormattedEvent fe) {
+		this.time = fe.getTime();
+		elevatorID = 1; // <-- fix this later
+		buttonNumber = fe.getCarButton();
+	}
 }
