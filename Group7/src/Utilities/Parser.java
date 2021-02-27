@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
-
+import java.util.ArrayList;
 import java.sql.Time;
 
 /***
@@ -19,9 +19,9 @@ import java.sql.Time;
  */
 public class Parser {
 	private File file;
-	private FormattedEvent fe ;
+	private ArrayList<FormattedEvent> fe ;
 	
-	/***
+	/**
 	 * Asks user to pick the text file that condenses the floor events then stores it in a File object.
 	 */
 	public Parser() {
@@ -33,16 +33,25 @@ public class Parser {
 	      this.file = fileChooser.getSelectedFile();
 	    }
 	    //end of code from https://www.codejava.net/java-se/swing/show-simple-open-file-dialog-using-jfilechooser
+	    fe = new ArrayList<FormattedEvent>();
+	    try 
+	    {
+	    	readIn();
+	    }
+	    catch (Exception e) 
+	    {
+	    	System.out.println("ERROR");
+	    	e.printStackTrace();
+	    }
 	}
 	
-	/***
+	/**
 	 * Assigns the file input text to the correct variables. Changes their type from string to the type they should have to satisfy the 
-	 * FloorEvent method.
+	 * FormattedEvent class.
 	 * 
-	 * @return a floor event object 
 	 * @throws ParseException
 	 */
-	public FormattedEvent parseFile() throws ParseException {
+	private void readIn() throws ParseException {
 		Scanner scanner;
 		
 		try {
@@ -58,7 +67,7 @@ public class Parser {
 			int carButton1;
 			DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.mmm");
 			while(scanner.hasNext()) {
-				time = scanner.next();
+				time = scanner.next().trim();
 				currentFloor = scanner.next();
 				direction = scanner.next();
 				carButton = scanner.next();
@@ -67,15 +76,25 @@ public class Parser {
 				currentFloor1 = Integer.parseInt(currentFloor);
 				direction1 = Direction.valueOf(direction.toUpperCase());
 				carButton1 = Integer.parseInt(carButton);
-				fe = new FormattedEvent(time1, currentFloor1, direction1, carButton1);
+				fe.add(new FormattedEvent(time1, currentFloor1, direction1, carButton1));
 			}
 			scanner.close();
 			
 		} catch (FileNotFoundException e) {
 			System.out.print("Error file not found");
 			e.printStackTrace();
-		}
-		
-		return fe;	
+		}	
+	}
+	
+	/**
+	 * parseFile send back one FormattedEvent object from the input file.
+	 * 
+	 * @return FormattedEvent object containing the next command
+	 */
+	public FormattedEvent parseFile()
+	{
+		FormattedEvent temp = fe.get(0);
+		fe.remove(0);
+		return temp;
 	}
 }
