@@ -30,7 +30,7 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param direction
 	 */
 	public void moveElevator(Direction direction) {
-		handleDoor(DoorPosition.CLOSED);
+		handleDoor(false);
 		handleMotor(direction);
 	}
 	
@@ -39,7 +39,7 @@ public class ElevatorSubsystem implements Runnable {
 	 */
 	public void stopElevator() {
 		handleMotor(Direction.STATIONARY);
-		handleDoor(DoorPosition.OPEN);
+		handleDoor(true);
 
 		scheduler.addElevatorArrivalEvent(
 			new ElevatorArrivalEvent(scheduler.getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection())
@@ -68,8 +68,8 @@ public class ElevatorSubsystem implements Runnable {
 	 * 
 	 * @param desiredPosition
 	 */
-	public void handleDoor(DoorPosition desiredPosition) {
-		if (desiredPosition == DoorPosition.CLOSED) {
+	public void handleDoor(boolean desiredPosition) {
+		if (desiredPosition == false) {
 			parentElevator.getDoor().closeDoor();
 		} else {
 			parentElevator.getDoor().openDoor();

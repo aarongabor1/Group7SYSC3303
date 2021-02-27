@@ -172,6 +172,7 @@ public class Scheduler implements Runnable {
 		}
 	
 		
+		// Debugging
 		System.out.println("addElevatorArrivalEvent has been called.");
 		containsElevatorArrivalEvent = true;
 		elevatorArrivalEvent = elevatorEvent;
@@ -198,6 +199,7 @@ public class Scheduler implements Runnable {
 			}
 		}
 		
+		// Debugging
 		System.out.println("getElevatorArrivalEvent has been called.");
 		
 		containsElevatorArrivalEvent = false;
