@@ -25,9 +25,9 @@ public class Floor {
 		this.floorNumber= floorNumber;
 		
 		if (floorNumber < Settings.NUMBER_OF_FLOORS)
-			this.upButton = new FloorButton(new FloorLamp(), Direction.UP);
+			this.upButton = new FloorButton(Direction.UP);
 		if (floorNumber > 1)
-			this.downButton = new FloorButton(new FloorLamp(), Direction.DOWN);
+			this.downButton = new FloorButton(Direction.DOWN);
 	}
 	
 	/**

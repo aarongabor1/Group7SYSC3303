@@ -278,19 +278,24 @@ public class Scheduler implements Runnable {
 		addFloorButtonEvent(floorButtonEvent);
 		
 		scheduleElevators("floor");
+		
 		System.out.println("Before loop: " + containsElevatorArrivalEvent);
+		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
 		while(!containsElevatorArrivalEvent) 
 			;
 		
+		// Debugging
 		System.out.println("After loop: " + containsElevatorArrivalEvent);
 		System.out.println("Elevator's turn to move to passenger's target floor.");
+		
 		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
 		
 		elevatorRequests.add(elevatorButtonEvent);
 		addElevatorButtonEvent(elevatorButtonEvent);
 		
 		scheduleElevators("elevator");
+		
 		System.out.println("Added passenger's requested floor");
 		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.

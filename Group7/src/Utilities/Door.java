@@ -7,16 +7,16 @@ package Utilities;
  * @version 02 February 2021
  */
 public class Door {
-	private DoorPosition position;
+	private boolean state;
 	
 	/**
 	 * Constructor for Door class
 	 * @param startingPosition is the position of the door when the object was constructed 
 	 * Default is closed
 	 */
-	public Door(DoorPosition startingPosition)
+	public Door(boolean startingPosition)
 	{
-		position = startingPosition;
+		this.state = startingPosition;
 	}
 	
 	/**
@@ -29,7 +29,7 @@ public class Door {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		position = DoorPosition.CLOSED;
+		state = false;
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class Door {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		position = DoorPosition.OPEN;
+		state = true;;
 	}
 	
 	/**
@@ -50,6 +50,6 @@ public class Door {
 	 * @return
 	 */
 	public boolean isOpen() {
-		return position == DoorPosition.OPEN;
+		return state;
 	}
 }

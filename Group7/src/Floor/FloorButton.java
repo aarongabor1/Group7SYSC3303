@@ -10,8 +10,8 @@ import Utilities.*;
 public class FloorButton extends Button {
 	private Direction direction;
 	
-	public FloorButton(FloorLamp floorLamp, Direction direction) {
-		super(floorLamp);
+	public FloorButton(Direction direction) {
+		super(false);
 		this.direction = direction;
 	}
 }

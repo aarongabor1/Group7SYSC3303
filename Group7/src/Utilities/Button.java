@@ -7,33 +7,33 @@ package Utilities;
  */
 public abstract class Button {
 	private boolean isPressed = false;
-	private Lamp buttonLamp;
+	private boolean lamp;
 	
-	public Button(Lamp buttonLamp) {
-		this.buttonLamp = buttonLamp;
+	public Button(boolean buttonLamp) {
+		this.lamp = buttonLamp;
 	}
 	
 	public void press() {
 		isPressed = true;
-		buttonLamp.turnOn();
+		lamp = true;
 	}
 	
 	public void unPress() {
 		isPressed = false;
-		buttonLamp.turnOff();
+		lamp = false;
 	}
 	
 	public void switchButton() {
 		isPressed = !isPressed;
-		buttonLamp.switchLamp();
+		lamp = !lamp;
 	}
 	
 	public boolean isPressed() {
 		return this.isPressed;
 	}
 	
-	public Lamp getButtonLamp() {
-		return buttonLamp;
+	public boolean getButtonLamp() {
+		return lamp;
 	}
 }
 

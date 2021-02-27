@@ -34,7 +34,7 @@ public class Elevator {
 		
 		this.elevatorSubsystem = new ElevatorSubsystem(scheduler, this);
 		this.motor = new Motor(this);
-		this.door = new Door(DoorPosition.CLOSED);
+		this.door = new Door(false);
 		this.elevatorButtons = new HashMap<Integer, ElevatorButton>();
 		
 		generateElevatorButtons();
@@ -50,7 +50,7 @@ public class Elevator {
 	 */
 	public void generateElevatorButtons() {
 		for (int i = 1; i <= Settings.NUMBER_OF_FLOORS; i++) {
-			elevatorButtons.put(i, new ElevatorButton(new ElevatorLamp(), i));
+			elevatorButtons.put(i, new ElevatorButton(false, i));
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class Elevator {
 		Collection<ElevatorButton> buttons = elevatorButtons.values();
 	
 		for (ElevatorButton b : buttons) {
-			if (b.getButtonLamp().isOn()) {
+			if (b.getButtonLamp()) {
 				return true;
 			}
 		}

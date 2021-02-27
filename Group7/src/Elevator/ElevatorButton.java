@@ -10,8 +10,13 @@ import Utilities.*;
 public class ElevatorButton extends Button {
 	private int floor;
 	
-	public ElevatorButton(ElevatorLamp elevatorLamp, int floor) {
-		super(elevatorLamp);
+	public ElevatorButton(boolean elevatorLamp, int floor) {
+		super(false);
 		this.floor = floor;
 	}
+
+	public int getFloorButtonNumber() {
+		return floor;
+	}
+	
 }
