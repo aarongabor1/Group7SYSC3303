@@ -19,6 +19,7 @@ public class FloorButtonPressEventConsumer implements Runnable {
 	 */
 	public void consume(FloorButtonPressEvent floorEvent) {
 		parent.turnOnLampForFloor(floorEvent.floor, floorEvent.direction);
+		System.out.println("New floor request: " + floorEvent.direction + " lamp is on");
 	}
 	
 	@Override

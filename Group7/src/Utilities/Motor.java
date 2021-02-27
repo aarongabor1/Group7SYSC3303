@@ -26,7 +26,6 @@ public class Motor {
 	 */
 	public void moveElevator(Direction direction)
 	{
-		System.out.println("Elevator going " + direction);
 		state = direction;
 		parentElevator.changeDirection(direction);
 		try {
@@ -38,6 +37,8 @@ public class Motor {
 			parentElevator.moveUp();
 		if (direction == Direction.DOWN)
 			parentElevator.moveDown();
+		
+		System.out.println("Elevator current floor: " + parentElevator.getCurrentFloor());
 	}
 	
 	/**
