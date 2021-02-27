@@ -13,13 +13,16 @@ import java.sql.Time;
 public class ElevatorArrivalEvent {
 	public Time time;
 	public int floorNumber;
-	public Direction fromDirection;
+	public int elevatorID;
+	public Direction goingInDirection;
 	
-	public ElevatorArrivalEvent(int floor, Direction direction) {
+	public ElevatorArrivalEvent(Time time, int floor, int elevator, Direction direction) {
 		if (floor < Floor.MINIMUM_FLOOR_NUM || floor > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("An elevator cannot arrive at an invalid floor!");
 		
+		this.time = time;
 		floorNumber = floor;
-		fromDirection = direction;
+		elevatorID = elevator;
+		goingInDirection = direction;
 	}
 }

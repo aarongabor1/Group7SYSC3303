@@ -1,11 +1,6 @@
 package Utilities;
 
-/***
- * This class takes in the file and uses the text to fill out the variable needed to
- * generate a floor event, time, current floor, direction and car button.
- * 
- * @author lynnmehyou, Aaron Gabor
- */
+import Events.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DateFormat;
@@ -14,13 +9,17 @@ import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 
-import Floor.FloorEvent;
-
 import java.sql.Time;
 
+/***
+ * This class takes in the file and uses the text to fill out the variable needed to
+ * generate a floor event, time, current floor, direction and car button.
+ * 
+ * @author lynnmehyou, Aaron Gabor
+ */
 public class Parser {
 	private File file;
-	private FloorEvent fe ;
+	private FormattedEvent fe ;
 	
 	/***
 	 * Asks user to pick the text file that condenses the floor events then stores it in a File object.
@@ -35,6 +34,7 @@ public class Parser {
 	    }
 	    //end of code from https://www.codejava.net/java-se/swing/show-simple-open-file-dialog-using-jfilechooser
 	}
+	
 	/***
 	 * Assigns the file input text to the correct variables. Changes their type from string to the type they should have to satisfy the 
 	 * FloorEvent method.
@@ -42,8 +42,9 @@ public class Parser {
 	 * @return a floor event object 
 	 * @throws ParseException
 	 */
-	public FloorEvent parseFile() throws ParseException {
+	public FormattedEvent parseFile() throws ParseException {
 		Scanner scanner;
+		
 		try {
 			scanner = new Scanner(file);
 			scanner.useDelimiter(" ");
@@ -66,8 +67,7 @@ public class Parser {
 				currentFloor1 = Integer.parseInt(currentFloor);
 				direction1 = Direction.valueOf(direction.toUpperCase());
 				carButton1 = Integer.parseInt(carButton);
-				fe = new FloorEvent(time1, currentFloor1, direction1, carButton1);
-				
+				fe = new FormattedEvent(time1, currentFloor1, direction1, carButton1);
 			}
 			scanner.close();
 			
@@ -76,8 +76,6 @@ public class Parser {
 			e.printStackTrace();
 		}
 		
-		return fe;
-		
+		return fe;	
 	}
-	
 }

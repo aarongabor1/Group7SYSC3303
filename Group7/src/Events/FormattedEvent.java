@@ -1,16 +1,18 @@
-package Floor;
+package Events;
 
 import java.sql.Time;
+
+import Floor.Floor;
 import Utilities.*;
 
 /** 
  * FloorEvent class which creates an object that stores the information needed for 
  * each elevator request.
  * 
- * @author Aaron Gabor
+ * @author Aaron Gabor, Marc Angers
  * @version 1.0.1
  */
-public class FloorEvent {
+public class FormattedEvent {
 	private Time time;
 	private int currentFloor;
 	private Direction direction;
@@ -25,8 +27,11 @@ public class FloorEvent {
 	 * elevator needs to go up or down, carButton is an integer value for the floor 
 	 * where the user would like to travel to.
 	 */
-	public FloorEvent(Time time, int currentFloor, Direction direction, int carButton)
+	public FormattedEvent(Time time, int currentFloor, Direction direction, int carButton)
 	{
+		if (currentFloor < Floor.MINIMUM_FLOOR_NUM || currentFloor > Settings.NUMBER_OF_FLOORS)
+			throw new IllegalArgumentException("An event cannot be generated for a floor that doesn't exist!");
+		
 		this.time = time;
 		this.currentFloor = currentFloor;
 		this.direction = direction;

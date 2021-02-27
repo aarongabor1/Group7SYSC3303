@@ -1,52 +1,65 @@
 package Utilities;
 
+import java.sql.Time;
+import java.text.ParseException;
 import java.util.LinkedList;
-
-import Events.DestinationUpdateEvent;
-import Events.ElevatorMovementEvent;
-import Events.SchedulerToElevatorEvent;
-import Events.SchedulerToElevatorEvent.RequestType;
-import Floor.FloorEvent;
+import java.util.List;
+import Events.*;
 
 /** 
- * Network class is the connection point of the whole project. All of the information that each
- * subsystem would like to send to another subsystem comes across the Network class. 
+ * The scheduler class is the connection point of the whole project. All of the information that each
+ * subsystem provides and consumes is organized and routed through this class. 
  *  
  * @author Aaron Gabor, Marc Angers
- * @version 1.1.1
+ * @version 1.1
  */
-public class Scheduler {
-	private FloorEvent floorSystemEvent, schedulerSystemEvent;
-	private ElevatorMovementEvent elevatorSystemEvent;
+public class Scheduler implements Runnable {
+	private FormattedEvent currentEventFromInput;
 	
-	private boolean containsFloorSystemEvent, containsSchedulerSystemEvent, containsElevatorSystemEvent;
+	private FloorButtonPressEvent floorButtonEvent;
+	private ElevatorButtonPressEvent elevatorButtonEvent;
+	private DestinationUpdateEvent destinationUpdateEvent;
+	private ElevatorArrivalEvent elevatorArrivalEvent;
 	
-	private LinkedList<FloorEvent> requestedElevators;
+	private boolean containsFloorButtonEvent, containsElevatorButtonEvent, containsDestinationUpdateEvent, containsElevatorArrivalEvent;
+		
+	private Parser parser;
+	private List<FloorButtonPressEvent> floorRequests;
+	private List<ElevatorButtonPressEvent> elevatorRequests;
+	
+	private Time currentTime;
+	//private Map<Integer, Integer> elevatorLocations; //something like this is probably needed right?
 	
 	/**
 	 * Constructor that will create the Network object.
 	 */
 	public Scheduler()
 	{
-		this.floorSystemEvent = null;
-		this.schedulerSystemEvent = null;
-		this.elevatorSystemEvent = null;
-		this.containsFloorSystemEvent = false;
-		this.containsSchedulerSystemEvent = false;
-		this.containsElevatorSystemEvent = false;
+		floorButtonEvent = null;
+		destinationUpdateEvent = null;
+		elevatorArrivalEvent = null;
+		
+		containsFloorButtonEvent = false;
+		containsDestinationUpdateEvent = false;
+		containsElevatorArrivalEvent = false;
 
-		this.requestedElevators = new LinkedList<>();
+		parser = new Parser();
+
+		floorRequests = new LinkedList<FloorButtonPressEvent>();
+		elevatorRequests = new LinkedList<ElevatorButtonPressEvent>();
+		//elevatorLocations = new HashMap<Integer, Integer>();
+		
+		currentTime = new Time(System.currentTimeMillis());
 	}
 	
+	// Event storage and retrieval methods. Could put this in a separate class. --------------------------------
 	/** 
-	 * putFloorSystemEvent is a method that it receive a FloorEvent object that the Floor System
-	 * wants to send.
-	 * 
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
+	 * addFloorSystemEvent is a method that adds floor system events to the floor event queue.
+	 * @param floorEvent is the event object that needs to be added
 	 */
-	public synchronized void putFloorSystemEvent(FloorEvent floorEvent)
-	{
-		while(this.containsFloorSystemEvent)
+	public synchronized void addFloorButtonEvent(FloorButtonPressEvent floorEvent)
+	{		
+		while(containsFloorButtonEvent)
 		{
 			try
 			{
@@ -58,159 +71,18 @@ public class Scheduler {
 			}
 		}
 		
-		requestedElevators.add(floorEvent);
-		this.containsFloorSystemEvent = true;
-		this.floorSystemEvent = floorEvent;
-		System.out.println("Floor system event: (" + floorSystemEvent + ") added to the network");
-		notifyAll();
-	}
-	
-	/** 
-	 * getFloorSystemEvent is a method where the Floor system can get a FloorEvent object from another
-	 * system.
-	 *
-	 * @return Either the FloorEvent object that needs to be transfered or null
-	 */
-	public synchronized SchedulerToElevatorEvent getFloorSystemEvent()
-	{
-		//Waits if this in not the method that should have been entered
-		while(!this.containsFloorSystemEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
+		containsFloorButtonEvent = true;
+		floorButtonEvent = floorEvent;
 		
-
-		SchedulerToElevatorEvent se = null;
-		
-		// Handle cases: NOT FINISHED
-		// 1. Passenger requests an elevator. Elevator is not at the passenger's floor.
-		// 2. Passenger is in elevator. Elevator is not at target floor.
-		// 3. New elevator request while elevator is moving. (If elevator is moving from floor 4 to floor 1, and elevator is requested at floor 3)
-		// 4. Elevator drops off passenger at their target floor.
-		for (FloorEvent e : requestedElevators) {
-			if (elevatorSystemEvent.getCurrentFloor() != e.getFloor()) {
-				se = new SchedulerToElevatorEvent(e.getFloor(), RequestType.NEW_ELEVATOR_REQUEST);
-			} else if (elevatorSystemEvent.getCurrentFloor() != e.getCarButton()) {
-				se = new SchedulerToElevatorEvent(e.getDirection(), e.getCarButton(), RequestType.MOVE_ELEVATOR);
-			} else {
-				
-			}
-		}
-		
-		
-		// Should this be here?
-		this.containsFloorSystemEvent = false;
-		FloorEvent event = this.floorSystemEvent; 
-		this.floorSystemEvent = null;
-		System.out.println("Floor system event: (" + event + ") retrieved by Scheduler");
-		notifyAll();
-		
-		return se;
-	}
-	
-	/** 
-	 * NOT USED
-	 * 
-	 * getSchedulerSystemEvent is a method that the Scheduler system can receive a FloorEvent object
-	 * from another system.
-	 *
-	 * @param floorEvent is the FloorEvent object that needs to be transfered
-	 */
-	public synchronized FloorEvent getSchedulerSystemEvent()
-	{
-		//Waits if this in not the method that should have been entered
-		while(!this.containsSchedulerSystemEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		
-		this.containsSchedulerSystemEvent = false;
-		FloorEvent event = this.schedulerSystemEvent;
-		this.floorSystemEvent = null;
-		System.out.println("Event: (" + event + ") Network retrieved floor event from Scheduler");
-		notifyAll();
-		
-		return event;
-	}
-
-	/**
-	 * putElevatorSystemEvent is a method that the Elevator system can send a FloorEvent object
-	 * to another system.
-	 * 
-	 * @param elevatorEvent is the FloorEvent object that needs to be transfered
-	 * @return 
-	 * @return null
-	 */
-	public synchronized void putElevatorSystemEvent(ElevatorMovementEvent elevatorEvent)
-	{
-		while(this.containsElevatorSystemEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		
-		monitorElevator(elevatorEvent); // Monitor elevator's location every time Scheduler receives info
-		
-		this.containsElevatorSystemEvent = true;
-		this.elevatorSystemEvent = elevatorEvent;
-		System.out.println("Event: (" + elevatorSystemEvent + ") Elevator system event sent to Scheduler");
 		notifyAll();
 	}
 	
 	/**
-	 * Keeps track of elevator's location.
-	 * 
-	 * @param ev Data sent by the Elevator Subsystem
+	 * getFloorButtonEvent is a method that provides the stored floor button press event.
+	 * @return the most recent floor button press event
 	 */
-	public void monitorElevator(ElevatorMovementEvent ev) {
-		System.out.println("Elevator is currently at floor " + ev.getCurrentFloor());
-		
-		for (FloorEvent e:requestedElevators) {	
-			if (e.getFloor() == ev.getCurrentFloor()) {
-				
-				System.out.println("Elevator is picking up passenger(s) at floor #" + ev.getCurrentFloor());
-			} else if (e.getFloor() == ev.getCurrentFloor()) {
-				
-				System.out.println("Elevator is dropping off passenger(s) at floor #" + ev.getCurrentFloor());
-				requestedElevators.remove(e); // Remove elevator request from the list if it has been completed
-			} else {
-			
-				System.out.println("Elevator is approaching floor #" + ev.getCurrentFloor());
-			}
-		}
-	}
-	
-	/**
-	 * NOT USED
-	 * 
-	 * getElevatorSystemEvent is a method where the Elevator system can receive a FloorEvent object
-	 * from another system.
-	 * 
-	 * @return Either the FloorEvent object that needs to be transfered or nullyjky6
-	 */
-	public synchronized ElevatorMovementEvent getElevatorSystemEvent()
-	{
-		while(!this.containsElevatorSystemEvent)
+	public synchronized FloorButtonPressEvent getFloorButtonEvent() {
+		while(!containsFloorButtonEvent)
 		{
 			try
 			{
@@ -221,14 +93,245 @@ public class Scheduler {
 				System.err.print(e);
 			}
 		}
-
-		ElevatorMovementEvent event = this.elevatorSystemEvent;
-		this.elevatorSystemEvent = null;
-		this.containsElevatorSystemEvent = false;
-		System.out.println("Event: (" + event + " )Elevator system event retreived by Scheduler");
+		
+		containsFloorButtonEvent = false;
+		FloorButtonPressEvent tempEvent = floorButtonEvent;
+		floorButtonEvent = null;
+		
 		notifyAll();
 		
-		return event;
+		return tempEvent;
+	}
+	
+	/**
+	 * addElevatorButtonEvent is a method that gets the stored elevator button press event.
+	 */
+	public synchronized void addElevatorButtonEvent(ElevatorButtonPressEvent elevatorEvent)
+	{		
+		while(containsElevatorButtonEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		containsElevatorButtonEvent = true;
+		elevatorButtonEvent = elevatorEvent;
+		
+		notifyAll();
+	}
+	
+	/**
+	 * getElevatorButtonEvent is a method that provides the stored elevator button press event.
+	 * @return the most recent elevator button press event
+	 */
+	public synchronized ElevatorButtonPressEvent getElevatorButtonEvent() {
+		while(!containsElevatorButtonEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		containsElevatorButtonEvent = false;
+		ElevatorButtonPressEvent tempEvent = elevatorButtonEvent;
+		elevatorButtonEvent = null;
+		
+		notifyAll();
+		
+		return tempEvent;
+	}
+	
+	/** 
+	 * addElevatorArrivalEvent adds an event that the scheduler holds for the floor subsystem to consume.
+	 */
+	public synchronized void addElevatorArrivalEvent(ElevatorArrivalEvent elevatorEvent)
+	{		
+		while(containsElevatorArrivalEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		/**
+		for (FloorButtonPressEvent e : floorRequests) {
+			if (e.floor == elevatorEvent.floorNumber) {
+				floorRequests.remove(e);
+			}
+				
+		}
+		*/
+		
+		System.out.println("addElevatorArrivalEvent has been called.");
+		containsElevatorArrivalEvent = true;
+		elevatorArrivalEvent = elevatorEvent;
+		
+		//removeInitiatingEventFor(elevatorEvent);
+		
+		notifyAll();
+	}
+	
+	/**
+	 * getElevatorArrivalEvent is a method that provides the stored elevator arrival event.
+	 * @return the most recent elevator arrival event
+	 */
+	public synchronized ElevatorArrivalEvent getElevatorArrivalEvent() {
+		while(!containsElevatorArrivalEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		System.out.println("getElevatorArrivalEvent has been called.");
+		
+		containsElevatorArrivalEvent = false;
+		ElevatorArrivalEvent tempEvent = elevatorArrivalEvent;
+		elevatorArrivalEvent = null;
+		
+		notifyAll();
+		
+		return tempEvent;
+	}
+	
+	/** 
+	 * addDestinationUpdateEvent adds an event that the scheduler holds for the floor subsystem to consume.
+	 */
+	public synchronized void addDestinationUpdateEvent(DestinationUpdateEvent destinationEvent)
+	{		
+		while(containsDestinationUpdateEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		containsDestinationUpdateEvent = true;
+		destinationUpdateEvent = destinationEvent;
+				
+		notifyAll();
+	}
+	
+	/**
+	 * getDestinationUpdateEvent is a method that provides the stored destination update event.
+	 * @return the most recent destination update event
+	 */
+	public synchronized DestinationUpdateEvent getDestinationUpdateEvent() {
+		while(!containsDestinationUpdateEvent)
+		{
+			try
+			{
+				wait();
+			}
+			catch(InterruptedException e)
+			{
+				System.err.print(e);
+			}
+		}
+		
+		containsDestinationUpdateEvent = false;
+		DestinationUpdateEvent tempEvent = destinationUpdateEvent;
+		destinationUpdateEvent = null;
+		
+		notifyAll();
+		
+		return tempEvent;
+	}
+	// End of event storage and retrieval. ---------------------------------------------------------------------
+	
+	// This method could be its own event generator class.
+	/**
+	 * Generates floor events using the parser file.
+	 * @throws ParseException
+	 */
+	public void generateFloorEvent() throws ParseException {
+		currentEventFromInput = parser.parseFile();
+		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
+		
+		floorRequests.add(floorButtonEvent);
+		addFloorButtonEvent(floorButtonEvent);
+		
+		scheduleElevators("floor");
+		System.out.println("Before loop: " + containsElevatorArrivalEvent);
+		// Temporary way of waiting for the elevator to arrive at the requested floor.
+		while(!containsElevatorArrivalEvent) 
+			;
+		
+		System.out.println("After loop: " + containsElevatorArrivalEvent);
+		System.out.println("Elevator's turn to move to passenger's target floor.");
+		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
+		
+		elevatorRequests.add(elevatorButtonEvent);
+		addElevatorButtonEvent(elevatorButtonEvent);
+		
+		scheduleElevators("elevator");
+		System.out.println("Added passenger's requested floor");
+		
+		// Temporary way of waiting for the elevator to arrive at the requested floor.
+		while(!containsElevatorArrivalEvent)
+			;
+	}
+	
+	// The main scheduling method.
+	/**
+	 * Method to organize the button press events and find the optimal elevator schedule.
+	 * Once the optimal schedule is found, the elevators will be notified of updates to their destinations.
+	 */
+	public void scheduleElevators(String mode) { // <-- Temporary variable, this will need to be changed in the future!
+		// This is the method where the elevator scheduling algorithm will go.
+		// VERY IMPORTANT, VERY COMPLICATED!
+		
+		// Temporary placeholder for the algorithm:
+		if (mode.equals("floor")) {
+			FloorButtonPressEvent mostImportantEvent = floorRequests.get(0);
+			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.floor));
+		} else if (mode.equals("elevator")) {
+			ElevatorButtonPressEvent mostImportantEvent = elevatorRequests.get(0);
+			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.buttonNumber));
+		}
+	}
+	
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				generateFloorEvent();
+			} catch (ParseException pe) {
+				pe.printStackTrace();
+			}
+		}
+	}
+	
+	// Get and set methods:
+	public Time getTime() {
+		currentTime = new Time(System.currentTimeMillis());
+		return currentTime;
 	}
 	
 }

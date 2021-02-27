@@ -1,6 +1,6 @@
 package Floor;
 
-import Utilities.*;
+import Utilities.Lamp;
 
 /**
  * 
