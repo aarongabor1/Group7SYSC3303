@@ -19,7 +19,7 @@ import java.sql.Time;
  */
 public class Parser {
 	private File file;
-	private ArrayList<FormattedEvent> fe ;
+	private ArrayList<FormattedEvent> inputEventsList ;
 	
 	/**
 	 * Asks user to pick the text file that condenses the floor events then stores it in a File object.
@@ -33,7 +33,7 @@ public class Parser {
 	      this.file = fileChooser.getSelectedFile();
 	    }
 	    //end of code from https://www.codejava.net/java-se/swing/show-simple-open-file-dialog-using-jfilechooser
-	    fe = new ArrayList<FormattedEvent>();
+	    inputEventsList = new ArrayList<FormattedEvent>();
 	    try 
 	    {
 	    	readIn();
@@ -56,7 +56,6 @@ public class Parser {
 		
 		try {
 			scanner = new Scanner(file);
-			scanner.useDelimiter(" ");
 			String time;
 			String currentFloor;
 			String direction;
@@ -76,7 +75,7 @@ public class Parser {
 				currentFloor1 = Integer.parseInt(currentFloor);
 				direction1 = Direction.valueOf(direction.toUpperCase());
 				carButton1 = Integer.parseInt(carButton);
-				fe.add(new FormattedEvent(time1, currentFloor1, direction1, carButton1));
+				inputEventsList.add(new FormattedEvent(time1, currentFloor1, direction1, carButton1));
 			}
 			scanner.close();
 			
@@ -93,8 +92,8 @@ public class Parser {
 	 */
 	public FormattedEvent parseFile()
 	{
-		FormattedEvent temp = fe.get(0);
-		fe.remove(0);
+		FormattedEvent temp = inputEventsList.get(0);
+		inputEventsList.remove(0);
 		return temp;
 	}
 }
