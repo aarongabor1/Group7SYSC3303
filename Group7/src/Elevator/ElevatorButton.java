@@ -19,4 +19,9 @@ public class ElevatorButton extends Button {
 		return floor;
 	}
 	
+	public void unPress() {
+	
+		
+	}
+	
 }

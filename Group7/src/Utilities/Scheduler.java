@@ -25,6 +25,7 @@ public class Scheduler implements Runnable {
 	private ElevatorArrivalEvent elevatorArrivalEvent;
 	
 	private boolean containsFloorButtonEvent, containsElevatorButtonEvent, containsDestinationUpdateEvent, containsElevatorArrivalEvent;
+	private boolean arrived;
 		
 	private Parser parser;
 	private List<FloorButtonPressEvent> floorRequests;
@@ -46,9 +47,10 @@ public class Scheduler implements Runnable {
 		containsFloorButtonEvent = false;
 		containsDestinationUpdateEvent = false;
 		containsElevatorArrivalEvent = false;
+		arrived = false;
 
 		parser = new Parser();
-		
+
 		floorRequests = new LinkedList<FloorButtonPressEvent>();
 		elevatorRequests = new LinkedList<ElevatorButtonPressEvent>();
 		newElevatorRequests = new LinkedList<FormattedEvent>();
@@ -175,10 +177,12 @@ public class Scheduler implements Runnable {
 			}
 		}
 	
+
 		elevatorLocations.put(1, elevatorEvent.floorNumber);
 		
 		for(FloorButtonPressEvent e:floorRequests) {
 			if (e.floor == elevatorEvent.floorNumber) {
+				System.out.println("... picking up passengers - floor lamp off");
 				floorRequests.remove(e);
 			}
 		}
@@ -188,7 +192,7 @@ public class Scheduler implements Runnable {
 				elevatorRequests.remove(e);
 				for (FormattedEvent fe : newElevatorRequests) {
 					if (fe.getCarButton() == elevatorEvent.floorNumber) {
-						//System.out.println("Elevator button floor: " + fe.getCarButton() + " lamp is off");
+						System.out.println("Elevator button lamp " + elevatorLocations.get(1) + " is off");
 						newElevatorRequests.remove(fe);
 					}
 				}
@@ -197,6 +201,7 @@ public class Scheduler implements Runnable {
 		
 		containsElevatorArrivalEvent = true;
 		elevatorArrivalEvent = elevatorEvent;
+		arrived = true;
 		
 		//removeInitiatingEventFor(elevatorEvent);
 		
@@ -219,9 +224,9 @@ public class Scheduler implements Runnable {
 				System.err.print(e);
 			}
 		}
-		
-		// Debugging
 
+
+		
 		containsElevatorArrivalEvent = false;
 		ElevatorArrivalEvent tempEvent = elevatorArrivalEvent;
 		elevatorArrivalEvent = null;
@@ -247,6 +252,7 @@ public class Scheduler implements Runnable {
 				System.err.print(e);
 			}
 		}
+	
 		containsDestinationUpdateEvent = true;
 		destinationUpdateEvent = destinationEvent;
 				
@@ -303,14 +309,12 @@ public class Scheduler implements Runnable {
 				;
 		}
 		
-		
 		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
 		
 		elevatorRequests.add(elevatorButtonEvent);
 		addElevatorButtonEvent(elevatorButtonEvent);
 		
 		scheduleElevators("elevator");
-		
 		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
 		for (ElevatorButtonPressEvent e : elevatorRequests) {
@@ -334,6 +338,7 @@ public class Scheduler implements Runnable {
 			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.floor));
 		} else if (mode.equals("elevator")) {
 			ElevatorButtonPressEvent mostImportantEvent = elevatorRequests.get(0);
+		
 			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.buttonNumber));
 		}
 	}
@@ -342,7 +347,7 @@ public class Scheduler implements Runnable {
 	public void run() {
 		
 		int numOfRequestsFinished = 0;
-		while (true) {
+		while (numOfRequestsFinished == newElevatorRequests.size()) {
 			try {
 				generateFloorEvent();
 			} catch (ParseException pe) {
