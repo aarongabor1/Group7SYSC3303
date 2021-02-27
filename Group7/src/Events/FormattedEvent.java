@@ -6,7 +6,7 @@ import Floor.Floor;
 import Utilities.*;
 
 /** 
- * FloorEvent class which creates an object that stores the information needed for 
+ * FormattedEvent class which creates an object that stores the information needed for 
  * each elevator request.
  * 
  * @author Aaron Gabor, Marc Angers

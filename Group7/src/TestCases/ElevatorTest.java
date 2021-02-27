@@ -29,8 +29,7 @@ class ElevatorTest {
 	@Test
 	void testMoveOneFloor() {
 		elevator.moveUp();
-		assertEquals(2, elevator.getCurrentFloor());
-		
+		assertEquals(2, elevator.getCurrentFloor());		
 	}
 	
 	@Test
@@ -55,6 +54,7 @@ class ElevatorTest {
 		}
 		
 		elevator.changeDirection(Direction.STATIONARY);
+		assertEquals(Direction.STATIONARY, elevator.getCurrentDirection());
 		assertEquals(3, elevator.getCurrentFloor());
 		
 	}
