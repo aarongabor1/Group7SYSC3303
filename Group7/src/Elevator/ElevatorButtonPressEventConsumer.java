@@ -16,7 +16,6 @@ public class ElevatorButtonPressEventConsumer implements Runnable {
 	
 	public void consume(ElevatorButtonPressEvent elevatorButtonEvent) {
 		parent.getElevator().turnOnLamp(elevatorButtonEvent.buttonNumber);
-		System.out.println("Floor button: " + elevatorButtonEvent.buttonNumber + " has been pressed - lamp is on");
 	}
 	
 	@Override

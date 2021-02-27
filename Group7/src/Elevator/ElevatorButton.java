@@ -21,12 +21,12 @@ public class ElevatorButton extends Button {
 	
 	public void press() {
 		super.press();
-		System.out.println("Elevator floor button " + floor + " lamp is on");
+		System.out.println("ELEVATOR: Floor #" + floor + " has been pressed - button lamp is on");
 	}
 	
 	public void unPress() {
-		super.unPress();
-		System.out.println("Elevator floor button " + floor + " lamp is off");
+		super.press();
+		System.out.println("ELEVATOR: Floor #" + floor + " button lamp is off");
 	}
 	
 }
