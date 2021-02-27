@@ -25,7 +25,6 @@ public class Scheduler implements Runnable {
 	private ElevatorArrivalEvent elevatorArrivalEvent;
 	
 	private boolean containsFloorButtonEvent, containsElevatorButtonEvent, containsDestinationUpdateEvent, containsElevatorArrivalEvent;
-	private boolean arrived;
 		
 	private Parser parser;
 	private List<FloorButtonPressEvent> floorRequests;
@@ -47,7 +46,6 @@ public class Scheduler implements Runnable {
 		containsFloorButtonEvent = false;
 		containsDestinationUpdateEvent = false;
 		containsElevatorArrivalEvent = false;
-		arrived = false;
 
 		parser = new Parser();
 
@@ -192,7 +190,6 @@ public class Scheduler implements Runnable {
 				elevatorRequests.remove(e);
 				for (FormattedEvent fe : newElevatorRequests) {
 					if (fe.getCarButton() == elevatorEvent.floorNumber) {
-						System.out.println("Elevator button lamp " + elevatorLocations.get(1) + " is off");
 						newElevatorRequests.remove(fe);
 					}
 				}
@@ -201,7 +198,6 @@ public class Scheduler implements Runnable {
 		
 		containsElevatorArrivalEvent = true;
 		elevatorArrivalEvent = elevatorEvent;
-		arrived = true;
 		
 		//removeInitiatingEventFor(elevatorEvent);
 		

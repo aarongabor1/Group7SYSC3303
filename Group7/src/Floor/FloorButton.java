@@ -14,4 +14,16 @@ public class FloorButton extends Button {
 		super(false);
 		this.direction = direction;
 	}
+	
+	/**
+	public void press() {
+		super.press();
+		System.out.println("Floor lamp " + direction + " is off");
+	}
+	
+	public void unPress() {
+		super.unPress();
+		System.out.println("Floor lamp " + direction + " is off");
+	}
+	*/
 }

@@ -60,7 +60,7 @@ public class Elevator {
 	 * @param buttonNumber
 	 */
 	public void turnOnLamp(int buttonNumber) {
-		elevatorButtons.get(buttonNumber).unPress();
+		elevatorButtons.get(buttonNumber).press();
 	}
 	
 	/**
