@@ -7,7 +7,7 @@ package Utilities;
  * @version 02 February 2021
  */
 public class Door {
-	private boolean state;
+	private boolean state; // True: Open, False: Closed.
 	
 	/**
 	 * Constructor for Door class
@@ -42,7 +42,7 @@ public class Door {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		state = true;;
+		state = true;
 	}
 	
 	/**

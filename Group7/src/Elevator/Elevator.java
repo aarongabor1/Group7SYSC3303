@@ -39,6 +39,7 @@ public class Elevator {
 		
 		generateElevatorButtons();
 
+		this.currentDestination = Floor.MINIMUM_FLOOR_NUM;
 		this.currentFloor = Floor.MINIMUM_FLOOR_NUM;
 		this.currentDirection = Direction.STATIONARY;
 						
@@ -122,7 +123,7 @@ public class Elevator {
 	public int getCurrentFloor() {
 		return currentFloor;
 	}
-	public int getCurrentDestination() {
+	public synchronized int getCurrentDestination() {
 		return currentDestination;
 	}
 	public Direction getCurrentDirection() {
@@ -137,7 +138,7 @@ public class Elevator {
 	public ElevatorSubsystem getElevatorSubsystem() {
 		return elevatorSubsystem;
 	}
-	public void updateDestination(int newDestination) {
+	public synchronized void updateDestination(int newDestination) {
 		currentDestination = newDestination;
 		System.out.println("Destination updated: " + currentDestination);
 	}

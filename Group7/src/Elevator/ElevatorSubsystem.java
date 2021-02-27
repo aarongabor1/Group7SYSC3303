@@ -53,6 +53,8 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param direction, the direction to move the elevator
 	 */
 	public void handleMotor(Direction direction) {
+		System.out.println("ElevatorSubsystem: Handling Motor: " + direction);
+
 		if (direction == Direction.STATIONARY)
 			parentElevator.getMotor().stopElevator();
 		else {
