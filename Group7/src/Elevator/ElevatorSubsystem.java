@@ -62,7 +62,7 @@ public class ElevatorSubsystem implements Runnable {
 				; // Will need to throw some sort of error here! Do not want the elevator to start moving if the doors are open!
 		}
 	}
-	
+
 	/**
 	 * Updates the elevator door to the desired position.
 	 * 
@@ -81,14 +81,15 @@ public class ElevatorSubsystem implements Runnable {
 		destinationUpdateEventConsumer.start();
 		elevatorButtonPressEventConsumer.start();
 		
-		while(true) {		
+		while(true) {
 			if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor())
-				moveElevator(Direction.UP);
+				moveElevator(Direction.UP); 
 			if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor())
 				moveElevator(Direction.DOWN);
 			if (parentElevator.getCurrentDestination() == parentElevator.getCurrentFloor() && parentElevator.isMoving())
 				stopElevator();
-		}		
+		}
+		
 	}
 	
 	// Get and set methods:

@@ -45,7 +45,7 @@ public class Motor {
 	 */
 	public void stopElevator()
 	{
-		System.out.println("Elevator Stopping");
+		System.out.println("Elevator stopped at floor #" + parentElevator.getCurrentDestination());
 		state = Direction.STATIONARY;
 		parentElevator.changeDirection(Direction.STATIONARY);
 	}

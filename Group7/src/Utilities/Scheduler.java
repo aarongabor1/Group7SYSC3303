@@ -169,6 +169,16 @@ public class Scheduler implements Runnable {
 			}
 		}
 		
+		/**
+		for (FloorButtonPressEvent e : floorRequests) {
+			if (e.floor == elevatorEvent.floorNumber) {
+				floorRequests.remove(e);
+			}
+				
+		}
+		*/
+		
+		System.out.println("addElevatorArrivalEvent has been called.");
 		containsElevatorArrivalEvent = true;
 		elevatorArrivalEvent = elevatorEvent;
 		
@@ -193,6 +203,8 @@ public class Scheduler implements Runnable {
 				System.err.print(e);
 			}
 		}
+		
+		System.out.println("getElevatorArrivalEvent has been called.");
 		
 		containsElevatorArrivalEvent = false;
 		ElevatorArrivalEvent tempEvent = elevatorArrivalEvent;
@@ -266,17 +278,20 @@ public class Scheduler implements Runnable {
 		addFloorButtonEvent(floorButtonEvent);
 		
 		scheduleElevators("floor");
-		
+		System.out.println("Before loop: " + containsElevatorArrivalEvent);
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
-		while(!containsElevatorArrivalEvent)
+		while(!containsElevatorArrivalEvent) 
 			;
 		
+		System.out.println("After loop: " + containsElevatorArrivalEvent);
+		System.out.println("Elevator's turn to move to passenger's target floor.");
 		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
 		
 		elevatorRequests.add(elevatorButtonEvent);
 		addElevatorButtonEvent(elevatorButtonEvent);
 		
 		scheduleElevators("elevator");
+		System.out.println("Added passenger's requested floor");
 		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
 		while(!containsElevatorArrivalEvent)
@@ -318,4 +333,5 @@ public class Scheduler implements Runnable {
 		currentTime = new Time(System.currentTimeMillis());
 		return currentTime;
 	}
+	
 }

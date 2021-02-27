@@ -3,6 +3,7 @@ package Elevator;
 import Utilities.*;
 import Floor.Floor;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,9 @@ public class Elevator {
 	}
 	
 	/**
-	 * Function to turn off a specified button lamp.
+	 * Function to turn off a specified button lamp. 
+	 * Lamp is turned off once elevator is at the lamp's corresponding floor number.
+	 * 
 	 * @param buttonNumber
 	 */
 	public void turnOffLamp(int buttonNumber) {
@@ -98,6 +101,22 @@ public class Elevator {
 	public boolean isMoving() {
 		return currentDirection != Direction.STATIONARY;
 	}
+	
+	/**
+	 * Checks if any elevator button lamps are on. 
+	 * @return
+	 */
+	public boolean haveLitElevatorLamps() {
+		Collection<ElevatorButton> buttons = elevatorButtons.values();
+	
+		for (ElevatorButton b : buttons) {
+			if (b.getButtonLamp().isOn()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 	// Get and set methods:
 	public int getCurrentFloor() {
@@ -120,5 +139,8 @@ public class Elevator {
 	}
 	public void updateDestination(int newDestination) {
 		currentDestination = newDestination;
+	}
+	public Map<Integer, ElevatorButton> getElevatorButtons() {
+		return elevatorButtons;
 	}
 }

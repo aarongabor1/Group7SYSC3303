@@ -31,5 +31,9 @@ public abstract class Button {
 	public boolean isPressed() {
 		return this.isPressed;
 	}
+	
+	public Lamp getButtonLamp() {
+		return buttonLamp;
+	}
 }
 

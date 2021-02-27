@@ -67,4 +67,8 @@ public class FloorSubsystem implements Runnable {
 	public Scheduler getScheduler() {
 		return scheduler;
 	}
+	
+	public Map<Integer, Floor> getFloors() {
+		return floors;
+	}
 }
