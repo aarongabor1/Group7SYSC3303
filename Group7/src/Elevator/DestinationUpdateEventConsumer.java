@@ -22,6 +22,7 @@ public class DestinationUpdateEventConsumer implements Runnable {
 		if (destinationUpdateEvent.elevatorID != parent.getElevator().ID)
 			parent.getScheduler().addDestinationUpdateEvent(destinationUpdateEvent);
 		else
+			System.out.println("ElevatorSubsystem destination floor: " + destinationUpdateEvent.destinationFloor);
 			parent.getElevator().updateDestination(destinationUpdateEvent.destinationFloor);
 	}
 	

@@ -59,7 +59,7 @@ public class ElevatorSubsystem implements Runnable {
 			if (!parentElevator.getDoor().isOpen())
 				parentElevator.getMotor().moveElevator(direction);
 			else
-				; // Will need to throw some sort of error here! Do not want the elevator to start moving if the doors are open!
+				System.out.println("DOOR NOT OPERATING"); // Iter4 - Will need to throw some sort of error here! Do not want the elevator to start moving if the doors are open!
 		}
 	}
 
@@ -81,11 +81,13 @@ public class ElevatorSubsystem implements Runnable {
 		destinationUpdateEventConsumer.start();
 		elevatorButtonPressEventConsumer.start();
 		
+		//System.out.println("ES current destination: " + parentElevator.getCurrentDestination());
+		//System.out.println("ES current location: " + parentElevator.getCurrentFloor());
 		while(true) {
 			if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor())
-				moveElevator(Direction.UP); 
-			if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor())
 				moveElevator(Direction.DOWN);
+			if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor())
+				moveElevator(Direction.UP);
 			if (parentElevator.getCurrentDestination() == parentElevator.getCurrentFloor() && parentElevator.isMoving())
 				stopElevator();
 		}

@@ -2,8 +2,11 @@ package Utilities;
 
 import java.sql.Time;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import Events.*;
 
 /** 
@@ -22,6 +25,7 @@ public class Scheduler implements Runnable {
 	private ElevatorArrivalEvent elevatorArrivalEvent;
 	
 	private boolean containsFloorButtonEvent, containsElevatorButtonEvent, containsDestinationUpdateEvent, containsElevatorArrivalEvent;
+	private boolean arrived;
 		
 	private Parser parser;
 	private List<FloorButtonPressEvent> floorRequests;
@@ -29,7 +33,7 @@ public class Scheduler implements Runnable {
 	private List<FormattedEvent> newElevatorRequests;
 	
 	private Time currentTime;
-	//private Map<Integer, Integer> elevatorLocations; //something like this is probably needed right?
+	private Map<Integer, Integer> elevatorLocations; //something like this is probably needed right?
 	
 	/**
 	 * Constructor that will create the Network object.
@@ -43,13 +47,15 @@ public class Scheduler implements Runnable {
 		containsFloorButtonEvent = false;
 		containsDestinationUpdateEvent = false;
 		containsElevatorArrivalEvent = false;
+		arrived = false;
 
 		parser = new Parser();
 
 		floorRequests = new LinkedList<FloorButtonPressEvent>();
 		elevatorRequests = new LinkedList<ElevatorButtonPressEvent>();
 		newElevatorRequests = new LinkedList<FormattedEvent>();
-		//elevatorLocations = new HashMap<Integer, Integer>();
+		elevatorLocations = new HashMap<Integer, Integer>();
+		elevatorLocations.put(1, 1);
 		
 		currentTime = new Time(System.currentTimeMillis());
 	}
@@ -174,8 +180,23 @@ public class Scheduler implements Runnable {
 		
 		// Debugging
 		System.out.println("addElevatorArrivalEvent has been called.");
+		elevatorLocations.put(1, elevatorEvent.floorNumber);
+		
+		for(FloorButtonPressEvent e:floorRequests) {
+			if (e.floor == elevatorEvent.floorNumber) {
+				floorRequests.remove(e);
+			}
+		}
+		
+		for(ElevatorButtonPressEvent e:elevatorRequests) {
+			if (e.buttonNumber == elevatorEvent.floorNumber) {
+				elevatorRequests.remove(e);
+			}
+		}
+		
 		containsElevatorArrivalEvent = true;
 		elevatorArrivalEvent = elevatorEvent;
+		arrived = true;
 		
 		//removeInitiatingEventFor(elevatorEvent);
 		
@@ -201,6 +222,7 @@ public class Scheduler implements Runnable {
 		
 		// Debugging
 		System.out.println("getElevatorArrivalEvent has been called.");
+
 		
 		containsElevatorArrivalEvent = false;
 		ElevatorArrivalEvent tempEvent = elevatorArrivalEvent;
@@ -227,7 +249,7 @@ public class Scheduler implements Runnable {
 				System.err.print(e);
 			}
 		}
-		
+		System.out.println("DestUpdateEvent: " + destinationEvent.destinationFloor);
 		containsDestinationUpdateEvent = true;
 		destinationUpdateEvent = destinationEvent;
 				
@@ -270,7 +292,6 @@ public class Scheduler implements Runnable {
 		currentEventFromInput = parser.parseFile();
 		newElevatorRequests.add(currentEventFromInput);
 		
-		
 		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
 		
 		floorRequests.add(floorButtonEvent);
@@ -281,8 +302,11 @@ public class Scheduler implements Runnable {
 		System.out.println("Before loop: " + containsElevatorArrivalEvent);
 		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
-		while(!containsElevatorArrivalEvent) 
-			;
+		for (FloorButtonPressEvent e : floorRequests) {
+			while (e.floor != elevatorLocations.get(1)) {
+				
+			}
+		}
 		
 		// Debugging
 		System.out.println("After loop: " + containsElevatorArrivalEvent);
@@ -298,8 +322,11 @@ public class Scheduler implements Runnable {
 		System.out.println("Added passenger's requested floor");
 		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
-		while(!containsElevatorArrivalEvent)
-			;
+		for (ElevatorButtonPressEvent e : elevatorRequests) {
+			while (e.buttonNumber != elevatorLocations.get(1)) {
+				
+			}
+		}
 	}
 	
 	// The main scheduling method.
@@ -317,6 +344,7 @@ public class Scheduler implements Runnable {
 			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.floor));
 		} else if (mode.equals("elevator")) {
 			ElevatorButtonPressEvent mostImportantEvent = elevatorRequests.get(0);
+			System.out.println("ScheduleElevators: " + mostImportantEvent.buttonNumber);
 			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.buttonNumber));
 		}
 	}

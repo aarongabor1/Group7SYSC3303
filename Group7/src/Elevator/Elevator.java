@@ -139,6 +139,7 @@ public class Elevator {
 	}
 	public void updateDestination(int newDestination) {
 		currentDestination = newDestination;
+		System.out.println("Destination updated: " + currentDestination);
 	}
 	public Map<Integer, ElevatorButton> getElevatorButtons() {
 		return elevatorButtons;
