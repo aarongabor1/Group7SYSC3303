@@ -16,6 +16,7 @@ public class Start {
 		
 		scheduler = new Scheduler();
 		elevator = new Elevator(scheduler);
+
 		
 		// Generate threads for each subsystem
 		floorSubsystem = new Thread(new FloorSubsystem(scheduler), "Floor Subsystem");

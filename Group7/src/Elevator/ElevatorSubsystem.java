@@ -80,7 +80,7 @@ public class ElevatorSubsystem implements Runnable {
 	public void run() {
 		destinationUpdateEventConsumer.start();
 		elevatorButtonPressEventConsumer.start();
-		
+
 		//System.out.println("ES current destination: " + parentElevator.getCurrentDestination());
 		//System.out.println("ES current location: " + parentElevator.getCurrentFloor());
 		while(true) {

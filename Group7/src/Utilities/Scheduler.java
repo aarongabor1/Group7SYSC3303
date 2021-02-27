@@ -191,6 +191,11 @@ public class Scheduler implements Runnable {
 		for(ElevatorButtonPressEvent e:elevatorRequests) {
 			if (e.buttonNumber == elevatorEvent.floorNumber) {
 				elevatorRequests.remove(e);
+				for (FormattedEvent fe : newElevatorRequests) {
+					if (fe.getCarButton() == elevatorEvent.floorNumber) {
+						newElevatorRequests.remove(fe);
+					}
+				}
 			}
 		}
 		
@@ -289,6 +294,7 @@ public class Scheduler implements Runnable {
 	 * @throws ParseException
 	 */
 	public void generateFloorEvent() throws ParseException {
+		
 		currentEventFromInput = parser.parseFile();
 		newElevatorRequests.add(currentEventFromInput);
 		
@@ -349,12 +355,15 @@ public class Scheduler implements Runnable {
 	
 	@Override
 	public void run() {
-		while (true) {
+		
+		int numOfRequestsFinished = 0;
+		while (numOfRequestsFinished == newElevatorRequests.size()) {
 			try {
 				generateFloorEvent();
 			} catch (ParseException pe) {
 				pe.printStackTrace();
 			}
+			numOfRequestsFinished++;
 		}
 	}
 	
