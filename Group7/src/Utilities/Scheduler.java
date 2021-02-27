@@ -26,6 +26,7 @@ public class Scheduler implements Runnable {
 	private Parser parser;
 	private List<FloorButtonPressEvent> floorRequests;
 	private List<ElevatorButtonPressEvent> elevatorRequests;
+	private List<FormattedEvent> newElevatorRequests;
 	
 	private Time currentTime;
 	//private Map<Integer, Integer> elevatorLocations; //something like this is probably needed right?
@@ -47,6 +48,7 @@ public class Scheduler implements Runnable {
 
 		floorRequests = new LinkedList<FloorButtonPressEvent>();
 		elevatorRequests = new LinkedList<ElevatorButtonPressEvent>();
+		newElevatorRequests = new LinkedList<FormattedEvent>();
 		//elevatorLocations = new HashMap<Integer, Integer>();
 		
 		currentTime = new Time(System.currentTimeMillis());
@@ -168,15 +170,7 @@ public class Scheduler implements Runnable {
 				System.err.print(e);
 			}
 		}
-		
-		/**
-		for (FloorButtonPressEvent e : floorRequests) {
-			if (e.floor == elevatorEvent.floorNumber) {
-				floorRequests.remove(e);
-			}
-				
-		}
-		*/
+	
 		
 		System.out.println("addElevatorArrivalEvent has been called.");
 		containsElevatorArrivalEvent = true;
@@ -272,6 +266,9 @@ public class Scheduler implements Runnable {
 	 */
 	public void generateFloorEvent() throws ParseException {
 		currentEventFromInput = parser.parseFile();
+		newElevatorRequests.add(currentEventFromInput);
+		
+		
 		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
 		
 		floorRequests.add(floorButtonEvent);
