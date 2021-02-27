@@ -303,9 +303,8 @@ public class Scheduler implements Runnable {
 		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
 		for (FloorButtonPressEvent e : floorRequests) {
-			while (e.floor != elevatorLocations.get(1)) {
-				
-			}
+			while (e.floor != elevatorLocations.get(1))
+				;
 		}
 		
 		// Debugging
@@ -323,9 +322,8 @@ public class Scheduler implements Runnable {
 		
 		// Temporary way of waiting for the elevator to arrive at the requested floor.
 		for (ElevatorButtonPressEvent e : elevatorRequests) {
-			while (e.buttonNumber != elevatorLocations.get(1)) {
-				
-			}
+			while (e.buttonNumber != elevatorLocations.get(1))
+				;
 		}
 	}
 	
