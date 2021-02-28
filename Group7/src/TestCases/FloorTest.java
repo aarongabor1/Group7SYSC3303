@@ -4,14 +4,13 @@ import Floor.Floor;
 import Utilities.Direction;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Momin Mushtaha, Lynn Mehyou
  * @version 101114546
  * Test class for floor class methods
  **/
-class FloorSubsystemTest {
+class FloorTest {
     /**
      * checks the floor number
      **/

@@ -6,9 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import Elevator.Elevator;
-import Elevator.ElevatorSubsystem;
 import Utilities.Direction;
-import Utilities.Scheduler;
 
 /**
  * A test class that tests the Elevator's movement between floors
@@ -17,7 +15,6 @@ import Utilities.Scheduler;
  */
 class ElevatorTest {
 	Elevator elevator;
-	Scheduler scheduler;
 	
 	@BeforeEach
 	void setUp() {
@@ -44,31 +41,41 @@ class ElevatorTest {
 	
 	/**
 	 * Tests elevator moving to destination floor
-	 */@Test
-		void testMoveToDestinationFloor() {
-			elevator.updateDestination(3);
-			
-			if (elevator.getCurrentDestination() < elevator.getCurrentFloor())
-				elevator.changeDirection(Direction.UP);
-			if (elevator.getCurrentDestination() > elevator.getCurrentFloor())
-				elevator.changeDirection(Direction.DOWN);
-			if (elevator.getCurrentDestination() == elevator.getCurrentFloor() && elevator.isMoving())
-				elevator.changeDirection(Direction.STATIONARY);
-			
-			while (elevator.getCurrentFloor() != elevator.getCurrentDestination()) {
-				if (elevator.getCurrentDirection() == Direction.UP) {
-					elevator.moveUp();
-				}
-				
-				if (elevator.getCurrentDirection() == Direction.DOWN) {
-					elevator.moveDown();
-				}
+	 */
+	@Test
+	void testMoveTwoFloors() {
+		 elevator.moveUp();
+		 elevator.moveUp();
+		 assertEquals(3, elevator.getCurrentFloor());
+	}
+	
+	/**
+	 * Checks if elevator's destination floor is updated
+	 */
+	@Test
+	void testUpdateDestinationFloor() {
+		elevator.updateDestination(4);
+		assertEquals(4, elevator.getCurrentDestination());
+	}
+	
+	/**
+	 * Tests elevator moving to destination floor
+	 */
+	@Test
+	void testMoveElevatorToDestinationFloor() {
+		elevator.updateDestination(4);
+		
+		while(elevator.getCurrentDestination() != elevator.getCurrentFloor()) {
+			if (elevator.getCurrentDestination() > elevator.getCurrentFloor()) {
+				elevator.moveUp();
 			}
 			
-			elevator.changeDirection(Direction.STATIONARY);
-			assertEquals(Direction.STATIONARY, elevator.getCurrentDirection());
-			assertEquals(3, elevator.getCurrentFloor());
-			
+			if (elevator.getCurrentDestination() < elevator.getCurrentFloor()) {
+				elevator.moveUp();
+			}
 		}
+		
+		assertEquals(4, elevator.getCurrentFloor());
+	}
 
 }
