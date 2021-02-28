@@ -1,9 +1,14 @@
 package TestCases;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.LinkedList;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import Floor.Floor;
 import Utilities.Direction;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Momin Mushtaha, Lynn Mehyou
@@ -11,23 +16,28 @@ import static org.junit.Assert.assertEquals;
  * Test class for floor class methods
  **/
 class FloorTest {
+	Floor floor;
+	
+	@BeforeEach
+	void setUp() {
+		floor = new Floor(1);
+	}
+
     /**
      * checks the floor number
      **/
-    @Test
-    public void getFloorLevelTest() {
-        Floor floor = new Floor(1);
-        assertEquals(floor.getFloorNumber(), 1);
-    }
-
+	@Test
+	void getFloorLevelTest() {
+		assertEquals(1, floor.getFloorNumber());
+	}
+	
     /**
      * Tests the boolean if a button is pressed and moving in the right direction
      **/
-    @Test
-    public void isPressedTest() {
-        Floor floor = new Floor(1);
-        floor.turnOnLamp(Direction.UP);
-        assertEquals(floor.getUpButton().isPressed(), true);
-    }
-    
+	@Test
+	void isGroundFloorButtonPressed() {
+		floor.turnOnLamp(Direction.UP);
+		assertEquals(true, floor.getUpButton().isPressed());
+	}
+
 }
