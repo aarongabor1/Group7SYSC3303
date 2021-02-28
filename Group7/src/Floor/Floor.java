@@ -19,8 +19,6 @@ public class Floor {
 	private boolean isElevatorAtFloor;
 	private FormattedEvent fe;
 	
-	
-	
 	public Floor(int floorNumber) {
 		this.floorNumber= floorNumber;
 		
@@ -87,5 +85,14 @@ public class Floor {
 			isElevatorAtFloor = false;
 		}
 		return isElevatorAtFloor;
+	}
+	
+	// get methods
+	public FloorButton getUpButton() {
+		return upButton;
+	}
+	
+	public FloorButton getDownButton() {
+		return downButton;
 	}
 }

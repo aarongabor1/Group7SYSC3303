@@ -26,8 +26,6 @@ public class Elevator {
 	
 	private Map<Integer, ElevatorButton> elevatorButtons;
 	
-	
-	
 	public Elevator(Scheduler scheduler) {
 		if (Settings.NUMBER_OF_FLOORS <= Floor.MINIMUM_FLOOR_NUM)
 			throw new IllegalArgumentException("Your building must have more than 1 floor to use an elevator!");
@@ -44,6 +42,21 @@ public class Elevator {
 		this.currentDirection = Direction.STATIONARY;
 						
 		ID = 1; // While there is only one elevator in the system, it is given an ID of 1. Will change this in later iterations.
+	}
+	
+	/**
+	 * Default constructor for test case use
+	 */
+	public Elevator() {
+		this.motor = new Motor(this);
+		this.door = new Door(false);
+		this.elevatorButtons = new HashMap<Integer, ElevatorButton>();
+		
+		generateElevatorButtons();
+
+		this.currentDestination = Floor.MINIMUM_FLOOR_NUM;
+		this.currentFloor = Floor.MINIMUM_FLOOR_NUM;
+		this.currentDirection = Direction.STATIONARY;
 	}
 	
 	/**

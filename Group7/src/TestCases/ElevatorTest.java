@@ -21,8 +21,7 @@ class ElevatorTest {
 	
 	@BeforeEach
 	void setUp() {
-		scheduler = new Scheduler(); // Causes you to input a file.
-		elevator = new Elevator(scheduler);
+		elevator = new Elevator();
 	}
 	
 	/**
@@ -45,32 +44,31 @@ class ElevatorTest {
 	
 	/**
 	 * Tests elevator moving to destination floor
-	 */
-	@Test
-	void testMoveToDestinationFloor() {
-		elevator.updateDestination(3);
-		
-		if (elevator.getCurrentDestination() < elevator.getCurrentFloor())
-			elevator.changeDirection(Direction.UP);
-		if (elevator.getCurrentDestination() > elevator.getCurrentFloor())
-			elevator.changeDirection(Direction.DOWN);
-		if (elevator.getCurrentDestination() == elevator.getCurrentFloor() && elevator.isMoving())
-			elevator.changeDirection(Direction.STATIONARY);
-		
-		while (elevator.getCurrentFloor() != elevator.getCurrentDestination()) {
-			if (elevator.getCurrentDirection() == Direction.UP) {
-				elevator.moveUp();
+	 */@Test
+		void testMoveToDestinationFloor() {
+			elevator.updateDestination(3);
+			
+			if (elevator.getCurrentDestination() < elevator.getCurrentFloor())
+				elevator.changeDirection(Direction.UP);
+			if (elevator.getCurrentDestination() > elevator.getCurrentFloor())
+				elevator.changeDirection(Direction.DOWN);
+			if (elevator.getCurrentDestination() == elevator.getCurrentFloor() && elevator.isMoving())
+				elevator.changeDirection(Direction.STATIONARY);
+			
+			while (elevator.getCurrentFloor() != elevator.getCurrentDestination()) {
+				if (elevator.getCurrentDirection() == Direction.UP) {
+					elevator.moveUp();
+				}
+				
+				if (elevator.getCurrentDirection() == Direction.DOWN) {
+					elevator.moveDown();
+				}
 			}
 			
-			if (elevator.getCurrentDirection() == Direction.DOWN) {
-				elevator.moveDown();
-			}
+			elevator.changeDirection(Direction.STATIONARY);
+			assertEquals(Direction.STATIONARY, elevator.getCurrentDirection());
+			assertEquals(3, elevator.getCurrentFloor());
+			
 		}
-		
-		elevator.changeDirection(Direction.STATIONARY);
-		assertEquals(Direction.STATIONARY, elevator.getCurrentDirection());
-		assertEquals(3, elevator.getCurrentFloor());
-		
-	}
 
 }
