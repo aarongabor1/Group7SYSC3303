@@ -342,14 +342,14 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		
-		int numOfRequestsFinished = 0;
-		while (numOfRequestsFinished == newElevatorRequests.size()) {
+		//int numOfRequestsFinished = 0;
+		while (true) {
 			try {
 				generateFloorEvent();
 			} catch (ParseException pe) {
 				pe.printStackTrace();
 			}
-			numOfRequestsFinished++;
+			//numOfRequestsFinished++;
 		}
 	}
 	
