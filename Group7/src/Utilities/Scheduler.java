@@ -288,8 +288,11 @@ public class Scheduler implements Runnable {
 	 * @throws ParseException
 	 */
 	public void generateFloorEvent() throws ParseException {
-		
-		currentEventFromInput = parser.parseFile();
+		try {
+			currentEventFromInput = parser.parseFile();
+		} catch (ParseException pe) {
+			return;
+		}
 		newElevatorRequests.add(currentEventFromInput);
 		
 		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);

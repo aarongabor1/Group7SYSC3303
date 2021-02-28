@@ -90,10 +90,15 @@ public class Parser {
 	 * 
 	 * @return FormattedEvent object containing the next command
 	 */
-	public FormattedEvent parseFile()
-	{
-		FormattedEvent temp = inputEventsList.get(0);
-		inputEventsList.remove(0);
-		return temp;
+	public FormattedEvent parseFile() throws ParseException	{
+		FormattedEvent temp;
+		
+		if (inputEventsList.size() > 0) {
+			temp = inputEventsList.get(0);
+			inputEventsList.remove(0);
+			return temp;
+		}
+		else
+			throw new ParseException("No more events in the input file!", 0);
 	}
 }
