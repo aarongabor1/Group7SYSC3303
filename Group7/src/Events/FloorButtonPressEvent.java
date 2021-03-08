@@ -3,6 +3,8 @@ package Events;
 import Utilities.Direction;
 import Utilities.Settings;
 import Floor.Floor;
+
+import java.io.Serializable;
 import java.sql.Time;
 
 /**
@@ -10,7 +12,8 @@ import java.sql.Time;
  * @author Marc Angers
  * @version 1.0.0
  */
-public class FloorButtonPressEvent {
+public class FloorButtonPressEvent implements Serializable {
+	private static final long serialVersionUID = 9182781161988433205L;
 	public Time time;
 	public int floor;
 	public Direction direction;

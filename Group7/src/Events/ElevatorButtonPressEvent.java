@@ -2,6 +2,8 @@ package Events;
 
 import Floor.Floor;
 import Utilities.Settings;
+
+import java.io.Serializable;
 import java.sql.Time;
 
 /**
@@ -9,7 +11,8 @@ import java.sql.Time;
  * @author Marc Angers
  * @version 1.0.0
  */
-public class ElevatorButtonPressEvent {
+public class ElevatorButtonPressEvent implements Serializable {
+	private static final long serialVersionUID = 8392902175566934473L;
 	public Time time;
 	public int elevatorID;
 	public int buttonNumber;

@@ -1,6 +1,13 @@
 package Floor;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
 import Events.FloorButtonPressEvent;
+import Utilities.Parser;
+import Utilities.Settings;
 
 /**
  * Class to consume the floor button press events that are provided by the scheduler.
@@ -9,9 +16,17 @@ import Events.FloorButtonPressEvent;
  */
 public class FloorButtonPressEventConsumer implements Runnable {
 	private FloorSubsystem parent;
+	private DatagramSocket receiveSocket;
 	
 	public FloorButtonPressEventConsumer(FloorSubsystem floorSubsystem) {
 		parent = floorSubsystem;
+		
+		try {
+			receiveSocket = new DatagramSocket(Settings.FLOOR_BUTTON_PRESS_ECP);
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	/**
@@ -24,8 +39,16 @@ public class FloorButtonPressEventConsumer implements Runnable {
 	
 	@Override
 	public void run() {
+		DatagramPacket packet = new DatagramPacket(new byte[8191], 8191);
+		
 		while (true) {
-			consume(parent.getScheduler().getFloorButtonEvent());
+			try {
+				receiveSocket.receive(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			consume((FloorButtonPressEvent)Parser.unpackDatagram(packet));
 		}
 	}
 }

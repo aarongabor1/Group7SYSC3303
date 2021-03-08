@@ -1,5 +1,8 @@
 package Utilities;
 
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -18,15 +21,9 @@ import Events.*;
  */
 public class Scheduler implements Runnable {
 	private FormattedEvent currentEventFromInput;
-	
-	private FloorButtonPressEvent floorButtonEvent;
-	private ElevatorButtonPressEvent elevatorButtonEvent;
-	private DestinationUpdateEvent destinationUpdateEvent;
-	private ElevatorArrivalEvent elevatorArrivalEvent;
-	
-	private boolean containsFloorButtonEvent, containsElevatorButtonEvent, containsDestinationUpdateEvent, containsElevatorArrivalEvent;
 		
 	private Parser parser;
+	private DatagramSocket sendSocket;
 	private List<FloorButtonPressEvent> floorRequests;
 	private List<ElevatorButtonPressEvent> elevatorRequests;
 	private List<FormattedEvent> newElevatorRequests;
@@ -39,15 +36,14 @@ public class Scheduler implements Runnable {
 	 */
 	public Scheduler()
 	{
-		floorButtonEvent = null;
-		destinationUpdateEvent = null;
-		elevatorArrivalEvent = null;
-		
-		containsFloorButtonEvent = false;
-		containsDestinationUpdateEvent = false;
-		containsElevatorArrivalEvent = false;
-
 		parser = new Parser();
+		
+		try {
+			sendSocket = new DatagramSocket();
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
 
 		floorRequests = new LinkedList<FloorButtonPressEvent>();
 		elevatorRequests = new LinkedList<ElevatorButtonPressEvent>();
@@ -57,231 +53,7 @@ public class Scheduler implements Runnable {
 		
 		currentTime = new Time(System.currentTimeMillis());
 	}
-	
-	// Event storage and retrieval methods. Could put this in a separate class. --------------------------------
-	/** 
-	 * addFloorSystemEvent is a method that adds floor system events to the floor event queue.
-	 * @param floorEvent is the event object that needs to be added
-	 */
-	public synchronized void addFloorButtonEvent(FloorButtonPressEvent floorEvent)
-	{		
-		while(containsFloorButtonEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
 		
-		containsFloorButtonEvent = true;
-		floorButtonEvent = floorEvent;
-		
-		notifyAll();
-	}
-	
-	/**
-	 * getFloorButtonEvent is a method that provides the stored floor button press event.
-	 * @return the most recent floor button press event
-	 */
-	public synchronized FloorButtonPressEvent getFloorButtonEvent() {
-		while(!containsFloorButtonEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		
-		containsFloorButtonEvent = false;
-		FloorButtonPressEvent tempEvent = floorButtonEvent;
-		floorButtonEvent = null;
-		
-		notifyAll();
-		
-		return tempEvent;
-	}
-	
-	/**
-	 * addElevatorButtonEvent is a method that gets the stored elevator button press event.
-	 */
-	public synchronized void addElevatorButtonEvent(ElevatorButtonPressEvent elevatorEvent)
-	{		
-		while(containsElevatorButtonEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		
-		containsElevatorButtonEvent = true;
-		elevatorButtonEvent = elevatorEvent;
-		
-		notifyAll();
-	}
-	
-	/**
-	 * getElevatorButtonEvent is a method that provides the stored elevator button press event.
-	 * @return the most recent elevator button press event
-	 */
-	public synchronized ElevatorButtonPressEvent getElevatorButtonEvent() {
-		while(!containsElevatorButtonEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		
-		containsElevatorButtonEvent = false;
-		ElevatorButtonPressEvent tempEvent = elevatorButtonEvent;
-		elevatorButtonEvent = null;
-		
-		notifyAll();
-		
-		return tempEvent;
-	}
-	
-	/** 
-	 * addElevatorArrivalEvent adds an event that the scheduler holds for the floor subsystem to consume.
-	 */
-	public synchronized void addElevatorArrivalEvent(ElevatorArrivalEvent elevatorEvent)
-	{		
-		while(containsElevatorArrivalEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-	
-
-		elevatorLocations.put(1, elevatorEvent.floorNumber);
-		
-		for(FloorButtonPressEvent e:floorRequests) {
-			if (e.floor == elevatorEvent.floorNumber) {
-				System.out.println("... picking up passengers - floor lamp off");
-				floorRequests.remove(e);
-			}
-		}
-		
-		for(ElevatorButtonPressEvent e:elevatorRequests) {
-			if (e.buttonNumber == elevatorEvent.floorNumber) {
-				elevatorRequests.remove(e);
-				for (FormattedEvent fe : newElevatorRequests) {
-					if (fe.getCarButton() == elevatorEvent.floorNumber) {
-						newElevatorRequests.remove(fe);
-					}
-				}
-			}
-		}
-		
-		containsElevatorArrivalEvent = true;
-		elevatorArrivalEvent = elevatorEvent;
-		
-		//removeInitiatingEventFor(elevatorEvent);
-		
-		notifyAll();
-	}
-	
-	/**
-	 * getElevatorArrivalEvent is a method that provides the stored elevator arrival event.
-	 * @return the most recent elevator arrival event
-	 */
-	public synchronized ElevatorArrivalEvent getElevatorArrivalEvent() {
-		while(!containsElevatorArrivalEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-
-
-		
-		containsElevatorArrivalEvent = false;
-		ElevatorArrivalEvent tempEvent = elevatorArrivalEvent;
-		elevatorArrivalEvent = null;
-		
-		notifyAll();
-		
-		return tempEvent;
-	}
-	
-	/** 
-	 * addDestinationUpdateEvent adds an event that the scheduler holds for the floor subsystem to consume.
-	 */
-	public synchronized void addDestinationUpdateEvent(DestinationUpdateEvent destinationEvent)
-	{		
-		while(containsDestinationUpdateEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-	
-		containsDestinationUpdateEvent = true;
-		destinationUpdateEvent = destinationEvent;
-				
-		notifyAll();
-	}
-	
-	/**
-	 * getDestinationUpdateEvent is a method that provides the stored destination update event.
-	 * @return the most recent destination update event
-	 */
-	public synchronized DestinationUpdateEvent getDestinationUpdateEvent() {
-		while(!containsDestinationUpdateEvent)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException e)
-			{
-				System.err.print(e);
-			}
-		}
-		
-		containsDestinationUpdateEvent = false;
-		DestinationUpdateEvent tempEvent = destinationUpdateEvent;
-		destinationUpdateEvent = null;
-		
-		notifyAll();
-		
-		return tempEvent;
-	}
-	// End of event storage and retrieval. ---------------------------------------------------------------------
-	
 	// This method could be its own event generator class.
 	/**
 	 * Generates floor events using the parser file.
@@ -298,7 +70,13 @@ public class Scheduler implements Runnable {
 		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
 		
 		floorRequests.add(floorButtonEvent);
-		addFloorButtonEvent(floorButtonEvent);
+		// Send the event to the appropriate consumer.
+		try {
+			sendSocket.send(Parser.packageObject(floorButtonEvent));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		scheduleElevators("floor");
 		
@@ -311,7 +89,13 @@ public class Scheduler implements Runnable {
 		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
 		
 		elevatorRequests.add(elevatorButtonEvent);
-		addElevatorButtonEvent(elevatorButtonEvent);
+		// Send the event to the appropriate consumer.
+		try {
+			sendSocket.send(Parser.packageObject(elevatorButtonEvent));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		scheduleElevators("elevator");
 		
@@ -331,14 +115,25 @@ public class Scheduler implements Runnable {
 		// This is the method where the elevator scheduling algorithm will go.
 		// VERY IMPORTANT, VERY COMPLICATED!
 		
+		DestinationUpdateEvent event;
+		
 		// Temporary placeholder for the algorithm:
 		if (mode.equals("floor")) {
 			FloorButtonPressEvent mostImportantEvent = floorRequests.get(0);
-			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.floor));
-		} else if (mode.equals("elevator")) {
+			// Send packet to destination update event consumer
+			event = new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.floor);
+		} else {
 			ElevatorButtonPressEvent mostImportantEvent = elevatorRequests.get(0);
+			// Send packet to destination update event consumer
+			event = new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.buttonNumber);
+		}
 		
-			addDestinationUpdateEvent(new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.buttonNumber));
+		// Send the event to the appropriate consumer.
+		try {
+			sendSocket.send(Parser.packageObject(event));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	

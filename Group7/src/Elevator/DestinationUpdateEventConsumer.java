@@ -1,6 +1,13 @@
 package Elevator;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
 import Events.DestinationUpdateEvent;
+import Utilities.Parser;
+import Utilities.Settings;
 
 /**
  * Class to update the elevator's destination by consuming the DestinationUpdateEvents provided by the scheduler.
@@ -10,8 +17,18 @@ import Events.DestinationUpdateEvent;
 public class DestinationUpdateEventConsumer implements Runnable {
 	private ElevatorSubsystem parent;
 	
+	private DatagramSocket receiveSocket, sendSocket;
+	
 	public DestinationUpdateEventConsumer(ElevatorSubsystem elevatorSubsystem) {
 		parent = elevatorSubsystem;
+		
+		try {
+			receiveSocket = new DatagramSocket(Settings.DESTINATION_UPDATE_ECP);
+			sendSocket = new DatagramSocket();
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	/**
@@ -20,7 +37,13 @@ public class DestinationUpdateEventConsumer implements Runnable {
 	 */
 	public void consume(DestinationUpdateEvent destinationUpdateEvent) {
 		if (destinationUpdateEvent.elevatorID != parent.getElevator().ID)
-			parent.getScheduler().addDestinationUpdateEvent(destinationUpdateEvent);
+			// Send the event to the appropriate consumer.
+			try {
+				sendSocket.send(Parser.packageObject(destinationUpdateEvent));
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 		else {
 			System.out.println("Elevator current floor: " + parent.getElevator().getCurrentFloor());
 			parent.getElevator().updateDestination(destinationUpdateEvent.destinationFloor);
@@ -29,8 +52,16 @@ public class DestinationUpdateEventConsumer implements Runnable {
 	
 	@Override
 	public void run() {
+		DatagramPacket packet = new DatagramPacket(new byte[8191], 8191);
+		
 		while (true) {
-			consume(parent.getScheduler().getDestinationUpdateEvent());
+			try {
+				receiveSocket.receive(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			consume((DestinationUpdateEvent)Parser.unpackDatagram(packet));
 		}
 	}
 }

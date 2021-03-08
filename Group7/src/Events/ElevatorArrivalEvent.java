@@ -3,6 +3,8 @@ package Events;
 import Utilities.Direction;
 import Utilities.Settings;
 import Floor.Floor;
+
+import java.io.Serializable;
 import java.sql.Time;
 
 /**
@@ -10,7 +12,8 @@ import java.sql.Time;
  * @author Marc Angers
  * @version 1.0.0
  */
-public class ElevatorArrivalEvent {
+public class ElevatorArrivalEvent implements Serializable {
+	private static final long serialVersionUID = -4504430610082759470L;
 	public Time time;
 	public int floorNumber;
 	public int elevatorID;

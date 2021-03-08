@@ -1,8 +1,15 @@
 package Utilities;
 
 import Events.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -100,5 +107,89 @@ public class Parser {
 		}
 		else
 			throw new ParseException("No more events in the input file!", 0);
+	}
+	
+	/**
+	 * Method to wrap an object (specifically the event objects within the system) in a datagrampacket that can be sent over the network.
+	 */
+	public static DatagramPacket packageObject(Object obj) {
+		String eventType = getEventType(obj);
+		
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream(8191);
+		
+		try {
+			ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
+			objectStream.writeObject(obj);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+			System.exit(1);
+		}
+		
+		byte[] data = byteStream.toByteArray();
+		
+		DatagramPacket packet;
+		switch (eventType) {
+		case "FBP":
+			packet = new DatagramPacket(data, data.length, Settings.FLOOR_SYSTEM_ADDRESS, Settings.FLOOR_BUTTON_PRESS_ECP);
+			break;
+		case "EBP":
+			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, Settings.ELEVATOR_BUTTON_PRESS_ECP);
+			break;
+		case "DU":
+			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, Settings.DESTINATION_UPDATE_ECP);
+			break;
+		case "EA":
+			packet = new DatagramPacket(data, data.length, Settings.FLOOR_SYSTEM_ADDRESS, Settings.ELEVATOR_ARRIVAL_ECP);
+			break;
+		default:
+			// Might want to throw an error here or something idk.
+			packet = new DatagramPacket(data, data.length);
+			break;
+		}
+		
+		return packet;
+	}
+	
+	/**
+	 * Method to unpack an object that was sent over the network.
+	 */
+	public static Object unpackDatagram(DatagramPacket packet) {
+		byte[] data = packet.getData();
+
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+
+		try {
+			ObjectInputStream objectStream = new ObjectInputStream(inputStream);
+			return objectStream.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		// Might want to throw some sort of error here
+		return new Object();
+	}
+	
+	/**
+	 * Helper method to determine what type of event was passed to the packageObject method.
+	 * @param obj, the event to test
+	 * @return the type of the event
+	 */
+	private static String getEventType(Object obj) {
+		FloorButtonPressEvent tempFBPEvent = new FloorButtonPressEvent(new Time(1), 1, Direction.UP);
+		ElevatorButtonPressEvent tempEBPEvent = new ElevatorButtonPressEvent(new Time(1), 1, 1);
+		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(new Time(1), 1, 1);
+		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(new Time(1), 1, 1, Direction.UP);
+		
+		if (obj.getClass() == tempFBPEvent.getClass())
+			return "FBP";
+		if (obj.getClass() == tempEBPEvent.getClass())
+			return "EBP";
+		if (obj.getClass() == tempDUEvent.getClass())
+			return "DU";
+		if (obj.getClass() == tempEAEvent.getClass())
+			return "EA";
+		
+		return "not-an-event";
 	}
 }

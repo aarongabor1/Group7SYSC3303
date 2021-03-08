@@ -1,6 +1,11 @@
 package Elevator;
 
 import Utilities.*;
+
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
 import Events.*;
 
 /**
@@ -14,6 +19,7 @@ public class ElevatorSubsystem implements Runnable {
 	private Elevator parentElevator;
 	private Thread destinationUpdateEventConsumer;
 	private Thread elevatorButtonPressEventConsumer;
+	private DatagramSocket sendSocket;
 	
 	
 	
@@ -22,6 +28,13 @@ public class ElevatorSubsystem implements Runnable {
 		parentElevator = parent;
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this), "Destination update event cosnumer");
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this), "Elevator button press event consumer");
+		
+		try {
+			sendSocket = new DatagramSocket();
+		} catch (SocketException se) {
+			se.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	/**
@@ -41,9 +54,15 @@ public class ElevatorSubsystem implements Runnable {
 		handleMotor(Direction.STATIONARY);
 		handleDoor(true);
 
-		scheduler.addElevatorArrivalEvent(
-			new ElevatorArrivalEvent(scheduler.getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection())
-		);
+		ElevatorArrivalEvent event = new ElevatorArrivalEvent(scheduler.getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection());
+		// Send the event to the appropriate consumer.
+		try {
+			sendSocket.send(Parser.packageObject(event));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+				
 		parentElevator.turnOffLamp(parentElevator.getCurrentFloor());
 	}
 	
