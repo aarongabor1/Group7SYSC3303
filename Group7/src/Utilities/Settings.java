@@ -25,6 +25,7 @@ public class Settings {
 	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6901; // Elevator Button Press Event Consumer Port.
 	public static final int DESTINATION_UPDATE_ECP = 6902; // Destination Update Event Consumer Port.
 	public static final int ELEVATOR_ARRIVAL_ECP = 6903; // Elevator Arrival Event Consumer Port.
+	public static final int ELEVATOR_MOVEMENT_ECP = 6904; // Elevator Movement Event Consumer Port.
 	
 	/**
 	 * Temporary helper method to initiate all of the elevator systems to run on the host machine.

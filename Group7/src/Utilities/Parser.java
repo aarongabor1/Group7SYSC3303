@@ -141,6 +141,9 @@ public class Parser {
 		case "EA":
 			packet = new DatagramPacket(data, data.length, Settings.FLOOR_SYSTEM_ADDRESS, Settings.ELEVATOR_ARRIVAL_ECP);
 			break;
+		case "EM":
+			packet = new DatagramPacket(data, data.length, Settings.SCHEDULER_ADDRESS, Settings.ELEVATOR_MOVEMENT_ECP);
+			break;
 		default:
 			// Might want to throw an error here or something idk.
 			packet = new DatagramPacket(data, data.length);
@@ -180,6 +183,7 @@ public class Parser {
 		ElevatorButtonPressEvent tempEBPEvent = new ElevatorButtonPressEvent(new Time(1), 1, 1);
 		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(new Time(1), 1, 1);
 		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(new Time(1), 1, 1, Direction.UP);
+		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(new Time(1), 1, 1);
 		
 		if (obj.getClass() == tempFBPEvent.getClass())
 			return "FBP";
@@ -189,6 +193,8 @@ public class Parser {
 			return "DU";
 		if (obj.getClass() == tempEAEvent.getClass())
 			return "EA";
+		if (obj.getClass() == tempEMEvent.getClass())
+			return "EM";
 		
 		return "not-an-event";
 	}

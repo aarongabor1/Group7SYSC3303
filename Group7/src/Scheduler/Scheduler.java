@@ -1,4 +1,4 @@
-package Utilities;
+package Scheduler;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import Events.*;
+import Utilities.Parser;
 
 /** 
  * The scheduler class is the connection point of the whole project. All of the information that each
@@ -20,6 +21,7 @@ import Events.*;
  * @version 1.1
  */
 public class Scheduler implements Runnable {
+	private Thread elevatorMovementEventConsumer;
 	private FormattedEvent currentEventFromInput;
 		
 	private Parser parser;
@@ -29,13 +31,15 @@ public class Scheduler implements Runnable {
 	private List<FormattedEvent> newElevatorRequests;
 	
 	private Time currentTime;
-	private Map<Integer, Integer> elevatorLocations; //something like this is probably needed right?
+	private Map<Integer, Integer> elevatorLocations;
+	private Map<Integer, Integer> elevatorDestinations;
 	
 	/**
 	 * Constructor that will create the Network object.
 	 */
 	public Scheduler()
 	{
+		elevatorMovementEventConsumer = new Thread(new ElevatorMovementEventConsumer(this), "Elevator movement event consumer");
 		parser = new Parser();
 		
 		try {
@@ -120,10 +124,14 @@ public class Scheduler implements Runnable {
 		// Temporary placeholder for the algorithm:
 		if (mode.equals("floor")) {
 			FloorButtonPressEvent mostImportantEvent = floorRequests.get(0);
+			// Update the elevator's destination within the scheduler.
+			elevatorDestinations.put(1, mostImportantEvent.floor);
 			// Send packet to destination update event consumer
 			event = new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.floor);
 		} else {
 			ElevatorButtonPressEvent mostImportantEvent = elevatorRequests.get(0);
+			// Update the elevator's destination within the scheduler.
+			elevatorDestinations.put(1, mostImportantEvent.buttonNumber);
 			// Send packet to destination update event consumer
 			event = new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.buttonNumber);
 		}
@@ -137,9 +145,20 @@ public class Scheduler implements Runnable {
 		}
 	}
 	
+	/**
+	 * Method to update an elevators location within the scheduler.
+	 * @param elevatorID, the elevator's location to update
+	 * @param currentLocation, the floor that the elevator has moved to
+	 */
+	public void updateLocation(int elevatorID, int currentLocation) {
+		elevatorLocations.put(elevatorID, currentLocation);
+	}
+	
 	@Override
 	public void run() {
-		
+		// Probably just want to start 2 other threads like the other subsystems.
+		// TODO: Make an event generator thread that will send events to the scheduler.
+		elevatorMovementEventConsumer.start();
 		//int numOfRequestsFinished = 0;
 		while (true) {
 			try {

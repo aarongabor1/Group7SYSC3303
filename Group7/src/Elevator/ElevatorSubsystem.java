@@ -1,6 +1,7 @@
 package Elevator;
 
 import Utilities.*;
+import Scheduler.Scheduler;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -26,7 +27,7 @@ public class ElevatorSubsystem implements Runnable {
 	public ElevatorSubsystem(Scheduler scheduler, Elevator parent) {
 		this.scheduler = scheduler;
 		parentElevator = parent;
-		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this), "Destination update event cosnumer");
+		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this), "Destination update event consumer");
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this), "Elevator button press event consumer");
 		
 		try {
@@ -77,9 +78,18 @@ public class ElevatorSubsystem implements Runnable {
 		if (direction == Direction.STATIONARY)
 			parentElevator.getMotor().stopElevator();
 		else {
-			if (!parentElevator.getDoor().isOpen())
+			if (!parentElevator.getDoor().isOpen()) {
 				parentElevator.getMotor().moveElevator(direction);
-			else
+				
+				// Create and send an elevator movement event to the scheduler.
+				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(scheduler.getTime(), parentElevator.getCurrentFloor(), parentElevator.ID);
+				try {
+					sendSocket.send(Parser.packageObject(elevatorMovementEvent));
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			} else
 				System.out.println("DOOR NOT OPERATING"); // Iter4 - Will need to throw some sort of error here! Do not want the elevator to start moving if the doors are open!
 		}
 	}
