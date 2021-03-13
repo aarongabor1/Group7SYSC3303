@@ -17,9 +17,7 @@ import java.util.Map;
  */
 public class Elevator {	
 	public int ID;
-	private int currentFloor;
-	private Direction currentDirection;
-	private int currentDestination;
+	private ElevatorState state;
 	
 	private ElevatorSubsystem elevatorSubsystem;
 	private Motor motor;
@@ -38,9 +36,7 @@ public class Elevator {
 		
 		generateElevatorButtons();
 
-		this.currentDestination = Floor.MINIMUM_FLOOR_NUM;
-		this.currentFloor = Floor.MINIMUM_FLOOR_NUM;
-		this.currentDirection = Direction.STATIONARY;
+		state = new ElevatorState(Floor.MINIMUM_FLOOR_NUM, Direction.STATIONARY, Floor.MINIMUM_FLOOR_NUM);
 						
 		ID = 1; // While there is only one elevator in the system, it is given an ID of 1. Will change this in later iterations.
 	}
@@ -55,9 +51,7 @@ public class Elevator {
 		
 		generateElevatorButtons();
 
-		this.currentDestination = Floor.MINIMUM_FLOOR_NUM;
-		this.currentFloor = Floor.MINIMUM_FLOOR_NUM;
-		this.currentDirection = Direction.STATIONARY;
+		state = new ElevatorState(Floor.MINIMUM_FLOOR_NUM, Direction.STATIONARY, Floor.MINIMUM_FLOOR_NUM);
 	}
 	
 	/**
@@ -92,21 +86,21 @@ public class Elevator {
 	 * @param direction
 	 */
 	public void changeDirection(Direction direction) {
-		currentDirection = direction;
+		state.updateDirection(direction);
 	}
 	
 	/**
 	 * Moves the elevator down
 	 */
 	public void moveDown() {
-		currentFloor--;
+		state.updateFloor(state.getFloor()-1);
 	}
 	
 	/**
 	 * Moves the elevator up
 	 */
 	public void moveUp() {
-		currentFloor++;
+		state.updateFloor(state.getFloor()+1);
 	}
 	
 	/**
@@ -114,7 +108,7 @@ public class Elevator {
 	 * @return
 	 */
 	public boolean isMoving() {
-		return currentDirection != Direction.STATIONARY;
+		return state.getDirection() != Direction.STATIONARY;
 	}
 	
 	/**
@@ -134,14 +128,17 @@ public class Elevator {
 	}
 
 	// Get and set methods:
+	public ElevatorState getState() {
+		return state;
+	}
 	public int getCurrentFloor() {
-		return currentFloor;
+		return state.getFloor();
 	}
 	public synchronized int getCurrentDestination() {
-		return currentDestination;
+		return state.getDestination();
 	}
 	public Direction getCurrentDirection() {
-		return currentDirection;
+		return state.getDirection();
 	}
 	public Door getDoor() {
 		return door;
@@ -153,7 +150,7 @@ public class Elevator {
 		return elevatorSubsystem;
 	}
 	public synchronized void updateDestination(int newDestination) {
-		currentDestination = newDestination;
+		state.updateDestination(newDestination);
 	}
 	public Map<Integer, ElevatorButton> getElevatorButtons() {
 		return elevatorButtons;

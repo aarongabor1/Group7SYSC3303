@@ -27,6 +27,7 @@ public class ElevatorSubsystem implements Runnable {
 	public ElevatorSubsystem(Scheduler scheduler, Elevator parent) {
 		this.scheduler = scheduler;
 		parentElevator = parent;
+		scheduler.registerNewElevator(parent);
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this), "Destination update event consumer");
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this), "Elevator button press event consumer");
 		
@@ -63,6 +64,14 @@ public class ElevatorSubsystem implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		// Create and send an elevator movement event to the scheduler.
+		ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(scheduler.getTime(), parentElevator.ID, parentElevator.getState());
+		try {
+			sendSocket.send(Parser.packageObject(elevatorMovementEvent));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 				
 		parentElevator.turnOffLamp(parentElevator.getCurrentFloor());
 	}
@@ -82,7 +91,7 @@ public class ElevatorSubsystem implements Runnable {
 				parentElevator.getMotor().moveElevator(direction);
 				
 				// Create and send an elevator movement event to the scheduler.
-				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(scheduler.getTime(), parentElevator.getCurrentFloor(), parentElevator.ID);
+				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(scheduler.getTime(), parentElevator.ID, parentElevator.getState());
 				try {
 					sendSocket.send(Parser.packageObject(elevatorMovementEvent));
 				} catch (IOException e) {

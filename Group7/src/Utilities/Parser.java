@@ -15,6 +15,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
+
+import Elevator.ElevatorState;
+
 import java.util.ArrayList;
 import java.sql.Time;
 
@@ -183,7 +186,7 @@ public class Parser {
 		ElevatorButtonPressEvent tempEBPEvent = new ElevatorButtonPressEvent(new Time(1), 1, 1);
 		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(new Time(1), 1, 1);
 		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(new Time(1), 1, 1, Direction.UP);
-		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(new Time(1), 1, 1);
+		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(new Time(1), 1, new ElevatorState(1, Direction.UP, 1));
 		
 		if (obj.getClass() == tempFBPEvent.getClass())
 			return "FBP";

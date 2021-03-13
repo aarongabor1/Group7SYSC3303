@@ -10,7 +10,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import Elevator.Elevator;
+import Elevator.ElevatorState;
 import Events.*;
+import Utilities.Direction;
 import Utilities.Parser;
 
 /** 
@@ -22,17 +25,13 @@ import Utilities.Parser;
  */
 public class Scheduler implements Runnable {
 	private Thread elevatorMovementEventConsumer;
-	private FormattedEvent currentEventFromInput;
+	private Thread eventGenerator;
 		
-	private Parser parser;
 	private DatagramSocket sendSocket;
-	private List<FloorButtonPressEvent> floorRequests;
-	private List<ElevatorButtonPressEvent> elevatorRequests;
-	private List<FormattedEvent> newElevatorRequests;
+	private Map<Integer, ElevatorState> elevatorStates;
+	private Map<Integer, List<Integer>> elevatorDestinations;
 	
 	private Time currentTime;
-	private Map<Integer, Integer> elevatorLocations;
-	private Map<Integer, Integer> elevatorDestinations;
 	
 	/**
 	 * Constructor that will create the Network object.
@@ -40,7 +39,7 @@ public class Scheduler implements Runnable {
 	public Scheduler()
 	{
 		elevatorMovementEventConsumer = new Thread(new ElevatorMovementEventConsumer(this), "Elevator movement event consumer");
-		parser = new Parser();
+		eventGenerator = new Thread(new EventGenerator(this), "Event generator");
 		
 		try {
 			sendSocket = new DatagramSocket();
@@ -49,65 +48,10 @@ public class Scheduler implements Runnable {
 			System.exit(1);
 		}
 
-		floorRequests = new LinkedList<FloorButtonPressEvent>();
-		elevatorRequests = new LinkedList<ElevatorButtonPressEvent>();
-		newElevatorRequests = new LinkedList<FormattedEvent>();
-		elevatorLocations = new HashMap<Integer, Integer>();
-		elevatorLocations.put(1, 1);
+		elevatorStates = new HashMap<Integer, ElevatorState>();
+		elevatorDestinations = new HashMap<Integer, List<Integer>>();
 		
 		currentTime = new Time(System.currentTimeMillis());
-	}
-		
-	// This method could be its own event generator class.
-	/**
-	 * Generates floor events using the parser file.
-	 * @throws ParseException
-	 */
-	public void generateFloorEvent() throws ParseException {
-		try {
-			currentEventFromInput = parser.parseFile();
-		} catch (ParseException pe) {
-			return;
-		}
-		newElevatorRequests.add(currentEventFromInput);
-		
-		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
-		
-		floorRequests.add(floorButtonEvent);
-		// Send the event to the appropriate consumer.
-		try {
-			sendSocket.send(Parser.packageObject(floorButtonEvent));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		scheduleElevators("floor");
-		
-		// Temporary way of waiting for the elevator to arrive at the requested floor.
-		for (FloorButtonPressEvent e : floorRequests) {
-			while (e.floor != elevatorLocations.get(1))
-				;
-		}
-		
-		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
-		
-		elevatorRequests.add(elevatorButtonEvent);
-		// Send the event to the appropriate consumer.
-		try {
-			sendSocket.send(Parser.packageObject(elevatorButtonEvent));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		scheduleElevators("elevator");
-		
-		// Temporary way of waiting for the elevator to arrive at the requested floor.
-		for (ElevatorButtonPressEvent e : elevatorRequests) {
-			while (e.buttonNumber != elevatorLocations.get(1))
-				;
-		}
 	}
 	
 	// The main scheduling method.
@@ -115,26 +59,24 @@ public class Scheduler implements Runnable {
 	 * Method to organize the button press events and find the optimal elevator schedule.
 	 * Once the optimal schedule is found, the elevators will be notified of updates to their destinations.
 	 */
-	public void scheduleElevators(String mode) { // <-- Temporary variable, this will need to be changed in the future!
-		// This is the method where the elevator scheduling algorithm will go.
-		// VERY IMPORTANT, VERY COMPLICATED!
+	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 	
+		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
 		
-		DestinationUpdateEvent event;
-		
-		// Temporary placeholder for the algorithm:
-		if (mode.equals("floor")) {
-			FloorButtonPressEvent mostImportantEvent = floorRequests.get(0);
-			// Update the elevator's destination within the scheduler.
-			elevatorDestinations.put(1, mostImportantEvent.floor);
-			// Send packet to destination update event consumer
-			event = new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.floor);
-		} else {
-			ElevatorButtonPressEvent mostImportantEvent = elevatorRequests.get(0);
-			// Update the elevator's destination within the scheduler.
-			elevatorDestinations.put(1, mostImportantEvent.buttonNumber);
-			// Send packet to destination update event consumer
-			event = new DestinationUpdateEvent(getTime(), 1, mostImportantEvent.buttonNumber);
+		// Send the event to the appropriate consumer.
+		try {
+			sendSocket.send(Parser.packageObject(event));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
+	}
+	/**
+	 * Overload of the scheduling method to deal with elevator button presses.
+	 * @param elevatorButtonPressEvent
+	 * @param elevatorID
+	 */
+	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {
+		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
 		
 		// Send the event to the appropriate consumer.
 		try {
@@ -146,31 +88,48 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * Method to update an elevators location within the scheduler.
-	 * @param elevatorID, the elevator's location to update
-	 * @param currentLocation, the floor that the elevator has moved to
+	 * Method to add a new elevator to the elevatorStates and elevatorDestinations maps.
+	 * @param newElevator
 	 */
-	public void updateLocation(int elevatorID, int currentLocation) {
-		elevatorLocations.put(elevatorID, currentLocation);
+	public void registerNewElevator(Elevator newElevator) {
+		elevatorStates.put(newElevator.ID, newElevator.getState());
+		elevatorDestinations.put(newElevator.ID, new LinkedList<Integer>());
 	}
 	
 	@Override
 	public void run() {
-		// Probably just want to start 2 other threads like the other subsystems.
-		// TODO: Make an event generator thread that will send events to the scheduler.
 		elevatorMovementEventConsumer.start();
-		//int numOfRequestsFinished = 0;
-		while (true) {
-			try {
-				generateFloorEvent();
-			} catch (ParseException pe) {
-				pe.printStackTrace();
-			}
-			//numOfRequestsFinished++;
-		}
+		eventGenerator.start();
 	}
 	
 	// Get and set methods:
+	/**
+	 * Method to update an elevators location within the scheduler.
+	 * @param elevatorID, the elevator's location to update
+	 * @param currentLocation, the floor that the elevator has moved to
+	 */
+	public void updateElevatorState(int elevatorID, ElevatorState state) {
+		elevatorStates.put(elevatorID, state);
+		
+		// If the elevator is at its current destination, update the elevator's destination.
+		if (elevatorDestinations.get(elevatorID).get(0) == state.getFloor())
+			elevatorDestinations.get(elevatorID).remove(0);
+		
+		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID, elevatorDestinations.get(elevatorID).get(0));
+		
+		// Send the event to the appropriate consumer.
+		try {
+			sendSocket.send(Parser.packageObject(event));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
+	public Map<Integer, ElevatorState> getElevatorStates() {
+		return elevatorStates;
+	}
+	
 	public Time getTime() {
 		currentTime = new Time(System.currentTimeMillis());
 		return currentTime;

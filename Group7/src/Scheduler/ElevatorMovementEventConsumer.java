@@ -35,7 +35,7 @@ public class ElevatorMovementEventConsumer implements Runnable {
 	 * @param destinationUpdateEvent
 	 */
 	public void consume(ElevatorMovementEvent elevatorMovementEvent) {
-		parent.updateLocation(elevatorMovementEvent.elevatorID, elevatorMovementEvent.currentFloor);
+		parent.updateElevatorState(elevatorMovementEvent.elevatorID, elevatorMovementEvent.getElevatorState());
 	}
 	
 	@Override
