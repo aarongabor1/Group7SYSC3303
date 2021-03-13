@@ -2,6 +2,7 @@ package Scheduler;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,6 +30,8 @@ public class EventGenerator implements Runnable {
 	public EventGenerator(Scheduler scheduler) {
 		parent = scheduler;
 		parser = new Parser();
+		
+		elevatorEvents = new HashMap<ElevatorState, ElevatorButtonPressEvent>();
 	}
 	
 	
@@ -84,7 +87,7 @@ public class EventGenerator implements Runnable {
 			try {
 				generateEvent();
 			} catch (ParseException pe) {
-				pe.printStackTrace();
+				return;
 			}
 			
 			checkForElevatorButtonEvent();

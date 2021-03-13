@@ -140,12 +140,14 @@ public class Parser {
 			packet = new DatagramPacket(data, data.length, Settings.FLOOR_SYSTEM_ADDRESS, Settings.FLOOR_BUTTON_PRESS_ECP);
 			break;
 		case "EBP":
-			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, Settings.ELEVATOR_BUTTON_PRESS_ECP);
+			ElevatorButtonPressEvent elevatorButtonPressEvent = (ElevatorButtonPressEvent) obj;
+			int ebp_ecp = ElevatorSubsystem.elevatorButtonPressEventConsumerPorts.get(elevatorButtonPressEvent.elevatorID);
+			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, ebp_ecp);
 			break;
 		case "DU":
-			DestinationUpdateEvent event = (DestinationUpdateEvent) obj;
-			int port = ElevatorSubsystem.elevatorSystemPorts.get(event.elevatorID);
-			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, port);
+			DestinationUpdateEvent destinationUpdateEvent = (DestinationUpdateEvent) obj;
+			int du_ecp = ElevatorSubsystem.destinationUpdateEventConsumerPorts.get(destinationUpdateEvent.elevatorID);
+			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, du_ecp);
 			break;
 		case "EA":
 			packet = new DatagramPacket(data, data.length, Settings.FLOOR_SYSTEM_ADDRESS, Settings.ELEVATOR_ARRIVAL_ECP);

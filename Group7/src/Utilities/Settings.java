@@ -23,11 +23,11 @@ public class Settings {
 	
 	// Event Consumer port (ECP) definitions:
 	public static final int FLOOR_BUTTON_PRESS_ECP = 6900; // Floor Button Press Event Consumer Port.
-	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6901; // Elevator Button Press Event Consumer Port.
-	public static final int ELEVATOR_ARRIVAL_ECP = 6902; // Elevator Arrival Event Consumer Port.
-	public static final int ELEVATOR_MOVEMENT_ECP = 6903; // Elevator Movement Event Consumer Port.
+	public static final int ELEVATOR_ARRIVAL_ECP = 6901; // Elevator Arrival Event Consumer Port.
+	public static final int ELEVATOR_MOVEMENT_ECP = 6902; // Elevator Movement Event Consumer Port.
 	
-	public static final int DESTINATION_UPDATE_ECP = 6904; // Initial Destination Update Event Consumer Port. (Should allow for as many ports after this as there are elevators)
+	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6903; // Initial Elevator Button Press Event Consumer Port. (Should allow for as many ports after this as there are elevators, up to 50 currently)
+	public static final int DESTINATION_UPDATE_ECP = 6953; // Initial Destination Update Event Consumer Port. (Should allow for as many ports after this as there are elevators)
 	
 	/**
 	 * Temporary helper method to initiate all of the elevator systems to run on the host machine.

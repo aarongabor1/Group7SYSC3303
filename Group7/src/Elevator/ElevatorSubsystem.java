@@ -18,7 +18,8 @@ import Events.*;
  * @version 1.2
  */
 public class ElevatorSubsystem implements Runnable {
-	public static Map<Integer, Integer> elevatorSystemPorts = new HashMap<Integer, Integer>(); 
+	public static Map<Integer, Integer> destinationUpdateEventConsumerPorts = new HashMap<Integer, Integer>();
+	public static Map<Integer, Integer> elevatorButtonPressEventConsumerPorts = new HashMap<Integer, Integer>(); 
 	
 	private Scheduler scheduler;
 	private Elevator parentElevator;
@@ -33,10 +34,11 @@ public class ElevatorSubsystem implements Runnable {
 		parentElevator = parent;
 		
 		scheduler.registerNewElevator(parent);
-		ElevatorSubsystem.elevatorSystemPorts.put(parent.ID, Settings.DESTINATION_UPDATE_ECP + parent.ID);
+		ElevatorSubsystem.destinationUpdateEventConsumerPorts.put(parent.ID, Settings.DESTINATION_UPDATE_ECP + parent.ID);
+		ElevatorSubsystem.elevatorButtonPressEventConsumerPorts.put(parent.ID, Settings.ELEVATOR_BUTTON_PRESS_ECP + parent.ID);
 		
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this, parent.ID), "Destination update event consumer for elevator " + parent.ID);
-		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this), "Elevator button press event consumer");
+		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this, parent.ID), "Elevator button press event consumer");
 		
 		try {
 			sendSocket = new DatagramSocket();

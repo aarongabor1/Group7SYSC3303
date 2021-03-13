@@ -16,14 +16,13 @@ import Utilities.Parser;
 public class DestinationUpdateEventConsumer implements Runnable {
 	private ElevatorSubsystem parent;
 	
-	private DatagramSocket receiveSocket, sendSocket;
+	private DatagramSocket receiveSocket;
 	
 	public DestinationUpdateEventConsumer(ElevatorSubsystem elevatorSubsystem, int elevatorID) {
 		parent = elevatorSubsystem;
 		
 		try {
-			receiveSocket = new DatagramSocket(ElevatorSubsystem.elevatorSystemPorts.get(elevatorID));
-			sendSocket = new DatagramSocket();
+			receiveSocket = new DatagramSocket(ElevatorSubsystem.destinationUpdateEventConsumerPorts.get(elevatorID));
 		} catch (SocketException se) {
 			se.printStackTrace();
 			System.exit(1);
@@ -35,18 +34,8 @@ public class DestinationUpdateEventConsumer implements Runnable {
 	 * @param destinationUpdateEvent
 	 */
 	public void consume(DestinationUpdateEvent destinationUpdateEvent) {
-		if (destinationUpdateEvent.elevatorID != parent.getElevator().ID)
-			// Send the event to the appropriate consumer.
-			try {
-				sendSocket.send(Parser.packageObject(destinationUpdateEvent));
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-		else {
-			System.out.println("Elevator current floor: " + parent.getElevator().getCurrentFloor());
-			parent.getElevator().updateDestination(destinationUpdateEvent.destinationFloor);
-		}
+		System.out.println("Elevator #" + destinationUpdateEvent.elevatorID + " moving to floor " + destinationUpdateEvent.destinationFloor);
+		parent.getElevator().updateDestination(destinationUpdateEvent.destinationFloor);
 	}
 	
 	@Override
