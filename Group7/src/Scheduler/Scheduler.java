@@ -63,8 +63,7 @@ public class Scheduler implements Runnable {
 	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 	
 	    
 	    int bestElevator = getBestElevator(floorButtonPressEvent);
-	    
-	    // Send the destination update event to the elevator with the ID == bestElevator;
+	    // Send the destination update event to the elevator with the ID == bestElevator
 	    
 		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
 		
