@@ -1,5 +1,7 @@
 package Elevator;
 
+import java.io.Serializable;
+
 import Utilities.Direction;
 
 /**
@@ -7,7 +9,8 @@ import Utilities.Direction;
  * @author Marc Angers
  * @version 1.1
  */
-public class ElevatorState {
+public class ElevatorState implements Serializable {
+	private static final long serialVersionUID = -1437296404849135721L;
 	private int currentFloor;
 	private Direction currentDirection;
 	private int currentDestination;

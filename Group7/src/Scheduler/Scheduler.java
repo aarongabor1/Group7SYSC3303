@@ -247,9 +247,16 @@ public class Scheduler implements Runnable {
 	public void updateElevatorState(int elevatorID, ElevatorState state) {
 		elevatorStates.put(elevatorID, state);
 		
+		// If the elevator has nowhere to go, we don't need to update its destination.
+		if (elevatorDestinations.get(elevatorID).size() <= 0)
+			return;
+		
 		// If the elevator is at its current destination, update the elevator's destination.
 		if (elevatorDestinations.get(elevatorID).get(0) == state.getFloor())
 			elevatorDestinations.get(elevatorID).remove(0);
+		
+		if (elevatorDestinations.get(elevatorID).size() <= 0)
+			return;
 		
 		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID, elevatorDestinations.get(elevatorID).get(0));
 		
