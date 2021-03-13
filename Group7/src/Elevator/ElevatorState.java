@@ -1,5 +1,8 @@
 package Elevator;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import Utilities.Direction;
 
 /**
@@ -11,6 +14,7 @@ public class ElevatorState {
 	private int currentFloor;
 	private Direction currentDirection;
 	private int currentDestination;
+
 	
 	public ElevatorState(int floor, Direction direction, int destination) {
 		currentFloor = floor;
@@ -35,6 +39,7 @@ public class ElevatorState {
 	public int getDestination() {
 		return currentDestination;
 	}
+
 	
 	public void updateFloor(int floor) {
 		currentFloor = floor;
@@ -45,4 +50,6 @@ public class ElevatorState {
 	public void updateDestination(int destination) {
 		currentDestination = destination;
 	}
+	
+	
 }

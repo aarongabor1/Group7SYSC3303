@@ -5,6 +5,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.sql.Time;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +61,11 @@ public class Scheduler implements Runnable {
 	 * Once the optimal schedule is found, the elevators will be notified of updates to their destinations.
 	 */
 	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 	
+	    
+	    int bestElevator = getBestElevator(floorButtonPressEvent);
+	    
+	    // Send the destination update event to the elevator with the ID == bestElevator;
+	    
 		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
 		
 		// Send the event to the appropriate consumer.
@@ -70,12 +76,73 @@ public class Scheduler implements Runnable {
 			System.exit(1);
 		}
 	}
+	
+	/**
+	 * Method to get the best elevator to service a new floor request
+	 * 
+	 * @param fe A new floor button press event (new floor request)
+	 * @return ElevatorState
+	 */
+	public int getBestElevator(FloorButtonPressEvent fe) {
+	    
+	    ElevatorState bestElevator = null;
+	    int bestElevatorID = 0;
+	    
+	    for (int i = 1; i <= elevatorStates.size(); i++) {
+	        ElevatorState currentElevator = elevatorStates.get(i);
+	        
+	        /////// IF CURRENT ELEVATOR IS STATIONARY //////
+	        
+	        if (currentElevator.getDirection() == Direction.STATIONARY) {
+	            if (currentElevator.getFloor() == fe.getFloor()) {
+	                return i;
+	            }
+	            
+	            if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
+	                bestElevator = currentElevator;
+                    bestElevatorID = i;
+	            }
+	        }
+ 	        
+	        ////// IF CURRENT ELEVATOR IS MOVING //////
+	        
+	        if (currentElevator.getDirection() == fe.getDirection()) {
+	            
+	            if (bestElevator == null) {
+	                bestElevator = currentElevator;
+	                bestElevatorID = i;
+	            }
+ 	            
+	            if (currentElevator.getFloor() > fe.getFloor() && currentElevator.getDirection() == Direction.DOWN) {
+	                if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
+	                    bestElevator = currentElevator;
+	                    bestElevatorID = i;
+	                }	               
+	            }
+	            
+	            if (currentElevator.getFloor() < fe.getFloor() && currentElevator.getDirection() == Direction.UP) {                   
+	                if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
+	                    bestElevator = currentElevator;
+	                    bestElevatorID = i;
+                    }                    
+                }	            
+	        }	        
+	    }
+	    
+	   return bestElevatorID;
+	}
+	
 	/**
 	 * Overload of the scheduling method to deal with elevator button presses.
 	 * @param elevatorButtonPressEvent
 	 * @param elevatorID
 	 */
 	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {
+	    List<Integer> destRequests = elevatorDestinations.get(elevatorID); 
+	    destRequests.add(elevatorButtonPressEvent.buttonNumber);
+	    Collections.sort(destRequests);
+	    
+	    
 		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
 		
 		// Send the event to the appropriate consumer.
