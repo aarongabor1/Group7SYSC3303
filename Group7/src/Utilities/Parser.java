@@ -17,6 +17,7 @@ import java.util.Scanner;
 import javax.swing.JFileChooser;
 
 import Elevator.ElevatorState;
+import Elevator.ElevatorSubsystem;
 
 import java.util.ArrayList;
 import java.sql.Time;
@@ -24,8 +25,11 @@ import java.sql.Time;
 /***
  * This class takes in the file and uses the text to fill out the variable needed to
  * generate a floor event, time, current floor, direction and car button.
+ * The class is also used as a router for events that are being sent over the network that makes sure that the correct events
+ * get sent to the corresponding event listeners in the correct subsystems.
  * 
- * @author lynnmehyou, Aaron Gabor
+ * @author lynnmehyou, Aaron Gabor, Marc Angers
+ * @version 1.1
  */
 public class Parser {
 	private File file;
@@ -139,7 +143,9 @@ public class Parser {
 			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, Settings.ELEVATOR_BUTTON_PRESS_ECP);
 			break;
 		case "DU":
-			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, Settings.DESTINATION_UPDATE_ECP);
+			DestinationUpdateEvent event = (DestinationUpdateEvent) obj;
+			int port = ElevatorSubsystem.elevatorSystemPorts.get(event.elevatorID);
+			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, port);
 			break;
 		case "EA":
 			packet = new DatagramPacket(data, data.length, Settings.FLOOR_SYSTEM_ADDRESS, Settings.ELEVATOR_ARRIVAL_ECP);

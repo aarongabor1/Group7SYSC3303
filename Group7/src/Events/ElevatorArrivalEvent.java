@@ -10,7 +10,7 @@ import java.sql.Time;
 /**
  * Event class to notify the floor subsystem when an elevator has reached a floor.
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class ElevatorArrivalEvent implements Serializable {
 	private static final long serialVersionUID = -4504430610082759470L;

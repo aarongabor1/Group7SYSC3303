@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
  * Class to contain all of the configurable values for the elevator simulation system.
  * 
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class Settings {
 	// Physical system settings definitions:
@@ -24,9 +24,10 @@ public class Settings {
 	// Event Consumer port (ECP) definitions:
 	public static final int FLOOR_BUTTON_PRESS_ECP = 6900; // Floor Button Press Event Consumer Port.
 	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6901; // Elevator Button Press Event Consumer Port.
-	public static final int DESTINATION_UPDATE_ECP = 6902; // Destination Update Event Consumer Port.
-	public static final int ELEVATOR_ARRIVAL_ECP = 6903; // Elevator Arrival Event Consumer Port.
-	public static final int ELEVATOR_MOVEMENT_ECP = 6904; // Elevator Movement Event Consumer Port.
+	public static final int ELEVATOR_ARRIVAL_ECP = 6902; // Elevator Arrival Event Consumer Port.
+	public static final int ELEVATOR_MOVEMENT_ECP = 6903; // Elevator Movement Event Consumer Port.
+	
+	public static final int DESTINATION_UPDATE_ECP = 6904; // Initial Destination Update Event Consumer Port. (Should allow for as many ports after this as there are elevators)
 	
 	/**
 	 * Temporary helper method to initiate all of the elevator systems to run on the host machine.

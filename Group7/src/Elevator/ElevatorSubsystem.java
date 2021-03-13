@@ -6,6 +6,8 @@ import Scheduler.Scheduler;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 import Events.*;
 
@@ -13,9 +15,11 @@ import Events.*;
  * ElevatorSubsystem is a class that controls one elevator
  * 
  * @author Diana Miraflor, Marc Angers
- * @version 1.1
+ * @version 1.2
  */
 public class ElevatorSubsystem implements Runnable {
+	public static Map<Integer, Integer> elevatorSystemPorts = new HashMap<Integer, Integer>(); 
+	
 	private Scheduler scheduler;
 	private Elevator parentElevator;
 	private Thread destinationUpdateEventConsumer;
@@ -27,8 +31,11 @@ public class ElevatorSubsystem implements Runnable {
 	public ElevatorSubsystem(Scheduler scheduler, Elevator parent) {
 		this.scheduler = scheduler;
 		parentElevator = parent;
+		
 		scheduler.registerNewElevator(parent);
-		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this), "Destination update event consumer");
+		ElevatorSubsystem.elevatorSystemPorts.put(parent.ID, Settings.DESTINATION_UPDATE_ECP + parent.ID);
+		
+		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this, parent.ID), "Destination update event consumer for elevator " + parent.ID);
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this), "Elevator button press event consumer");
 		
 		try {

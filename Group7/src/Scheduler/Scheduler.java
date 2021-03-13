@@ -14,14 +14,13 @@ import Elevator.ElevatorState;
 import Events.*;
 import Utilities.Direction;
 import Utilities.Parser;
-import Utilities.Settings;
 
 /** 
  * The scheduler class is the connection point of the whole project. All of the information that each
  * subsystem provides and consumes is organized and routed through this class. 
  *  
  * @author Aaron Gabor, Marc Angers, Diana Miraflor
- * @version 1.1
+ * @version 1.2
  */
 public class Scheduler implements Runnable {
 	private Thread elevatorMovementEventConsumer;

@@ -12,7 +12,7 @@ import Utilities.Settings;
 /**
  * Class to consume the floor button press events that are provided by the scheduler.
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class FloorButtonPressEventConsumer implements Runnable {
 	private FloorSubsystem parent;

@@ -7,23 +7,22 @@ import java.net.SocketException;
 
 import Events.DestinationUpdateEvent;
 import Utilities.Parser;
-import Utilities.Settings;
 
 /**
  * Class to update the elevator's destination by consuming the DestinationUpdateEvents provided by the scheduler.
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class DestinationUpdateEventConsumer implements Runnable {
 	private ElevatorSubsystem parent;
 	
 	private DatagramSocket receiveSocket, sendSocket;
 	
-	public DestinationUpdateEventConsumer(ElevatorSubsystem elevatorSubsystem) {
+	public DestinationUpdateEventConsumer(ElevatorSubsystem elevatorSubsystem, int elevatorID) {
 		parent = elevatorSubsystem;
 		
 		try {
-			receiveSocket = new DatagramSocket(Settings.DESTINATION_UPDATE_ECP);
+			receiveSocket = new DatagramSocket(ElevatorSubsystem.elevatorSystemPorts.get(elevatorID));
 			sendSocket = new DatagramSocket();
 		} catch (SocketException se) {
 			se.printStackTrace();

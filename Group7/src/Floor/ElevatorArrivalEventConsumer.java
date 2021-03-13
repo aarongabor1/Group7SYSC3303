@@ -12,7 +12,7 @@ import Utilities.Settings;
 /**
  * Class to consume the elevator arrival events provided by the scheduler.
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class ElevatorArrivalEventConsumer implements Runnable {
 	private FloorSubsystem parent;

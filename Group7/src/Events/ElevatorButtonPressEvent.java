@@ -9,7 +9,7 @@ import java.sql.Time;
 /**
  * Event class to notify the scheduler that a button was pressed within an elevator.
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class ElevatorButtonPressEvent implements Serializable {
 	private static final long serialVersionUID = 8392902175566934473L;

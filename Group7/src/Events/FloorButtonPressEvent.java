@@ -10,7 +10,7 @@ import java.sql.Time;
 /**
  * Event class to notify the scheduler when a button on a floor is pressed.
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class FloorButtonPressEvent implements Serializable {
 	private static final long serialVersionUID = 9182781161988433205L;

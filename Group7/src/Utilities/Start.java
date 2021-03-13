@@ -6,11 +6,13 @@ import java.util.List;
 import Elevator.*;
 import Floor.*;
 import Scheduler.Scheduler;
+import Utilities.Settings;
 
 /**
   * The Start class is the main entry point into the code. This class creates and runs the threads for all the other systems in the code.
-  * @author Marc Angers
-  *	@version 1.0.0
+  * 
+  * @author Marc Angers, Diana Miraflor
+  *	@version 1.1
   */
 public class Start {
 	public static void main(String[] args) {
@@ -18,8 +20,7 @@ public class Start {
 		List<Thread> elevatorSubsystemList = new LinkedList<>();
 	    
 	    Scheduler scheduler;
-		Elevator elevator;
-		Thread floorSubsystem, elevatorSubsystem, schedulerThread;
+		Thread floorSubsystem,  schedulerThread;
 		
 		scheduler = new Scheduler();
 		
@@ -33,15 +34,14 @@ public class Start {
 		
 		// Generate threads for each subsystem
 		floorSubsystem = new Thread(new FloorSubsystem(scheduler), "Floor Subsystem");
-		//elevatorSubsystem = new Thread(elevator.getElevatorSubsystem(), "Elevator Subsystem");
 		schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		floorSubsystem.start();
+		
 		for (Thread e : elevatorSubsystemList) {
 		    e.start();
 		}
 		
-		//elevatorSubsystem.start();
 		schedulerThread.start();
 	}
 }

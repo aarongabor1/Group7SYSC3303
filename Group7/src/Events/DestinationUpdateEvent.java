@@ -9,7 +9,7 @@ import java.sql.Time;
 /**
  * Event class to notify an elevator that its destination floor has changed.
  * @author Marc Angers
- * @vertion 1.0.0
+ * @vertion 1.1
  */
 public class DestinationUpdateEvent implements Serializable {
 	private static final long serialVersionUID = 7558165628865501458L;

@@ -1,14 +1,11 @@
 package Elevator;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import Utilities.Direction;
 
 /**
  * Class containing information about the state of an elevator.
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class ElevatorState {
 	private int currentFloor;

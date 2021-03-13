@@ -15,6 +15,12 @@ import Utilities.Settings;
 import Elevator.ElevatorState;
 import Floor.Floor;
 
+/**
+ * Class to generate the floor and elevator button press events that are contained in the input file.
+ * 
+ * @author Marc Angers
+ * @version 1.0
+ */
 public class EventGenerator implements Runnable {
 	private Scheduler parent;
 	private Parser parser;

@@ -12,7 +12,7 @@ import java.util.Map;
  * Elevator class is for the ElevatorSubsytem class to control.
  * 
  * @author Diana Miraflor, Marc Angers
- * @version 1.1
+ * @version 1.2
  *
  */
 public class Elevator {	
