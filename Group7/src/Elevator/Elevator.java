@@ -25,7 +25,7 @@ public class Elevator {
 	
 	private Map<Integer, ElevatorButton> elevatorButtons;
 	
-	public Elevator(Scheduler scheduler) {
+	public Elevator(Scheduler scheduler, int elevatorID) {
 		if (Settings.NUMBER_OF_FLOORS <= Floor.MINIMUM_FLOOR_NUM)
 			throw new IllegalArgumentException("Your building must have more than 1 floor to use an elevator!");
 		
@@ -38,7 +38,7 @@ public class Elevator {
 
 		state = new ElevatorState(Floor.MINIMUM_FLOOR_NUM, Direction.STATIONARY, Floor.MINIMUM_FLOOR_NUM);
 						
-		ID = 1; // While there is only one elevator in the system, it is given an ID of 1. Will change this in later iterations.
+		ID = elevatorID; // While there is only one elevator in the system, it is given an ID of 1. Will change this in later iterations.
 	}
 	
 	/**
@@ -154,5 +154,8 @@ public class Elevator {
 	}
 	public Map<Integer, ElevatorButton> getElevatorButtons() {
 		return elevatorButtons;
+	}
+	public int getID() {
+	    return ID;
 	}
 }
