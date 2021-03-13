@@ -32,4 +32,12 @@ public class FloorButtonPressEvent implements Serializable {
 		this.floor = fe.getFloor();
 		this.direction = fe.getDirection();
 	}
+	
+	public Direction getDirection() {
+	    return direction;
+	}
+	
+	public int getFloor() {
+	    return floor;
+	}
 }
