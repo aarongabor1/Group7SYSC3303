@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.sql.Time;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -63,6 +62,7 @@ public class Scheduler implements Runnable {
 	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 	
 	    
 	    int bestElevator = getBestElevator(floorButtonPressEvent);
+	    addDestination(bestElevator, floorButtonPressEvent.floor);
 	    // Send the destination update event to the elevator with the ID == bestElevator
 	    
 		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
@@ -141,10 +141,7 @@ public class Scheduler implements Runnable {
 	 * @param elevatorID
 	 */
 	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {
-	    List<Integer> destRequests = elevatorDestinations.get(elevatorID); 
-	    destRequests.add(elevatorButtonPressEvent.buttonNumber);
-	    Collections.sort(destRequests);
-	    
+	    addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
 	    
 		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
 		
@@ -155,6 +152,31 @@ public class Scheduler implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
+	}
+	
+	/**
+	 * Method to add a destination to the destination list for a given elevator.
+	 * @param elevatorID
+	 * @param destinationFloor
+	 */
+	private void addDestination(int elevatorID, int destinationFloor) {
+		List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
+		
+		if (currentDestinations.size() == 0) {
+			currentDestinations.add(destinationFloor);
+		}
+		
+		// Loop through the destinations for the elevator, and determine if the new destination is "on the way".
+		int previousDest = elevatorStates.get(elevatorID).getFloor();
+		for (int nextDest : currentDestinations) {
+			// If the new destination is between the previous destination and the next destination, add it into the list at that location.
+			// Return
+			
+			// Set previousDest to nextDest.
+		}
+		
+		// If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.
+		currentDestinations.add(destinationFloor);
 	}
 	
 	/**
