@@ -14,21 +14,34 @@ import Scheduler.Scheduler;
   */
 public class Start {
 	public static void main(String[] args) {
-		Scheduler scheduler;
+		List<Elevator> elevatorList = new LinkedList<>();
+		List<Thread> elevatorSubsystemList = new LinkedList<>();
+	    
+	    Scheduler scheduler;
 		Elevator elevator;
 		Thread floorSubsystem, elevatorSubsystem, schedulerThread;
 		
 		scheduler = new Scheduler();
-		elevator = new Elevator(scheduler);
-
+		
+		for (int i = 1; i <= Settings.NUMBER_OF_ELEVATORS; i++) {
+		    elevatorList.add(new Elevator(scheduler, i));
+		}
+		
+		for (Elevator e : elevatorList) {
+		    elevatorSubsystemList.add(new Thread(e.getElevatorSubsystem(), "Elevator Subsystem #" + e.getID()));
+		}
 		
 		// Generate threads for each subsystem
 		floorSubsystem = new Thread(new FloorSubsystem(scheduler), "Floor Subsystem");
-		elevatorSubsystem = new Thread(elevator.getElevatorSubsystem(), "Elevator Subsystem");
+		//elevatorSubsystem = new Thread(elevator.getElevatorSubsystem(), "Elevator Subsystem");
 		schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		floorSubsystem.start();
-		elevatorSubsystem.start();
+		for (Thread e : elevatorSubsystemList) {
+		    e.start();
+		}
+		
+		//elevatorSubsystem.start();
 		schedulerThread.start();
 	}
 }

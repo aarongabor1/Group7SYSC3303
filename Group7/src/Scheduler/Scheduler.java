@@ -14,6 +14,7 @@ import Elevator.ElevatorState;
 import Events.*;
 import Utilities.Direction;
 import Utilities.Parser;
+import Utilities.Settings;
 
 /** 
  * The scheduler class is the connection point of the whole project. All of the information that each
@@ -49,7 +50,7 @@ public class Scheduler implements Runnable {
 
 		elevatorStates = new HashMap<Integer, ElevatorState>();
 		elevatorDestinations = new HashMap<Integer, List<Integer>>();
-		
+	
 		currentTime = new Time(System.currentTimeMillis());
 	}
 	
