@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.sql.Time;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,21 +58,54 @@ public class Scheduler implements Runnable {
 	 * Method to organize the button press events and find the optimal elevator schedule.
 	 * Once the optimal schedule is found, the elevators will be notified of updates to their destinations.
 	 */
-	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 	
+	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 			
+	    // Find the best elevator to serve the floor request
+		int bestElevator = getBestElevator(floorButtonPressEvent);
 	    
-	    int bestElevator = getBestElevator(floorButtonPressEvent);
+		// Grab the current destination of the elevator
+	    int previousDestination = elevatorDestinations.get(bestElevator).get(0);
+	    
+	    // Add the new destination into the elevator's destination queue
 	    addDestination(bestElevator, floorButtonPressEvent.floor);
-	    // Send the destination update event to the elevator with the ID == bestElevator
 	    
-		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
-		
-		// Send the event to the appropriate consumer.
-		try {
-			sendSocket.send(Parser.packageObject(event));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+	    int newDestination = elevatorDestinations.get(bestElevator).get(0);
+	    if (newDestination != previousDestination) {
+	    	// The current destination for the elevator should change, so generate a new DestinationUpdateEvent
+			DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), bestElevator, newDestination);
+			
+			// Send the event to the appropriate consumer.
+			try {
+				sendSocket.send(Parser.packageObject(event));
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+	    }
+	}
+	
+	/**
+	 * Overload of the scheduling method to deal with elevator button presses.
+	 * @param elevatorButtonPressEvent
+	 * @param elevatorID
+	 */
+	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {    
+	    addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
+	    
+	    int previousDestination = elevatorDestinations.get(elevatorID).get(0);
+	    		
+		int newDestination = elevatorDestinations.get(elevatorID).get(0);
+	    if (newDestination != previousDestination) {
+	    	// The current destination for the elevator should change, so generate a new DestinationUpdateEvent
+			DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID, newDestination);
+			
+			// Send the event to the appropriate consumer.
+			try {
+				sendSocket.send(Parser.packageObject(event));
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+	    }
 	}
 	
 	/**
@@ -141,30 +173,6 @@ public class Scheduler implements Runnable {
 	    }
 	    
 	   return bestElevatorID;
-	}
-	
-	/**
-	 * Overload of the scheduling method to deal with elevator button presses.
-	 * @param elevatorButtonPressEvent
-	 * @param elevatorID
-	 */
-	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {
-	       
-	    List<Integer> destRequests = elevatorDestinations.get(elevatorID); 
-	    destRequests.add(elevatorButtonPressEvent.buttonNumber);
-	    Collections.sort(destRequests);
-	    
-	    addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
-	    
-		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
-		
-		// Send the event to the appropriate consumer.
-		try {
-			sendSocket.send(Parser.packageObject(event));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 	}
 	
 	/**
