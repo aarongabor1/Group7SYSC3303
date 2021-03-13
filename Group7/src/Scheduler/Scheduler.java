@@ -129,7 +129,15 @@ public class Scheduler implements Runnable {
 	                    bestElevatorID = i;
                     }                    
                 }	            
-	        }	        
+	        }
+	        
+	        if (!(fe.getFloor() < currentElevator.getFloor() && fe.getFloor() > currentElevator.getDestination()) 
+                    || !(fe.getFloor() > currentElevator.getFloor() && fe.getFloor() < currentElevator.getDestination())) {
+                if (Math.abs(currentElevator.getDestination() - fe.getFloor()) < Math.abs(bestElevator.getDestination() - fe.getFloor())){
+                    bestElevator = currentElevator;
+                    bestElevatorID = i;
+                }
+            }
 	    }
 	    
 	   return bestElevatorID;
@@ -141,6 +149,11 @@ public class Scheduler implements Runnable {
 	 * @param elevatorID
 	 */
 	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {
+	       
+	    List<Integer> destRequests = elevatorDestinations.get(elevatorID); 
+	    destRequests.add(elevatorButtonPressEvent.buttonNumber);
+	    Collections.sort(destRequests);
+	    
 	    addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
 	    
 		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), 1, 1); // <-- Remove this!!!
@@ -160,19 +173,35 @@ public class Scheduler implements Runnable {
 	 * @param destinationFloor
 	 */
 	private void addDestination(int elevatorID, int destinationFloor) {
-		List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
-		
-		if (currentDestinations.size() == 0) {
-			currentDestinations.add(destinationFloor);
-		}
-		
+	    List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
+	    
+	    if (currentDestinations.size() == 0) {
+            currentDestinations.add(destinationFloor);
+            // OR should it be elevatorDestinations.get(elevatorID).add(destinationFloor)
+            // Because the local variable currentDestinations is the list that is being mutated, not the list that is inside elevatorDestinations
+	    }
+	    
 		// Loop through the destinations for the elevator, and determine if the new destination is "on the way".
 		int previousDest = elevatorStates.get(elevatorID).getFloor();
-		for (int nextDest : currentDestinations) {
-			// If the new destination is between the previous destination and the next destination, add it into the list at that location.
-			// Return
-			
-			// Set previousDest to nextDest.
+		for (int i = 0; i < currentDestinations.size(); i ++) {
+		    
+		    // If the new destination is between the previous destination and the next destination, add it into the list at that location.
+            // Return
+            
+		    if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
+		        if (currentDestinations.get(i) > destinationFloor && destinationFloor > previousDest) {
+		            currentDestinations.add(i++, destinationFloor);
+		        }
+		    }
+		    
+		    if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
+		        if (currentDestinations.get(i) < destinationFloor && destinationFloor < previousDest) {
+		            currentDestinations.add(i++, destinationFloor);
+		        }
+		    }
+		    
+		    // Set previousDest to nextDest.
+		    previousDest = currentDestinations.get(i);
 		}
 		
 		// If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.

@@ -32,14 +32,14 @@ class ShedulingAlgoTest {
     void setUp() {
         elevatorStates = new HashMap<Integer, ElevatorState>();
         
-        ElevatorState e1 = new ElevatorState(3, Direction.DOWN, 1);
-        ElevatorState e2 = new ElevatorState(4, Direction.DOWN, 2);
-        ElevatorState e3 = new ElevatorState(1, Direction.UP, 4);
+        ElevatorState e1 = new ElevatorState(3, Direction.UP, 6);
+        ElevatorState e2 = new ElevatorState(6, Direction.DOWN, 4);
+        //ElevatorState e3 = new ElevatorState(1, Direction.UP, 4);
     
         
         elevatorStates.put(1, e1);
         elevatorStates.put(2, e2);
-        elevatorStates.put(3, e3);
+       // elevatorStates.put(3, e3);
     }
 
     /**
@@ -93,20 +93,28 @@ class ShedulingAlgoTest {
                     bestElevatorID = i;
                 }
                 
-                if (currentElevator.getFloor() > fe.getFloor() && currentElevator.getDirection() == Direction.DOWN) {
-                    if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
-                        bestElevator = currentElevator;
-                        bestElevatorID = i;
-                    }                  
+                if (currentElevator.getFloor() > fe.getFloor() && currentElevator.getDirection() == Direction.DOWN) {              
+                        if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
+                            bestElevator = currentElevator;
+                            bestElevatorID = i;
+                        }                          
                 }
                 
-                if (currentElevator.getFloor() < fe.getFloor() && currentElevator.getDirection() == Direction.UP) {                   
+                if (currentElevator.getFloor() < fe.getFloor() && currentElevator.getDirection() == Direction.UP) {             
                     if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
                         bestElevator = currentElevator;
                         bestElevatorID = i;
-                    }                    
+                    }   
                 }               
-            }           
+            } 
+            
+            if (!(fe.getFloor() < currentElevator.getFloor() && fe.getFloor() > currentElevator.getDestination()) 
+                    || !(fe.getFloor() > currentElevator.getFloor() && fe.getFloor() < currentElevator.getDestination())) {
+                if (Math.abs(currentElevator.getDestination() - fe.getFloor()) < Math.abs(bestElevator.getDestination() - fe.getFloor())){
+                    bestElevator = currentElevator;
+                    bestElevatorID = i;
+                }
+            }
         }
         
        return bestElevatorID;
