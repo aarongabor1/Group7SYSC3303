@@ -14,10 +14,20 @@ import Elevator.ElevatorState;
 import Events.FloorButtonPressEvent;
 import Utilities.Direction;
 
+/**
+ * A class to test the algorithm for Scheduler for picking the best elevator
+ * to service a new floor request
+ * 
+ * @author Diana Miraflor
+ *
+ */
 class ShedulingAlgoTest {
     
     private Map<Integer, ElevatorState> elevatorStates;
     
+    /**
+     * Current states of the elevators
+     */
     @BeforeEach
     void setUp() {
         elevatorStates = new HashMap<Integer, ElevatorState>();
@@ -32,15 +42,21 @@ class ShedulingAlgoTest {
         elevatorStates.put(3, e3);
     }
 
+    /**
+     * Tests the best elevator and prints the elevator ID
+     */
     @Test
     void test() {
      
         FloorButtonPressEvent fe = new FloorButtonPressEvent(new Time(1000), 2, Direction.UP);      
         int bestElevator = getBestElevator(fe);        
-        System.out.println("Elevator #" + bestElevator);
+        System.out.println("Elevator #" + bestElevator + " is the best elevator");
         
     }
     
+    /*
+     * The algorithm
+     */
     public int getBestElevator(FloorButtonPressEvent fe) {
         
         ElevatorState bestElevator = null;

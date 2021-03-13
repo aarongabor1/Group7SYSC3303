@@ -80,7 +80,7 @@ public class Scheduler implements Runnable {
 	 * Method to get the best elevator to service a new floor request
 	 * 
 	 * @param fe A new floor button press event (new floor request)
-	 * @return ElevatorState
+	 * @return int ID of the best elevator
 	 */
 	public int getBestElevator(FloorButtonPressEvent fe) {
 	    
@@ -91,8 +91,13 @@ public class Scheduler implements Runnable {
 	        ElevatorState currentElevator = elevatorStates.get(i);
 	        
 	        /////// IF CURRENT ELEVATOR IS STATIONARY //////
-	        
 	        if (currentElevator.getDirection() == Direction.STATIONARY) {
+	            
+	            if (bestElevator == null) {
+                    bestElevator = currentElevator;
+                    bestElevatorID = i;
+                }
+	            
 	            if (currentElevator.getFloor() == fe.getFloor()) {
 	                return i;
 	            }
@@ -104,7 +109,6 @@ public class Scheduler implements Runnable {
 	        }
  	        
 	        ////// IF CURRENT ELEVATOR IS MOVING //////
-	        
 	        if (currentElevator.getDirection() == fe.getDirection()) {
 	            
 	            if (bestElevator == null) {
