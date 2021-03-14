@@ -174,7 +174,7 @@ public class Scheduler implements Runnable {
             } 
             
             // Checks the case where all the elevators are above or below the current floor
-            else if (allElevatorsAbove(fe) || allElevatorsBelow(fe)) {
+            else if (allElevatorsAbove(fe) || allElevatorsBelow(fe) && currentElevator.getFloor() != fe.getFloor()) {
                
                 if (bestElevator == null) {
                     bestElevator = currentElevator;
