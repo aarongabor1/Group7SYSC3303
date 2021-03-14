@@ -61,6 +61,7 @@ public class Scheduler implements Runnable {
 	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 			
 	    // Find the best elevator to serve the floor request
 		int bestElevator = mostConvenientElevator(floorButtonPressEvent);
+		elevatorStates.get(bestElevator).updateRequests();
 	    
 		// Grab the current destination of the elevator
 	    List<Integer> currentDestinations = elevatorDestinations.get(bestElevator);
@@ -141,6 +142,11 @@ public class Scheduler implements Runnable {
                 } else if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
                     bestElevator = currentElevator;
                     bestElevatorID = i;
+                } else if (currentElevator.getRequests() < bestElevator.getRequests()) {
+                    
+                    bestElevator = currentElevator;
+                    bestElevatorID = i;
+                       
                 }
             }
                
@@ -168,7 +174,7 @@ public class Scheduler implements Runnable {
             } 
             
             // Checks the case where all the elevators are above or below the current floor
-            else if (allElevatorsAbove(fe) || allElevatorsBelow(fe)) {
+            else if (allElevatorsAbove(fe) || allElevatorsBelow(fe) && currentElevator.getFloor() != fe.getFloor()) {
                
                 if (bestElevator == null) {
                     bestElevator = currentElevator;
@@ -185,8 +191,7 @@ public class Scheduler implements Runnable {
                 }
             }
             
-            System.out.println("Current best elevator: " + bestElevatorID);
-            
+            //System.out.println("Current best elevator: " + bestElevatorID);    
         }
         
        return bestElevatorID;

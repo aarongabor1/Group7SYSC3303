@@ -1,6 +1,7 @@
 package Elevator;
 
 import java.io.Serializable;
+import java.util.List;
 
 import Utilities.Direction;
 
@@ -14,12 +15,15 @@ public class ElevatorState implements Serializable {
 	private int currentFloor;
 	private Direction currentDirection;
 	private int currentDestination;
+	
+	private int requests;
 
 	
 	public ElevatorState(int floor, Direction direction, int destination) {
 		currentFloor = floor;
 		currentDirection = direction; 
 		currentDestination = destination;
+		requests = 0;
 	}
 	
 	public boolean triggersElevatorButtonEvent(ElevatorState requiredState) {
@@ -39,6 +43,9 @@ public class ElevatorState implements Serializable {
 	public int getDestination() {
 		return currentDestination;
 	}
+	public int getRequests() {
+	    return requests;
+	}
 
 	
 	public void updateFloor(int floor) {
@@ -49,6 +56,9 @@ public class ElevatorState implements Serializable {
 	}
 	public void updateDestination(int destination) {
 		currentDestination = destination;
+	}
+	public void updateRequests() {
+	    requests++;
 	}
 	
 	
