@@ -96,7 +96,7 @@ public class Scheduler implements Runnable {
 	 * @param elevatorButtonPressEvent
 	 * @param elevatorID
 	 */
-	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {    
+	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) { 
 	    addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
 	    
 	    int previousDestination = elevatorDestinations.get(elevatorID).get(0);
