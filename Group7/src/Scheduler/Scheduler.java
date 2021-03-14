@@ -142,12 +142,7 @@ public class Scheduler implements Runnable {
                 } else if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
                     bestElevator = currentElevator;
                     bestElevatorID = i;
-                } else if (currentElevator.getRequests() < bestElevator.getRequests()) {
-                    
-                    bestElevator = currentElevator;
-                    bestElevatorID = i;
-                       
-                }
+                } 
             }
                
             // If current elevator is moving

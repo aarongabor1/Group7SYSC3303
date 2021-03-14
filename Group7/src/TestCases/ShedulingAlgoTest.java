@@ -18,7 +18,7 @@ import Utilities.Direction;
  * A class to test the algorithm for Scheduler for picking the best elevator
  * to service a new floor request
  * 
- * @author Diana Miraflor
+ * @author Diana Miraflor, Aaron Gabor
  *
  */
 class ShedulingAlgoTest {
@@ -48,9 +48,15 @@ class ShedulingAlgoTest {
     @Test
     void test() {
      
-        FloorButtonPressEvent fe = new FloorButtonPressEvent(new Time(1000), 2, Direction.UP);      
+    	FloorButtonPressEvent fe = new FloorButtonPressEvent(new Time(1000), 4, Direction.UP);      
         int bestElevator = mostConvenientElevator(fe);        
-        System.out.println("Elevator #" + bestElevator + " is the best elevator");
+        assertEquals(3, bestElevator);
+        FloorButtonPressEvent fe2 = new FloorButtonPressEvent(new Time(1000), 5, Direction.DOWN);      
+        bestElevator = mostConvenientElevator(fe2);        
+        assertEquals(1, bestElevator);
+        FloorButtonPressEvent fe3 = new FloorButtonPressEvent(new Time(1000), 5, Direction.UP);      
+        bestElevator = mostConvenientElevator(fe3);        
+        assertEquals(2, bestElevator);
         
     }
     
@@ -70,11 +76,13 @@ class ShedulingAlgoTest {
                 if (bestElevator == null) {
                     bestElevator = currentElevator;
                     bestElevatorID = i;
+                } 
                 
-                } else if (currentElevator.getFloor() == fe.getFloor()) {                
+                else if (currentElevator.getFloor() == fe.getFloor()) {                
                     return i;
+                } 
                 
-                } else if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
+                else if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
                     bestElevator = currentElevator;
                     bestElevatorID = i;
                 }
@@ -104,7 +112,7 @@ class ShedulingAlgoTest {
             } 
             
             // Checks the case where all the elevators are above or below the current floor
-            else if (allElevatorsAbove(fe) || allElevatorsBelow(fe)) {
+            else if (allElevatorsAbove(fe) || allElevatorsBelow(fe) && currentElevator.getFloor() != fe.getFloor()) {
                
                 if (bestElevator == null) {
                     bestElevator = currentElevator;
@@ -120,9 +128,6 @@ class ShedulingAlgoTest {
                     }
                 }
             }
-            
-            System.out.println("Current best elevator: " + bestElevatorID);
-            
         }
         
        return bestElevatorID;
