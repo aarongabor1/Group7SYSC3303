@@ -60,7 +60,7 @@ public class Scheduler implements Runnable {
 	 */
 	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 			
 	    // Find the best elevator to serve the floor request
-		int bestElevator = getBestElevator(floorButtonPressEvent);
+		int bestElevator = mostConvenientElevator(floorButtonPressEvent);
 	    
 		// Grab the current destination of the elevator
 	    List<Integer> currentDestinations = elevatorDestinations.get(bestElevator);
@@ -121,65 +121,105 @@ public class Scheduler implements Runnable {
 	 * @param fe A new floor button press event (new floor request)
 	 * @return int ID of the best elevator
 	 */
-	public int getBestElevator(FloorButtonPressEvent fe) {
-	    
-	    ElevatorState bestElevator = null;
-	    int bestElevatorID = 0;
-	    
-	    for (int i = 1; i <= elevatorStates.size(); i++) {
-	        ElevatorState currentElevator = elevatorStates.get(i);
-	        
-	        /////// IF CURRENT ELEVATOR IS STATIONARY //////
-	        if (currentElevator.getDirection() == Direction.STATIONARY) {
-	            
-	            if (bestElevator == null) {
+	public int mostConvenientElevator(FloorButtonPressEvent fe) {
+
+        ElevatorState bestElevator = null;
+        int bestElevatorID = 0;
+        
+        for (int i = 1; i <= elevatorStates.size(); i++) {
+            ElevatorState currentElevator = elevatorStates.get(i);        
+         
+            if (currentElevator.getDirection() == Direction.STATIONARY) {
+                
+                if (bestElevator == null) {
                     bestElevator = currentElevator;
                     bestElevatorID = i;
-                }
-	            
-	            if (currentElevator.getFloor() == fe.getFloor()) {
-	                return i;
-	            }
-	            
-	            if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
-	                bestElevator = currentElevator;
-                    bestElevatorID = i;
-	            }
-	        }
- 	        
-	        ////// IF CURRENT ELEVATOR IS MOVING //////
-	        if (currentElevator.getDirection() == fe.getDirection()) {
-	            
-	            if (bestElevator == null) {
-	                bestElevator = currentElevator;
-	                bestElevatorID = i;
-	            }
- 	            
-	            if (currentElevator.getFloor() > fe.getFloor() && currentElevator.getDirection() == Direction.DOWN) {
-	                if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
-	                    bestElevator = currentElevator;
-	                    bestElevatorID = i;
-	                }	               
-	            }
-	            
-	            if (currentElevator.getFloor() < fe.getFloor() && currentElevator.getDirection() == Direction.UP) {                   
-	                if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
-	                    bestElevator = currentElevator;
-	                    bestElevatorID = i;
-                    }                    
-                }	            
-	        }
-	        
-	        if (!(fe.getFloor() < currentElevator.getFloor() && fe.getFloor() > currentElevator.getDestination()) 
-                    || !(fe.getFloor() > currentElevator.getFloor() && fe.getFloor() < currentElevator.getDestination())) {
-                if (Math.abs(currentElevator.getDestination() - fe.getFloor()) < Math.abs(bestElevator.getDestination() - fe.getFloor())){
+                
+                } else if (currentElevator.getFloor() == fe.getFloor()) {                
+                    return i;
+                
+                } else if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
                     bestElevator = currentElevator;
                     bestElevatorID = i;
                 }
             }
+               
+            // If current elevator is moving
+            else if (currentElevator.getDirection() == fe.getDirection() && (currentElevator.getFloor() - fe.getFloor() != 0)) {
+                
+                if (bestElevator == null) {
+                    bestElevator = currentElevator;
+                    bestElevatorID = i;
+                }
+                
+                else if (currentElevator.getFloor() > fe.getFloor() && currentElevator.getDirection() == Direction.DOWN) {              
+                        if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
+                            bestElevator = currentElevator;
+                            bestElevatorID = i;
+                        }                          
+                }
+                
+                else if (currentElevator.getFloor() < fe.getFloor() && currentElevator.getDirection() == Direction.UP) {             
+                    if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
+                        bestElevator = currentElevator;
+                        bestElevatorID = i;
+                    }   
+                }               
+            } 
+            
+            // Checks the case where all the elevators are above or below the current floor
+            else if (allElevatorsAbove(fe) || allElevatorsBelow(fe)) {
+               
+                if (bestElevator == null) {
+                    bestElevator = currentElevator;
+                    bestElevatorID = i;
+                }
+                
+                else if (!(fe.getFloor() < currentElevator.getFloor() && fe.getFloor() > currentElevator.getDestination()) 
+                    || !(fe.getFloor() > currentElevator.getFloor() && fe.getFloor() < currentElevator.getDestination())) {
+                    
+                    if (Math.abs(currentElevator.getDestination() - fe.getFloor()) < Math.abs(bestElevator.getDestination() - fe.getFloor())){             
+                           bestElevator = currentElevator;
+                           bestElevatorID = i;                    
+                    }
+                }
+            }
+            
+            System.out.println("Current best elevator: " + bestElevatorID);
+            
+        }
+        
+       return bestElevatorID;
+	}
+	
+	/**
+	 * Checks if all the elevators are currently above the requested floor
+	 * 
+	 * @param fe
+	 * @return
+	 */
+	 public boolean allElevatorsAbove(FloorButtonPressEvent fe) {
+	     for (int i = 1; i <= elevatorStates.size(); i++) {
+	         if (elevatorStates.get(i).getFloor() < fe.getFloor()) {
+	             return false;               
+	         }
+	     }
+	     return true;
+	 }
+	
+	 /**
+	  * Checks if all the elevators are currently below the requested floor
+	  * 
+	  * @param fe
+	  * @return
+	  */
+	public boolean allElevatorsBelow(FloorButtonPressEvent fe) {
+	    for (int i = 1; i <= elevatorStates.size(); i++) {
+	        if (elevatorStates.get(i).getFloor() > fe.getFloor()) {
+	            return false;
+	        }
 	    }
-	    
-	   return bestElevatorID;
+	    return true;
 	}
 	
 	/**
