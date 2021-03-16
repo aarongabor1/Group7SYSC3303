@@ -1,7 +1,6 @@
 package Elevator;
 
 import java.io.Serializable;
-import java.util.List;
 
 import Utilities.Direction;
 

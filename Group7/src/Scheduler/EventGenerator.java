@@ -3,6 +3,8 @@ package Scheduler;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -25,12 +27,14 @@ public class EventGenerator implements Runnable {
 	private Scheduler parent;
 	private Parser parser;
 	private Map<ElevatorState, ElevatorButtonPressEvent> elevatorEvents;
+	private List<FloorButtonPressEvent> floorEvents;
 	
 	public EventGenerator(Scheduler scheduler) {
 		parent = scheduler;
 		parser = new Parser();
 		
 		elevatorEvents = new HashMap<ElevatorState, ElevatorButtonPressEvent>();
+		floorEvents = new LinkedList<FloorButtonPressEvent>();
 	}
 	
 	
@@ -50,9 +54,21 @@ public class EventGenerator implements Runnable {
 		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
 		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
 		ElevatorState requiredState = new ElevatorState(floorButtonEvent.floor, floorButtonEvent.direction, floorButtonEvent.direction == Direction.UP ? Settings.NUMBER_OF_FLOORS : Floor.MINIMUM_FLOOR_NUM);
-		elevatorEvents.put(requiredState, elevatorButtonEvent);
 		
-		parent.scheduleEvent(floorButtonEvent);
+		elevatorEvents.put(requiredState, elevatorButtonEvent);
+		floorEvents.add(floorButtonEvent);
+	}
+	
+	/**
+	 * Method to check if a floor button press event is ready to be triggered.
+	 */
+	private void checkForFloorButtonEvent() {
+		for (FloorButtonPressEvent floorButtonEvent : floorEvents) {
+			if (floorButtonEvent.time >= parent.getTime()) {
+				parent.scheduleEvent(floorButtonEvent);
+				floorEvents.remove(floorButtonEvent);
+			}
+		}
 	}
 	
 	/**
@@ -69,6 +85,9 @@ public class EventGenerator implements Runnable {
 			for (Map.Entry<Integer, ElevatorState> elevatorStates : parent.getElevatorStates().entrySet()) {
 				ElevatorState stateToCheck = (ElevatorState) elevatorStates.getValue();
 				if (stateToCheck.triggersElevatorButtonEvent(requiredState)) {
+					// Update the elevator button press event to make sure it's coming from the right elevator:
+					elevatorEvent.getValue().updateElevatorID(elevatorStates.getKey());
+					
 					// Fire the elevator button press event:
 					parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());
 					
@@ -89,7 +108,8 @@ public class EventGenerator implements Runnable {
 				break;
 			}
 		}
-		while (elevatorEvents.size() > 0) {
+		while (elevatorEvents.size() > 0 || floorEvents.size() > 0) {
+			checkForFloorButtonEvent();
 			checkForElevatorButtonEvent();
 		}
 	}

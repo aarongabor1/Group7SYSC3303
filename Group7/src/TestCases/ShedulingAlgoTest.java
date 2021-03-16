@@ -2,9 +2,7 @@ package TestCases;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.sql.Time;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,13 +46,13 @@ class ShedulingAlgoTest {
     @Test
     void test() {
      
-    	FloorButtonPressEvent fe = new FloorButtonPressEvent(new Time(1000), 4, Direction.UP);      
+        FloorButtonPressEvent fe = new FloorButtonPressEvent(1000, 2, Direction.UP);      
         int bestElevator = mostConvenientElevator(fe);        
         assertEquals(3, bestElevator);
-        FloorButtonPressEvent fe2 = new FloorButtonPressEvent(new Time(1000), 5, Direction.DOWN);      
+        FloorButtonPressEvent fe2 = new FloorButtonPressEvent(1000, 5, Direction.DOWN);      
         bestElevator = mostConvenientElevator(fe2);        
         assertEquals(1, bestElevator);
-        FloorButtonPressEvent fe3 = new FloorButtonPressEvent(new Time(1000), 5, Direction.UP);      
+        FloorButtonPressEvent fe3 = new FloorButtonPressEvent(1000, 5, Direction.UP);      
         bestElevator = mostConvenientElevator(fe3);        
         assertEquals(2, bestElevator);
         

@@ -1,7 +1,5 @@
 package Events;
 
-import java.sql.Time;
-
 import Floor.Floor;
 import Utilities.*;
 
@@ -13,7 +11,7 @@ import Utilities.*;
  * @version 1.0.1
  */
 public class FormattedEvent {
-	private Time time;
+	private long time;
 	private int currentFloor;
 	private Direction direction;
 	private int carButton;
@@ -27,7 +25,7 @@ public class FormattedEvent {
 	 * elevator needs to go up or down, carButton is an integer value for the floor 
 	 * where the user would like to travel to.
 	 */
-	public FormattedEvent(Time time, int currentFloor, Direction direction, int carButton)
+	public FormattedEvent(long time, int currentFloor, Direction direction, int carButton)
 	{
 		if (currentFloor < Floor.MINIMUM_FLOOR_NUM || currentFloor > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("An event cannot be generated for a floor that doesn't exist!");
@@ -44,7 +42,7 @@ public class FormattedEvent {
 	 * 
 	 * @return returns a Time object
 	 */
-	public Time getTime()
+	public long getTime()
 	{
 		return this.time;
 	}
@@ -88,6 +86,6 @@ public class FormattedEvent {
 	 * @return string containing all information.
 	 */
 	public String toString() {
-		return time.toString() + ": " + currentFloor + " " + direction + " " + carButton;
+		return time + ": " + currentFloor + " " + direction + " " + carButton;
 	}
 }

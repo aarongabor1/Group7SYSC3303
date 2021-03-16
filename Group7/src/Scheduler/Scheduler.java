@@ -3,7 +3,6 @@ package Scheduler;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class Scheduler implements Runnable {
 	private Map<Integer, ElevatorState> elevatorStates;
 	private Map<Integer, List<Integer>> elevatorDestinations;
 	
-	private Time currentTime;
+	private long startTime;
 	
 	/**
 	 * Constructor that will create the Network object.
@@ -50,7 +49,7 @@ public class Scheduler implements Runnable {
 		elevatorStates = new HashMap<Integer, ElevatorState>();
 		elevatorDestinations = new HashMap<Integer, List<Integer>>();
 	
-		currentTime = new Time(System.currentTimeMillis());
+		startTime = System.currentTimeMillis();
 	}
 	
 	// The main scheduling method.
@@ -313,9 +312,8 @@ public class Scheduler implements Runnable {
 		return elevatorStates;
 	}
 	
-	public Time getTime() {
-		currentTime = new Time(System.currentTimeMillis());
-		return currentTime;
+	public long getTime() {
+		return System.currentTimeMillis() - startTime;
 	}
 	
 }

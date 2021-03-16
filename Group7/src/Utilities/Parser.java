@@ -20,7 +20,6 @@ import Elevator.ElevatorState;
 import Elevator.ElevatorSubsystem;
 
 import java.util.ArrayList;
-import java.sql.Time;
 
 /***
  * This class takes in the file and uses the text to fill out the variable needed to
@@ -33,7 +32,9 @@ import java.sql.Time;
  */
 public class Parser {
 	private File file;
-	private ArrayList<FormattedEvent> inputEventsList ;
+	private ArrayList<FormattedEvent> inputEventsList;
+	
+	long startTime = 0;
 	
 	/**
 	 * Asks user to pick the text file that condenses the floor events then stores it in a File object.
@@ -74,7 +75,6 @@ public class Parser {
 			String currentFloor;
 			String direction;
 			String carButton;
-			Time time1;
 			int currentFloor1;
 			Direction direction1;
 			int carButton1;
@@ -84,12 +84,19 @@ public class Parser {
 				currentFloor = scanner.next();
 				direction = scanner.next();
 				carButton = scanner.next();
+				
 				long ms = dateFormat.parse(time).getTime();
-				time1 = new Time(ms);
+				if (startTime == 0) {
+					startTime = ms;
+					ms = 0;
+				}
+				else
+					ms = ms - startTime;
+				
 				currentFloor1 = Integer.parseInt(currentFloor);
 				direction1 = Direction.valueOf(direction.toUpperCase());
 				carButton1 = Integer.parseInt(carButton);
-				inputEventsList.add(new FormattedEvent(time1, currentFloor1, direction1, carButton1));
+				inputEventsList.add(new FormattedEvent(ms, currentFloor1, direction1, carButton1));
 			}
 			scanner.close();
 			
@@ -190,11 +197,11 @@ public class Parser {
 	 * @return the type of the event
 	 */
 	private static String getEventType(Object obj) {
-		FloorButtonPressEvent tempFBPEvent = new FloorButtonPressEvent(new Time(1), 1, Direction.UP);
-		ElevatorButtonPressEvent tempEBPEvent = new ElevatorButtonPressEvent(new Time(1), 1, 1);
-		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(new Time(1), 1, 1);
-		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(new Time(1), 1, 1, Direction.UP);
-		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(new Time(1), 1, new ElevatorState(1, Direction.UP, 1));
+		FloorButtonPressEvent tempFBPEvent = new FloorButtonPressEvent(System.currentTimeMillis(), 1, Direction.UP);
+		ElevatorButtonPressEvent tempEBPEvent = new ElevatorButtonPressEvent(System.currentTimeMillis(), 1, 1);
+		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(System.currentTimeMillis(), 1, 1);
+		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(System.currentTimeMillis(), 1, 1, Direction.UP);
+		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(System.currentTimeMillis(), 1, new ElevatorState(1, Direction.UP, 1));
 		
 		if (obj.getClass() == tempFBPEvent.getClass())
 			return "FBP";

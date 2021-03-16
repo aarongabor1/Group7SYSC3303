@@ -4,7 +4,6 @@ import Floor.Floor;
 import Utilities.Settings;
 
 import java.io.Serializable;
-import java.sql.Time;
 
 /**
  * Event class to notify the scheduler that a button was pressed within an elevator.
@@ -13,11 +12,11 @@ import java.sql.Time;
  */
 public class ElevatorButtonPressEvent implements Serializable {
 	private static final long serialVersionUID = 8392902175566934473L;
-	public Time time;
+	public long time;
 	public int elevatorID;
 	public int buttonNumber;
 	
-	public ElevatorButtonPressEvent(Time time, int elevator, int button) {
+	public ElevatorButtonPressEvent(long time, int elevator, int button) {
 		if (button < Floor.MINIMUM_FLOOR_NUM || button > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("Cannot press an elevator button that does not exist!");
 		
@@ -28,7 +27,12 @@ public class ElevatorButtonPressEvent implements Serializable {
 	
 	public ElevatorButtonPressEvent(FormattedEvent fe) {
 		this.time = fe.getTime();
-		elevatorID = 1; // <-- fix this later
+		elevatorID = 0; // We don't know which elevator the button press is coming from when the event is initialized, will update it later.
 		buttonNumber = fe.getCarButton();
+	}
+	
+	// Get and set methods:
+	public void updateElevatorID(int newID) {
+		elevatorID = newID;
 	}
 }
