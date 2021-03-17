@@ -22,8 +22,8 @@ public class ElevatorState implements Serializable {
 	}
 	
 	public boolean triggersElevatorButtonEvent(ElevatorState requiredState) {
-		boolean satisfiesCurrentFloor = currentFloor == requiredState.getFloor();
-		boolean satisfiesCurrentDirection = currentDirection == requiredState.getDirection() || currentDirection == Direction.STATIONARY;
+		boolean satisfiesCurrentFloor = (currentFloor == requiredState.getFloor());
+		boolean satisfiesCurrentDirection = (currentDirection == requiredState.getDirection() || currentDirection == Direction.STATIONARY);
 		
 		return satisfiesCurrentFloor && satisfiesCurrentDirection;
 	}
@@ -48,4 +48,8 @@ public class ElevatorState implements Serializable {
 	public void updateDestination(int destination) {
 		currentDestination = destination;
 	}	
+	
+	public String toString() {
+		return "State: " + currentFloor + ", " + currentDirection.toString() + ", " + currentDestination;
+	}
 }

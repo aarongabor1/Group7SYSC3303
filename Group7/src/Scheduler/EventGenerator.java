@@ -82,8 +82,10 @@ public class EventGenerator implements Runnable {
 	private void checkForElevatorButtonEvent() {
 		// Loop through all of the waiting elevator button press events:
 		Iterator<Entry<ElevatorState, ElevatorButtonPressEvent>> iterator = elevatorEvents.entrySet().iterator();
+		Map.Entry<ElevatorState, ElevatorButtonPressEvent> elevatorEvent;
+		
 		while (iterator.hasNext()) {
-			Map.Entry<ElevatorState, ElevatorButtonPressEvent> elevatorEvent = (Map.Entry<ElevatorState, ElevatorButtonPressEvent>) iterator.next();
+			elevatorEvent = (Map.Entry<ElevatorState, ElevatorButtonPressEvent>) iterator.next();
 			ElevatorState requiredState = (ElevatorState) elevatorEvent.getKey();
 			
 			// Check if any of the current elevator states satisfy the requirements to fire the elevator button press event:
@@ -124,7 +126,7 @@ public class EventGenerator implements Runnable {
 		}
 		
 		// Fire the events when they are ready.
-		while (elevatorEvents.size() > 0 || floorEvents.size() > 0) {
+		while (true) {
 			checkForFloorButtonEvent();
 			checkForElevatorButtonEvent();
 		}

@@ -6,6 +6,12 @@ import java.util.List;
 import Elevator.Elevator;
 import Utilities.Settings;
 
+/**
+ * Class to run just the elevator subsystems on a given computer.
+ * 
+ * @author Marc Angers
+ * @version 1.0
+ */
 public class RunElevators {
 	public static void main(String args[]) {
 		List<Elevator> elevatorList = new LinkedList<>();

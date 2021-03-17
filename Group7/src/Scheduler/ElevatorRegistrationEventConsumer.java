@@ -9,6 +9,12 @@ import Events.ElevatorRegistrationEvent;
 import Utilities.Parser;
 import Utilities.Settings;
 
+/**
+ * Class to consume the elevator registration events from when the elevators are initialized.
+ * 
+ * @author Marc Angers
+ * @version 1.0
+ */
 public class ElevatorRegistrationEventConsumer implements Runnable {
 private Scheduler parent;
 	

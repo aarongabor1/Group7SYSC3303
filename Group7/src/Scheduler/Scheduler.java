@@ -100,10 +100,12 @@ public class Scheduler implements Runnable {
 	 * @param elevatorID
 	 */
 	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) { 
-	    addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
-	    
-	    int previousDestination = elevatorDestinations.get(elevatorID).get(0);
-	    		
+		int previousDestination = -1;
+		if (elevatorDestinations.get(elevatorID).size() > 0)
+	    	previousDestination = elevatorDestinations.get(elevatorID).get(0);
+		
+		addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
+	    	    		
 		int newDestination = elevatorDestinations.get(elevatorID).get(0);
 	    if (newDestination != previousDestination) {
 	    	// The current destination for the elevator should change, so generate a new DestinationUpdateEvent
