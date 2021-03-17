@@ -1,5 +1,7 @@
 package Utilities;
 
+import java.io.Serializable;
+
 import Elevator.*;
 
 /**
@@ -8,7 +10,8 @@ import Elevator.*;
  * @author Momin Mushtaha, Marc Angers
  * @version 1.1
  */
-public class Motor {
+public class Motor implements Serializable {
+	private static final long serialVersionUID = -4732599232139952812L;
 	private Elevator parentElevator;
 	private Direction state;
 	

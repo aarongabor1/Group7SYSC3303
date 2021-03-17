@@ -2,8 +2,8 @@ package Elevator;
 
 import Utilities.*;
 import Floor.Floor;
-import Scheduler.Scheduler;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,8 @@ import java.util.Map;
  * @version 1.2
  *
  */
-public class Elevator {	
+public class Elevator implements Serializable {	
+	private static final long serialVersionUID = -438420167744224910L;
 	public int ID;
 	private ElevatorState state;
 	
@@ -25,7 +26,7 @@ public class Elevator {
 	
 	private Map<Integer, ElevatorButton> elevatorButtons;
 	
-	public Elevator(Scheduler scheduler, int elevatorID) {
+	public Elevator(int elevatorID) {
 		if (Settings.NUMBER_OF_FLOORS <= Floor.MINIMUM_FLOOR_NUM)
 			throw new IllegalArgumentException("Your building must have more than 1 floor to use an elevator!");
 		
@@ -39,7 +40,7 @@ public class Elevator {
 					
 		ID = elevatorID;
 		
-		this.elevatorSubsystem = new ElevatorSubsystem(scheduler, this);
+		this.elevatorSubsystem = new ElevatorSubsystem(this);
 	}
 	
 	/**

@@ -22,6 +22,7 @@ import Utilities.Parser;
  * @version 1.2
  */
 public class Scheduler implements Runnable {
+	private Thread elevatorRegistrationEventConsumer;
 	private Thread elevatorMovementEventConsumer;
 	private Thread eventGenerator;
 		
@@ -36,6 +37,7 @@ public class Scheduler implements Runnable {
 	 */
 	public Scheduler()
 	{
+		elevatorRegistrationEventConsumer = new Thread(new ElevatorRegistrationEventConsumer(this), "Elevator registration event consumer");
 		elevatorMovementEventConsumer = new Thread(new ElevatorMovementEventConsumer(this), "Elevator movement event consumer");
 		eventGenerator = new Thread(new EventGenerator(this), "Event generator");
 		
@@ -60,7 +62,7 @@ public class Scheduler implements Runnable {
 	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 			
 	    // Find the best elevator to serve the floor request
 		int bestElevator = mostConvenientElevator(floorButtonPressEvent);
-		elevatorStates.get(bestElevator).updateRequests();
+		System.out.println("Best Elevator: " + bestElevator);
 	    
 		// Grab the current destination of the elevator
 	    List<Integer> currentDestinations = elevatorDestinations.get(bestElevator);
@@ -273,6 +275,7 @@ public class Scheduler implements Runnable {
 	
 	@Override
 	public void run() {
+		elevatorRegistrationEventConsumer.start();
 		elevatorMovementEventConsumer.start();
 		eventGenerator.start();
 	}

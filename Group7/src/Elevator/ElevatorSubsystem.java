@@ -1,7 +1,6 @@
 package Elevator;
 
 import Utilities.*;
-import Scheduler.Scheduler;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -21,29 +20,37 @@ public class ElevatorSubsystem implements Runnable {
 	public static Map<Integer, Integer> destinationUpdateEventConsumerPorts = new HashMap<Integer, Integer>();
 	public static Map<Integer, Integer> elevatorButtonPressEventConsumerPorts = new HashMap<Integer, Integer>(); 
 	
-	private Scheduler scheduler;
 	private Elevator parentElevator;
 	private Thread destinationUpdateEventConsumer;
 	private Thread elevatorButtonPressEventConsumer;
 	private DatagramSocket sendSocket;
 	
+	private long startTime;
 	
-	
-	public ElevatorSubsystem(Scheduler scheduler, Elevator parent) {
-		this.scheduler = scheduler;
+	public ElevatorSubsystem(Elevator parent) {
 		parentElevator = parent;
 		
-		scheduler.registerNewElevator(parent);
 		ElevatorSubsystem.destinationUpdateEventConsumerPorts.put(parent.ID, Settings.DESTINATION_UPDATE_ECP + parent.ID);
 		ElevatorSubsystem.elevatorButtonPressEventConsumerPorts.put(parent.ID, Settings.ELEVATOR_BUTTON_PRESS_ECP + parent.ID);
 		
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this, parent.ID), "Destination update event consumer for elevator " + parent.ID);
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this, parent.ID), "Elevator button press event consumer");
 		
+		startTime = System.currentTimeMillis();
+
 		try {
 			sendSocket = new DatagramSocket();
 		} catch (SocketException se) {
 			se.printStackTrace();
+			System.exit(1);
+		}
+		
+		ElevatorRegistrationEvent initializationEvent = new ElevatorRegistrationEvent(getTime(), parent);
+		
+		try {
+			sendSocket.send(Parser.packageObject(initializationEvent));
+		} catch (IOException e) {
+			e.printStackTrace();
 			System.exit(1);
 		}
 	}
@@ -65,7 +72,7 @@ public class ElevatorSubsystem implements Runnable {
 		handleMotor(Direction.STATIONARY);
 		handleDoor(true);
 
-		ElevatorArrivalEvent event = new ElevatorArrivalEvent(scheduler.getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection());
+		ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection());
 		// Send the event to the appropriate consumer.
 		try {
 			sendSocket.send(Parser.packageObject(event));
@@ -74,7 +81,7 @@ public class ElevatorSubsystem implements Runnable {
 			System.exit(1);
 		}
 		// Create and send an elevator movement event to the scheduler.
-		ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(scheduler.getTime(), parentElevator.ID, parentElevator.getState());
+		ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState());
 		try {
 			sendSocket.send(Parser.packageObject(elevatorMovementEvent));
 		} catch (IOException e) {
@@ -100,7 +107,7 @@ public class ElevatorSubsystem implements Runnable {
 				parentElevator.getMotor().moveElevator(direction);
 				
 				// Create and send an elevator movement event to the scheduler.
-				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(scheduler.getTime(), parentElevator.ID, parentElevator.getState());
+				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState());
 				try {
 					sendSocket.send(Parser.packageObject(elevatorMovementEvent));
 				} catch (IOException e) {
@@ -142,10 +149,10 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	// Get and set methods:
-	public Scheduler getScheduler() {
-		return scheduler;
-	}
 	public Elevator getElevator() {
 		return parentElevator;
+	}
+	public long getTime() {
+		return System.currentTimeMillis() - startTime;
 	}
 }

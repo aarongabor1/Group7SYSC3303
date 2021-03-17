@@ -101,6 +101,7 @@ public class EventGenerator implements Runnable {
 	
 	@Override
 	public void run() {
+		// Load all the events into memory from the input file.
 		while (true) {
 			try {
 				generateEvent();
@@ -108,6 +109,14 @@ public class EventGenerator implements Runnable {
 				break;
 			}
 		}
+		// Wait for the elevators to be registered in the system before firing events.
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}
+		
+		// Fire the events when they are ready.
 		while (elevatorEvents.size() > 0 || floorEvents.size() > 0) {
 			checkForFloorButtonEvent();
 			checkForElevatorButtonEvent();

@@ -17,17 +17,18 @@ public class Settings {
 	public static final int TIME_TO_TRAVEL_BETWEEN_FLOORS = 500; // The time it takes the elevator to travel from one floor to another.
 	
 	// System IP Address definitions:
-	public static final InetAddress FLOOR_SYSTEM_ADDRESS = getLocalAddress();
-	public static final InetAddress ELEVATOR_SYSTEM_ADDRESS = getLocalAddress();
-	public static final InetAddress SCHEDULER_ADDRESS = getLocalAddress();
+	public static final InetAddress FLOOR_SYSTEM_ADDRESS = getLocalAddress(); // Change this to 10.0.0.247 for Aaron's setup
+	public static final InetAddress ELEVATOR_SYSTEM_ADDRESS = getLocalAddress(); // Change this to 10.0.0.228 for Aaron's setup
+	public static final InetAddress SCHEDULER_ADDRESS = getLocalAddress(); // Change this to 10.0.0.164 for Aaron's setup
 	
 	// Event Consumer port (ECP) definitions:
 	public static final int FLOOR_BUTTON_PRESS_ECP = 6900; // Floor Button Press Event Consumer Port.
 	public static final int ELEVATOR_ARRIVAL_ECP = 6901; // Elevator Arrival Event Consumer Port.
 	public static final int ELEVATOR_MOVEMENT_ECP = 6902; // Elevator Movement Event Consumer Port.
+	public static final int ELEVATOR_REGISTRATION_ECP = 6903; // Elevator Registration Event Consumer Port.
 	
-	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6903; // Initial Elevator Button Press Event Consumer Port. (Should allow for as many ports after this as there are elevators, up to 50 currently)
-	public static final int DESTINATION_UPDATE_ECP = 6953; // Initial Destination Update Event Consumer Port. (Should allow for as many ports after this as there are elevators)
+	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6904; // Initial Elevator Button Press Event Consumer Port. (Should allow for as many ports after this as there are elevators, up to 50 currently)
+	public static final int DESTINATION_UPDATE_ECP = 6954; // Initial Destination Update Event Consumer Port. (Should allow for as many ports after this as there are elevators)
 	
 	/**
 	 * Temporary helper method to initiate all of the elevator systems to run on the host machine.

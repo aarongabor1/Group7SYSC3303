@@ -1,4 +1,4 @@
-package Utilities; 
+package Run; 
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class Start {
 		scheduler = new Scheduler();
 		
 		for (int i = 1; i <= Settings.NUMBER_OF_ELEVATORS; i++) {
-		    elevatorList.add(new Elevator(scheduler, i));
+		    elevatorList.add(new Elevator(i));
 		}
 		
 		for (Elevator e : elevatorList) {
@@ -33,7 +33,7 @@ public class Start {
 		}
 		
 		// Generate threads for each subsystem
-		floorSubsystem = new Thread(new FloorSubsystem(scheduler), "Floor Subsystem");
+		floorSubsystem = new Thread(new FloorSubsystem(), "Floor Subsystem");
 		schedulerThread = new Thread(scheduler, "Scheduler");
 		
 		floorSubsystem.start();

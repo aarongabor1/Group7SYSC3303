@@ -1,7 +1,6 @@
 package Floor;
 
 import Utilities.*;
-import Scheduler.Scheduler;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import java.util.Map;
  */
 
 public class FloorSubsystem implements Runnable {
-	private Scheduler scheduler;
 	private Map<Integer, Floor> floors;
 	
 	private Thread floorButtonPressEventConsumer;
@@ -20,8 +18,7 @@ public class FloorSubsystem implements Runnable {
 		
 	
 	
-	public FloorSubsystem (Scheduler scheduler) {
-		this.scheduler = scheduler;
+	public FloorSubsystem () {
 		floors = new HashMap<Integer, Floor>();
 		
 		floorButtonPressEventConsumer = new Thread(new FloorButtonPressEventConsumer(this), "Floor button press event consumer");
@@ -65,10 +62,6 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	// Get and set methods:
-	public Scheduler getScheduler() {
-		return scheduler;
-	}
-	
 	public Map<Integer, Floor> getFloors() {
 		return floors;
 	}

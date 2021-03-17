@@ -1,12 +1,15 @@
 package Utilities;
 
+import java.io.Serializable;
+
 /**
  * Class Door is the door object in the elevator system
  *
  * @author Momin Mushtaha
  * @version 02 February 2021
  */
-public class Door {
+public class Door implements Serializable {
+	private static final long serialVersionUID = -5628941387336998547L;
 	private boolean state; // True: Open, False: Closed.
 	
 	/**

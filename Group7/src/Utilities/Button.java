@@ -1,11 +1,14 @@
 package Utilities;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Marc Angers
  * @version 1.0.0
  */
-public abstract class Button {
+public abstract class Button implements Serializable {
+	private static final long serialVersionUID = 672315112732782201L;
 	private boolean isPressed = false;
 	private boolean lamp;
 	

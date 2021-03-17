@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 
+import Elevator.Elevator;
 import Elevator.ElevatorState;
 import Elevator.ElevatorSubsystem;
 
@@ -162,6 +163,9 @@ public class Parser {
 		case "EM":
 			packet = new DatagramPacket(data, data.length, Settings.SCHEDULER_ADDRESS, Settings.ELEVATOR_MOVEMENT_ECP);
 			break;
+		case "ER":
+			packet = new DatagramPacket(data, data.length, Settings.SCHEDULER_ADDRESS, Settings.ELEVATOR_REGISTRATION_ECP);
+			break;
 		default:
 			// Might want to throw an error here or something idk.
 			packet = new DatagramPacket(data, data.length);
@@ -202,6 +206,7 @@ public class Parser {
 		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(System.currentTimeMillis(), 1, 1);
 		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(System.currentTimeMillis(), 1, 1, Direction.UP);
 		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(System.currentTimeMillis(), 1, new ElevatorState(1, Direction.UP, 1));
+		ElevatorRegistrationEvent tempEREvent = new ElevatorRegistrationEvent(System.currentTimeMillis(), new Elevator());
 		
 		if (obj.getClass() == tempFBPEvent.getClass())
 			return "FBP";
@@ -213,6 +218,8 @@ public class Parser {
 			return "EA";
 		if (obj.getClass() == tempEMEvent.getClass())
 			return "EM";
+		if (obj.getClass() == tempEREvent.getClass())
+			return "ER";
 		
 		return "not-an-event";
 	}
