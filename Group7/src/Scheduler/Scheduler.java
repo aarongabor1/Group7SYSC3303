@@ -235,13 +235,14 @@ public class Scheduler implements Runnable {
 	    
 	    if (currentDestinations.size() == 0) {
             currentDestinations.add(destinationFloor);
+            return;
             // OR should it be elevatorDestinations.get(elevatorID).add(destinationFloor)
             // Because the local variable currentDestinations is the list that is being mutated, not the list that is inside elevatorDestinations
 	    }
 	    
 		// Loop through the destinations for the elevator, and determine if the new destination is "on the way".
 		int previousDest = elevatorStates.get(elevatorID).getFloor();
-		for (int i = 0; i < currentDestinations.size(); i ++) {
+		for (int i = 0; i < currentDestinations.size(); i++) {
 		    
 		    // If the new destination is between the previous destination and the next destination, add it into the list at that location.
             // Return
@@ -249,12 +250,14 @@ public class Scheduler implements Runnable {
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
 		        if (currentDestinations.get(i) > destinationFloor && destinationFloor > previousDest) {
 		            currentDestinations.add(i++, destinationFloor);
+		            return;
 		        }
 		    }
 		    
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
 		        if (currentDestinations.get(i) < destinationFloor && destinationFloor < previousDest) {
 		            currentDestinations.add(i++, destinationFloor);
+		            return;
 		        }
 		    }
 		    
