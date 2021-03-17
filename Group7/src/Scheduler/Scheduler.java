@@ -31,6 +31,7 @@ public class Scheduler implements Runnable {
 	private Map<Integer, List<Integer>> elevatorDestinations;
 	
 	private long startTime;
+	private int elevatorCount;
 	
 	/**
 	 * Constructor that will create the Network object.
@@ -51,6 +52,7 @@ public class Scheduler implements Runnable {
 		elevatorStates = new HashMap<Integer, ElevatorState>();
 		elevatorDestinations = new HashMap<Integer, List<Integer>>();
 	
+		elevatorCount = 0;
 		startTime = System.currentTimeMillis();
 	}
 	
@@ -271,6 +273,8 @@ public class Scheduler implements Runnable {
 	public void registerNewElevator(Elevator newElevator) {
 		elevatorStates.put(newElevator.ID, newElevator.getState());
 		elevatorDestinations.put(newElevator.ID, new LinkedList<Integer>());
+		
+		elevatorCount++;
 	}
 	
 	@Override
@@ -311,12 +315,14 @@ public class Scheduler implements Runnable {
 		}
 	}
 	
+	// Get and set methods:
 	public Map<Integer, ElevatorState> getElevatorStates() {
 		return elevatorStates;
 	}
-	
 	public long getTime() {
 		return System.currentTimeMillis() - startTime;
 	}
-	
+	public int getElevatorCount() {
+		return elevatorCount;
+	}
 }

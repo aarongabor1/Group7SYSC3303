@@ -64,7 +64,7 @@ public class EventGenerator implements Runnable {
 	 */
 	private void checkForFloorButtonEvent() {
 		for (FloorButtonPressEvent floorButtonEvent : floorEvents) {
-			if (floorButtonEvent.time >= parent.getTime()) {
+			if (parent.getTime() >= floorButtonEvent.time) {
 				parent.scheduleEvent(floorButtonEvent);
 				floorEvents.remove(floorButtonEvent);
 			}
@@ -110,10 +110,12 @@ public class EventGenerator implements Runnable {
 			}
 		}
 		// Wait for the elevators to be registered in the system before firing events.
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
+		while (parent.getElevatorCount() < Settings.NUMBER_OF_ELEVATORS) {
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException ie) {
+				ie.printStackTrace();
+			}
 		}
 		
 		// Fire the events when they are ready.
