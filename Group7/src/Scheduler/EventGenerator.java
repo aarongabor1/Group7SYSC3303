@@ -63,10 +63,15 @@ public class EventGenerator implements Runnable {
 	 * Method to check if a floor button press event is ready to be triggered.
 	 */
 	private void checkForFloorButtonEvent() {
-		for (FloorButtonPressEvent floorButtonEvent : floorEvents) {
+		Iterator<FloorButtonPressEvent> iterator = floorEvents.iterator();
+		FloorButtonPressEvent floorButtonEvent;
+		
+		while (iterator.hasNext()) {
+			floorButtonEvent = iterator.next();
+			
 			if (parent.getTime() >= floorButtonEvent.time) {
 				parent.scheduleEvent(floorButtonEvent);
-				floorEvents.remove(floorButtonEvent);
+				iterator.remove();
 			}
 		}
 	}
