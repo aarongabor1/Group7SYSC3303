@@ -16,10 +16,7 @@ import Events.*;
  * @author Diana Miraflor, Marc Angers
  * @version 1.2
  */
-public class ElevatorSubsystem implements Runnable {
-	public static Map<Integer, Integer> destinationUpdateEventConsumerPorts = new HashMap<Integer, Integer>();
-	public static Map<Integer, Integer> elevatorButtonPressEventConsumerPorts = new HashMap<Integer, Integer>(); 
-	
+public class ElevatorSubsystem implements Runnable {	
 	private Elevator parentElevator;
 	private Thread destinationUpdateEventConsumer;
 	private Thread elevatorButtonPressEventConsumer;
@@ -29,9 +26,6 @@ public class ElevatorSubsystem implements Runnable {
 	
 	public ElevatorSubsystem(Elevator parent) {
 		parentElevator = parent;
-		
-		ElevatorSubsystem.destinationUpdateEventConsumerPorts.put(parent.ID, Settings.DESTINATION_UPDATE_ECP + parent.ID);
-		ElevatorSubsystem.elevatorButtonPressEventConsumerPorts.put(parent.ID, Settings.ELEVATOR_BUTTON_PRESS_ECP + parent.ID);
 		
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this, parent.ID), "Destination update event consumer for elevator " + parent.ID);
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this, parent.ID), "Elevator button press event consumer");

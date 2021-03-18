@@ -18,7 +18,6 @@ import javax.swing.JFileChooser;
 
 import Elevator.Elevator;
 import Elevator.ElevatorState;
-import Elevator.ElevatorSubsystem;
 
 import java.util.ArrayList;
 
@@ -149,12 +148,12 @@ public class Parser {
 			break;
 		case "EBP":
 			ElevatorButtonPressEvent elevatorButtonPressEvent = (ElevatorButtonPressEvent) obj;
-			int ebp_ecp = ElevatorSubsystem.elevatorButtonPressEventConsumerPorts.get(elevatorButtonPressEvent.elevatorID);
+			int ebp_ecp = Settings.ELEVATOR_BUTTON_PRESS_ECP + elevatorButtonPressEvent.elevatorID;
 			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, ebp_ecp);
 			break;
 		case "DU":
 			DestinationUpdateEvent destinationUpdateEvent = (DestinationUpdateEvent) obj;
-			int du_ecp = ElevatorSubsystem.destinationUpdateEventConsumerPorts.get(destinationUpdateEvent.elevatorID);
+			int du_ecp = Settings.DESTINATION_UPDATE_ECP + destinationUpdateEvent.elevatorID;
 			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, du_ecp);
 			break;
 		case "EA":
