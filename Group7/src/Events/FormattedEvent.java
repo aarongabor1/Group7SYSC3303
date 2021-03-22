@@ -3,18 +3,23 @@ package Events;
 import Floor.Floor;
 import Utilities.*;
 
+import javax.xml.stream.FactoryConfigurationError;
+
 /** 
  * FormattedEvent class which creates an object that stores the information needed for 
  * each elevator request.
  * 
- * @author Aaron Gabor, Marc Angers
- * @version 1.0.1
+ * @author Aaron Gabor, Marc Angers, Momin Mushataha
+ * @version 1.0.2
  */
 public class FormattedEvent {
 	private long time;
 	private int currentFloor;
 	private Direction direction;
 	private int carButton;
+	private String errorOccurred;
+	private String errorType;
+	public boolean isError;
 	
 	/**
 	 * Constructor for the FloorEvent class, it will read all of the parameters
@@ -34,6 +39,17 @@ public class FormattedEvent {
 		this.currentFloor = currentFloor;
 		this.direction = direction;
 		this.carButton = carButton;
+	}
+
+	/**
+	FormattedEvent constructor for HardFailure and SoftFailure errors
+	 @param errorOccurred is the type of error occurred in the system
+	 **/
+	public FormattedEvent(String errorType, String errorOccurred)
+	{
+		isError = true;
+		this.errorOccurred = errorOccurred;
+		this.errorType = errorType;
 	}
 	
 	/**
@@ -79,7 +95,22 @@ public class FormattedEvent {
 	{
 		return this.carButton;
 	}
-	
+
+	/**
+	 * getErrorOccurred is a method to retrieve the errorOccurred String
+	 * @return returns the errorOccurred String
+	 */
+	public String getErrorOccurred()
+	{
+		return this.errorOccurred;
+	}
+
+	/**
+	 * getErrorType is a method to retrieve the errorType String
+	 * @return returns the errorType String
+	 */
+	public String getErrorType() { return this.errorType; }
+
 	/**
 	 * toString returns the a string version of all information stored in the FloorEvent object.
 	 * 
