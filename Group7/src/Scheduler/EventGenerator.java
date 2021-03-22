@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import Events.ElevatorButtonPressEvent;
-import Events.FloorButtonPressEvent;
-import Events.FormattedEvent;
+import Events.*;
 import Utilities.Direction;
 import Utilities.Parser;
 import Utilities.Settings;
@@ -20,7 +18,7 @@ import Floor.Floor;
 /**
  * Class to generate the floor and elevator button press events that are contained in the input file.
  * 
- * @author Marc Angers
+ * @author Marc Angers, Momin Mushtaha
  * @version 1.0
  */
 public class EventGenerator implements Runnable {
@@ -50,14 +48,29 @@ public class EventGenerator implements Runnable {
 		} catch (ParseException pe) {
 			throw pe;
 		}
-		
+		if (currentEventFromInput.isError)
+		{
+
+			String errorOccurred = currentEventFromInput.getErrorOccurred();
+			String errorType = currentEventFromInput.getErrorType();
+			if (errorType.equals("HardFailure"))
+			{
+				HardFailureEvent hardFailureEvent = new HardFailureEvent(errorOccurred);
+			}
+			else if (errorType.equals("SoftFailure"))
+			{
+				SoftFailureEvent softFailureEvent = new SoftFailureEvent(errorOccurred);
+			}
+
+		}
+		else{
 		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
 		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
 		ElevatorState requiredState = new ElevatorState(floorButtonEvent.floor, floorButtonEvent.direction, floorButtonEvent.direction == Direction.UP ? Settings.NUMBER_OF_FLOORS : Floor.MINIMUM_FLOOR_NUM);
 		
 		elevatorEvents.put(requiredState, elevatorButtonEvent);
 		floorEvents.add(floorButtonEvent);
-	}
+	}}
 	
 	/**
 	 * Method to check if a floor button press event is ready to be triggered.
