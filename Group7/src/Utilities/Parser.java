@@ -20,6 +20,7 @@ import Elevator.Elevator;
 import Elevator.ElevatorState;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /***
  * This class takes in the file and uses the text to fill out the variable needed to
@@ -68,10 +69,12 @@ public class Parser {
 	 */
 	private void readIn() throws ParseException {
 		Scanner scanner;
-		
+
 		try {
 			scanner = new Scanner(file);
 			String time;
+			String temp;
+			String errorType;
 			String currentFloor;
 			String direction;
 			String carButton;
@@ -79,34 +82,44 @@ public class Parser {
 			Direction direction1;
 			int carButton1;
 			DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.mmm");
-			while(scanner.hasNext()) {
+
+			while (scanner.hasNextLine()) {
 				time = scanner.next().trim();
-				currentFloor = scanner.next();
-				direction = scanner.next();
-				carButton = scanner.next();
-				
-				long ms = dateFormat.parse(time).getTime();
-				if (startTime == 0) {
-					startTime = ms;
-					ms = 0;
+				temp = scanner.next();
+				if ((temp.equals("floorSensorFailure")) || (temp.equals("elevatorStuckFailure"))) {
+					//raise HardFailureEvent
+					errorType  = "HardFailure";
+					inputEventsList.add(new FormattedEvent(errorType, temp));
+				} else if ((temp.equals("doorStuckOpenedFailure")) || (temp.equals("doorStuckClosedFailure"))) {
+					//raise SoftFailureEvent
+					errorType  = "SoftFailure";
+					inputEventsList.add(new FormattedEvent(errorType, temp));
+				} else {
+					currentFloor = temp;
+					direction = scanner.next();
+					carButton = scanner.next();
+
+					long ms = dateFormat.parse(time).getTime();
+					if (startTime == 0) {
+						startTime = ms;
+						ms = 0;
+					} else
+						ms = ms - startTime;
+
+					currentFloor1 = Integer.parseInt(currentFloor);
+					direction1 = Direction.valueOf(direction.toUpperCase());
+					carButton1 = Integer.parseInt(carButton);
+					inputEventsList.add(new FormattedEvent(ms, currentFloor1, direction1, carButton1));
 				}
-				else
-					ms = ms - startTime;
-				
-				currentFloor1 = Integer.parseInt(currentFloor);
-				direction1 = Direction.valueOf(direction.toUpperCase());
-				carButton1 = Integer.parseInt(carButton);
-				inputEventsList.add(new FormattedEvent(ms, currentFloor1, direction1, carButton1));
 			}
-			scanner.close();
-			
+				scanner.close();
+
+
 		} catch (FileNotFoundException e) {
-			System.out.print("Error file not found");
 			e.printStackTrace();
-		}	
+		}
 	}
-	
-	/**
+		/**
 	 * parseFile send back one FormattedEvent object from the input file.
 	 * 
 	 * @return FormattedEvent object containing the next command
