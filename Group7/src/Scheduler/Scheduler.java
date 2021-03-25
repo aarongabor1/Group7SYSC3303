@@ -298,6 +298,7 @@ public class Scheduler implements Runnable {
         }	    
 	    
 	    transferFloorEvents(elevatorID);
+	    elevatorDestinations.remove(elevatorID);
 	}
 	
 	/**

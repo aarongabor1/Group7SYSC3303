@@ -71,8 +71,9 @@ public class ElevatorSubsystem implements Runnable {
 	public void stopElevator() {
 		handleMotor(Direction.STATIONARY);
 		handleDoor(true);
-
-		ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection());
+		
+		if (!shutDown) {
+ 		ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection());
 		// Send the event to the appropriate consumer.
 		try {
 			sendSocket.send(Parser.packageObject(event));
@@ -80,9 +81,17 @@ public class ElevatorSubsystem implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		}
 		// Create and send an elevator movement event to the scheduler.
-		ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState());
-		try {
+		ElevatorMovementEvent elevatorMovementEvent;
+		elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
+		
+		if (shutDown) {
+		    parentElevator.shutDown();
+		    elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), true);
+		}
+		
+		try {		   
 			sendSocket.send(Parser.packageObject(elevatorMovementEvent));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -107,7 +116,8 @@ public class ElevatorSubsystem implements Runnable {
 				parentElevator.getMotor().moveElevator(direction);
 				
 				// Create and send an elevator movement event to the scheduler.
-				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState());
+				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
+				
 				try {
 					sendSocket.send(Parser.packageObject(elevatorMovementEvent));
 				} catch (IOException e) {
@@ -137,6 +147,7 @@ public class ElevatorSubsystem implements Runnable {
 	 */
 	public void shutDownElevator() {
 	    shutDown = true;
+	    stopElevator();
 	}
 
 	@Override

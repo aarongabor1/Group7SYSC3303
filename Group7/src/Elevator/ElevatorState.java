@@ -14,11 +14,13 @@ public class ElevatorState implements Serializable {
 	private int currentFloor;
 	private Direction currentDirection;
 	private int currentDestination;
+	private boolean shutDown;
 	
 	public ElevatorState(int floor, Direction direction, int destination) {
 		currentFloor = floor;
 		currentDirection = direction; 
 		currentDestination = destination;
+		shutDown = false;
 	}
 	
 	public boolean triggersElevatorButtonEvent(ElevatorState requiredState) {
@@ -38,6 +40,9 @@ public class ElevatorState implements Serializable {
 	public int getDestination() {
 		return currentDestination;
 	}
+	public boolean isShutDown() {
+	    return shutDown;
+	}
 
 	public void updateFloor(int floor) {
 		currentFloor = floor;
@@ -48,6 +53,9 @@ public class ElevatorState implements Serializable {
 	public void updateDestination(int destination) {
 		currentDestination = destination;
 	}	
+	public void shutDown() {
+	    shutDown = true;
+	}
 	
 	public String toString() {
 		return "State: " + currentFloor + ", " + currentDirection.toString() + ", " + currentDestination;
