@@ -282,7 +282,7 @@ public class Scheduler implements Runnable {
 		elevatorCount++;
 	}
 	
-	/*
+	/**
 	 * A method that tells an elevator to shut down
 	 */
 	public void shutDownElevator(int elevatorID, boolean mode) {
@@ -300,7 +300,7 @@ public class Scheduler implements Runnable {
 	    transferFloorEvents(elevatorID);
 	}
 	
-	/*
+	/**
 	 * Transfers an elevator's floor events to the most convenient elevator
 	 */
 	public void transferFloorEvents(int elevatorID) {

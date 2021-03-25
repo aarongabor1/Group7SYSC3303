@@ -9,6 +9,12 @@ import Events.ErrorEvent;
 import Utilities.Parser;
 import Utilities.Settings;
 
+/**
+ * Class to consume error events from Scheduler
+ * 
+ * @author Diana Miraflor
+ *
+ */
 public class ErrorEventConsumer implements Runnable {
     private ElevatorSubsystem parent;
     private DatagramSocket receiveSocket;
