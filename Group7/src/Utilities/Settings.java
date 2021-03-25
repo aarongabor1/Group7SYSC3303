@@ -30,6 +30,9 @@ public class Settings {
 	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6904; // Initial Elevator Button Press Event Consumer Port. (Should allow for as many ports after this as there are elevators, up to 50 currently)
 	public static final int DESTINATION_UPDATE_ECP = 6954; // Initial Destination Update Event Consumer Port. (Should allow for as many ports after this as there are elevators)
 	
+	public static final int HARD_FAILURE_ECP = 7004; // Initial Hard Failure Event Consumer Port. (Should allow for as many ports after this as there are elevators)
+	public static final int SOFT_FAILURE_ECP = 7054; // Soft Failure Event Consumer Port. (Should allow for as many ports after this as there are elevators)
+	
 	/**
 	 * Temporary helper method to initiate all of the elevator systems to run on the host machine.
 	 * Once the code is ready to be run on multiple different computers this method won't be needed.

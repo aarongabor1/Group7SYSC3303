@@ -122,6 +122,22 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
+	 * Method to send a failure event to its corresponding subsystem.
+	 * @param failureEvent
+	 */
+	public void SendFailure(FailureEvent failureEvent) {
+		// run Diana&Lynn's method?
+		
+		// Send the event to the appropriate consumer.
+		try {
+			sendSocket.send(Parser.packageObject(failureEvent));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
+	/**
 	 * Method to get the best elevator to service a new floor request
 	 * 
 	 * @param fe A new floor button press event (new floor request)

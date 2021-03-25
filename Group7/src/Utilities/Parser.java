@@ -20,7 +20,6 @@ import Elevator.Elevator;
 import Elevator.ElevatorState;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 /***
  * This class takes in the file and uses the text to fill out the variable needed to
@@ -73,8 +72,7 @@ public class Parser {
 		try {
 			scanner = new Scanner(file);
 			String time;
-			String temp;
-			String errorType;
+			String whatHappened;
 			String currentFloor;
 			String direction;
 			String carButton;
@@ -85,26 +83,30 @@ public class Parser {
 
 			while (scanner.hasNextLine()) {
 				time = scanner.next().trim();
-				temp = scanner.next();
-				if ((temp.equals("floorSensorFailure")) || (temp.equals("elevatorStuckFailure"))) {
+				long ms = dateFormat.parse(time).getTime();
+				if (startTime == 0) {
+					startTime = ms;
+					ms = 0;
+				} else
+					ms = ms - startTime;
+				
+				whatHappened = scanner.next();
+				if ((whatHappened.equals("floorSensorFailure")) || (whatHappened.equals("elevatorStuckFailure"))) {
 					//raise HardFailureEvent
-					errorType  = "HardFailure";
-					inputEventsList.add(new FormattedEvent(errorType, temp));
-				} else if ((temp.equals("doorStuckOpenedFailure")) || (temp.equals("doorStuckClosedFailure"))) {
+					String errorType  = "HardFailure";
+					int elevatorID = Integer.parseInt(scanner.next());
+					inputEventsList.add(new FormattedEvent(ms, errorType, whatHappened, elevatorID));
+				} else if ((whatHappened.equals("doorStuckOpenedFailure")) || (whatHappened.equals("doorStuckClosedFailure"))) {
 					//raise SoftFailureEvent
-					errorType  = "SoftFailure";
-					inputEventsList.add(new FormattedEvent(errorType, temp));
+					String errorType  = "SoftFailure";
+					int elevatorID = Integer.parseInt(scanner.next());
+					long duration = Integer.parseInt(scanner.next());
+					System.out.println(duration);
+					inputEventsList.add(new FormattedEvent(ms, errorType, whatHappened, elevatorID, duration));
 				} else {
-					currentFloor = temp;
+					currentFloor = whatHappened;
 					direction = scanner.next();
 					carButton = scanner.next();
-
-					long ms = dateFormat.parse(time).getTime();
-					if (startTime == 0) {
-						startTime = ms;
-						ms = 0;
-					} else
-						ms = ms - startTime;
 
 					currentFloor1 = Integer.parseInt(currentFloor);
 					direction1 = Direction.valueOf(direction.toUpperCase());
@@ -178,8 +180,18 @@ public class Parser {
 		case "ER":
 			packet = new DatagramPacket(data, data.length, Settings.SCHEDULER_ADDRESS, Settings.ELEVATOR_REGISTRATION_ECP);
 			break;
+		case "HF":
+			HardFailureEvent hardFailureEvent = (HardFailureEvent) obj;
+			int hf_ecp = Settings.HARD_FAILURE_ECP + hardFailureEvent.getElevator();
+			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, hf_ecp);
+			break;
+		case "SF":
+			SoftFailureEvent softFailureEvent = (SoftFailureEvent) obj;
+			int sf_ecp = Settings.SOFT_FAILURE_ECP + softFailureEvent.getElevator();
+			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, sf_ecp);
 		default:
 			// Might want to throw an error here or something idk.
+			System.out.println("Could not determine the type of packet to be sent!");
 			packet = new DatagramPacket(data, data.length);
 			break;
 		}
@@ -219,6 +231,8 @@ public class Parser {
 		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(System.currentTimeMillis(), 1, 1, Direction.UP);
 		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(System.currentTimeMillis(), 1, new ElevatorState(1, Direction.UP, 1));
 		ElevatorRegistrationEvent tempEREvent = new ElevatorRegistrationEvent(System.currentTimeMillis(), new Elevator());
+		HardFailureEvent tempHFEvent = new HardFailureEvent(System.currentTimeMillis(), "temp", 1);
+		SoftFailureEvent tempSFEvent = new SoftFailureEvent(System.currentTimeMillis(), "temp", 1, 1);
 		
 		if (obj.getClass() == tempFBPEvent.getClass())
 			return "FBP";
@@ -232,6 +246,10 @@ public class Parser {
 			return "EM";
 		if (obj.getClass() == tempEREvent.getClass())
 			return "ER";
+		if (obj.getClass() == tempHFEvent.getClass())
+			return "HF";
+		if (obj.getClass() == tempSFEvent.getClass())
+			return "SF";
 		
 		return "not-an-event";
 	}

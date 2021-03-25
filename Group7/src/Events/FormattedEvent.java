@@ -3,8 +3,6 @@ package Events;
 import Floor.Floor;
 import Utilities.*;
 
-import javax.xml.stream.FactoryConfigurationError;
-
 /** 
  * FormattedEvent class which creates an object that stores the information needed for 
  * each elevator request.
@@ -17,9 +15,12 @@ public class FormattedEvent {
 	private int currentFloor;
 	private Direction direction;
 	private int carButton;
+	
+	public boolean isError;
 	private String errorOccurred;
 	private String errorType;
-	public boolean isError;
+	private long errorDuration;
+	private int failingElevator;
 	
 	/**
 	 * Constructor for the FloorEvent class, it will read all of the parameters
@@ -42,14 +43,28 @@ public class FormattedEvent {
 	}
 
 	/**
-	FormattedEvent constructor for HardFailure and SoftFailure errors
-	 @param errorOccurred is the type of error occurred in the system
-	 **/
-	public FormattedEvent(String errorType, String errorOccurred)
+	 * FormattedEvent constructor for HardFailure errors
+	 * @param errorOccurred is the type of error occurred in the system
+	 */
+	public FormattedEvent(long time, String errorType, String errorOccurred, int elevatorID)
 	{
 		isError = true;
 		this.errorOccurred = errorOccurred;
 		this.errorType = errorType;
+		failingElevator = elevatorID;
+	}
+	
+	/**
+	 * FormattedEvent constructor for SoftFailure errors
+	 * @param errorOccurred is the type of error occurred in the system
+	 */
+	public FormattedEvent(long time, String errorType, String errorOccurred, int elevatorID, long errorDuration)
+	{
+		isError = true;
+		this.errorOccurred = errorOccurred;
+		this.errorType = errorType;
+		failingElevator = elevatorID;
+		this.errorDuration = errorDuration;
 	}
 	
 	/**
@@ -109,7 +124,17 @@ public class FormattedEvent {
 	 * getErrorType is a method to retrieve the errorType String
 	 * @return returns the errorType String
 	 */
-	public String getErrorType() { return this.errorType; }
+	public String getErrorType() { 
+		return this.errorType;
+	}
+	
+	public int getElevator() {
+		return this.failingElevator;
+	}
+	
+	public long getDuration() {
+		return this.errorDuration;
+	}
 
 	/**
 	 * toString returns the a string version of all information stored in the FloorEvent object.

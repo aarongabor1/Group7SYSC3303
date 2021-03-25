@@ -1,6 +1,5 @@
 package Events;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -8,11 +7,22 @@ import java.io.Serializable;
  * @author Momin Mushtaha
  * @vertion 1.1
  */
-public class SoftFailureEvent implements Serializable {
-    @Serial
+public class SoftFailureEvent extends FailureEvent implements Serializable {
     private static final long serialVersionUID = 7997388758226315463L;
-
-    public SoftFailureEvent(String whatHappened) {
-        System.out.println("SoftFailureEvent raised due to " + whatHappened);
+    private String whatHappened;
+    private long duration;
+    
+    public SoftFailureEvent(long time, String whatHappened, int elevatorID, long duration) {
+    	super(time, elevatorID);
+    	this.whatHappened = whatHappened;
+    	this.duration = duration;
+    }
+    
+    public String getWhatHappened() {
+    	return whatHappened;
+    }
+    
+    public long getDuration() {
+    	return this.duration;
     }
 }

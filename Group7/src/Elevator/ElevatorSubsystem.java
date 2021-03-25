@@ -5,8 +5,6 @@ import Utilities.*;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.HashMap;
-import java.util.Map;
 
 import Events.*;
 
@@ -20,6 +18,8 @@ public class ElevatorSubsystem implements Runnable {
 	private Elevator parentElevator;
 	private Thread destinationUpdateEventConsumer;
 	private Thread elevatorButtonPressEventConsumer;
+	private Thread hardFailureEventConsumer;
+	private Thread softFailureEventConsumer;
 	private DatagramSocket sendSocket;
 	
 	private long startTime;
@@ -29,6 +29,8 @@ public class ElevatorSubsystem implements Runnable {
 		
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this, parent.ID), "Destination update event consumer for elevator " + parent.ID);
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this, parent.ID), "Elevator button press event consumer");
+		hardFailureEventConsumer = new Thread(new HardFailureEventConsumer(this, parent.ID), "Hard failure event consumer");
+		softFailureEventConsumer = new Thread(new SoftFailureEventConsumer(this, parent.ID), "Soft failure event consumer");
 		
 		startTime = System.currentTimeMillis();
 
@@ -130,6 +132,8 @@ public class ElevatorSubsystem implements Runnable {
 	public void run() {
 		destinationUpdateEventConsumer.start();
 		elevatorButtonPressEventConsumer.start();
+		hardFailureEventConsumer.start();
+		softFailureEventConsumer.start();
 		
 		while(true) {
 			if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor())

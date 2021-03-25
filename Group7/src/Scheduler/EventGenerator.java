@@ -26,6 +26,7 @@ public class EventGenerator implements Runnable {
 	private Parser parser;
 	private Map<ElevatorState, ElevatorButtonPressEvent> elevatorEvents;
 	private List<FloorButtonPressEvent> floorEvents;
+	private List<FailureEvent> failureEvents;
 	
 	public EventGenerator(Scheduler scheduler) {
 		parent = scheduler;
@@ -33,6 +34,7 @@ public class EventGenerator implements Runnable {
 		
 		elevatorEvents = new HashMap<ElevatorState, ElevatorButtonPressEvent>();
 		floorEvents = new LinkedList<FloorButtonPressEvent>();
+		failureEvents = new LinkedList<FailureEvent>();
 	}
 	
 	
@@ -48,29 +50,35 @@ public class EventGenerator implements Runnable {
 		} catch (ParseException pe) {
 			throw pe;
 		}
-		if (currentEventFromInput.isError)
-		{
-
+		
+		if (currentEventFromInput.isError) {
+			long time = currentEventFromInput.getTime();
 			String errorOccurred = currentEventFromInput.getErrorOccurred();
 			String errorType = currentEventFromInput.getErrorType();
+			int elevator = currentEventFromInput.getElevator();
+			
+			FailureEvent failureEvent;
+			
 			if (errorType.equals("HardFailure"))
 			{
-				HardFailureEvent hardFailureEvent = new HardFailureEvent(errorOccurred);
+				failureEvent = new HardFailureEvent(time, errorOccurred, elevator);
 			}
-			else if (errorType.equals("SoftFailure"))
+			else // errorType.equals("SoftFailure"), otherwise we have a problem
 			{
-				SoftFailureEvent softFailureEvent = new SoftFailureEvent(errorOccurred);
+				long duration = currentEventFromInput.getDuration();
+				failureEvent = new SoftFailureEvent(time, errorOccurred, elevator, duration);
 			}
-
+			
+			failureEvents.add(failureEvent);
+		} else {
+			FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
+			ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
+			ElevatorState requiredState = new ElevatorState(floorButtonEvent.floor, floorButtonEvent.direction, floorButtonEvent.direction == Direction.UP ? Settings.NUMBER_OF_FLOORS : Floor.MINIMUM_FLOOR_NUM);
+			
+			elevatorEvents.put(requiredState, elevatorButtonEvent);
+			floorEvents.add(floorButtonEvent);
 		}
-		else{
-		FloorButtonPressEvent floorButtonEvent = new FloorButtonPressEvent(currentEventFromInput);
-		ElevatorButtonPressEvent elevatorButtonEvent = new ElevatorButtonPressEvent(currentEventFromInput);
-		ElevatorState requiredState = new ElevatorState(floorButtonEvent.floor, floorButtonEvent.direction, floorButtonEvent.direction == Direction.UP ? Settings.NUMBER_OF_FLOORS : Floor.MINIMUM_FLOOR_NUM);
-		
-		elevatorEvents.put(requiredState, elevatorButtonEvent);
-		floorEvents.add(floorButtonEvent);
-	}}
+	}
 	
 	/**
 	 * Method to check if a floor button press event is ready to be triggered.
@@ -118,6 +126,23 @@ public class EventGenerator implements Runnable {
 		}
 	}
 	
+	/**
+	 * Method to check if an error event should be fired
+	 */
+	private void checkForFailureEvent() {
+		Iterator<FailureEvent> iterator = failureEvents.iterator();
+		FailureEvent failureEvent;
+		
+		while (iterator.hasNext()) {
+			failureEvent = iterator.next();
+			
+			if (parent.getTime() >= failureEvent.getTime()) {
+				parent.SendFailure(failureEvent);
+				iterator.remove();
+			}
+		}
+	}
+	
 	
 	@Override
 	public void run() {
@@ -132,7 +157,7 @@ public class EventGenerator implements Runnable {
 		// Wait for the elevators to be registered in the system before firing events.
 		while (parent.getElevatorCount() < Settings.NUMBER_OF_ELEVATORS) {
 			try {
-				Thread.sleep(500);
+				Thread.sleep(500); // Might want to find a better way of making sure that all of the elevators are registered...
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
 			}
@@ -142,6 +167,7 @@ public class EventGenerator implements Runnable {
 		while (true) {
 			checkForFloorButtonEvent();
 			checkForElevatorButtonEvent();
+			checkForFailureEvent();
 		}
 	}
 }
