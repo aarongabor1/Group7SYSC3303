@@ -137,7 +137,7 @@ public class EventGenerator implements Runnable {
 			failureEvent = iterator.next();
 			
 			if (parent.getTime() >= failureEvent.getTime()) {
-				parent.SendFailure(failureEvent);
+				parent.sendFailure(failureEvent);
 				iterator.remove();
 			}
 		}

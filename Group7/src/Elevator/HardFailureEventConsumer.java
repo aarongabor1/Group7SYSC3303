@@ -35,8 +35,8 @@ public class HardFailureEventConsumer implements Runnable {
 	 * @param destinationUpdateEvent
 	 */
 	public void consume(HardFailureEvent hardFailureEvent) {
-		System.out.println("Elevator #" + hardFailureEvent.getElevator() + " is stuck!");
-		// Add function call to the elevator to shut it down?
+		System.out.println("Elevator #" + hardFailureEvent.getElevator() + " is stuck!");		
+		parent.shutDownElevator();
 	}
 	
 	@Override

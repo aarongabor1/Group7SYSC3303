@@ -18,9 +18,12 @@ public class ElevatorSubsystem implements Runnable {
 	private Elevator parentElevator;
 	private Thread destinationUpdateEventConsumer;
 	private Thread elevatorButtonPressEventConsumer;
+
 	private Thread hardFailureEventConsumer;
 	private Thread softFailureEventConsumer;
 	private DatagramSocket sendSocket;
+	
+	private boolean shutDown;
 	
 	private long startTime;
 	
@@ -29,6 +32,7 @@ public class ElevatorSubsystem implements Runnable {
 		
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this, parent.ID), "Destination update event consumer for elevator " + parent.ID);
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this, parent.ID), "Elevator button press event consumer");
+
 		hardFailureEventConsumer = new Thread(new HardFailureEventConsumer(this, parent.ID), "Hard failure event consumer");
 		softFailureEventConsumer = new Thread(new SoftFailureEventConsumer(this, parent.ID), "Soft failure event consumer");
 		
@@ -49,6 +53,8 @@ public class ElevatorSubsystem implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
+		this.shutDown = false;
 	}
 	
 	/**
@@ -67,18 +73,29 @@ public class ElevatorSubsystem implements Runnable {
 	public void stopElevator() {
 		handleMotor(Direction.STATIONARY);
 		handleDoor(true);
-
-		ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(), parentElevator.ID, parentElevator.getCurrentDirection());
-		// Send the event to the appropriate consumer.
-		try {
-			sendSocket.send(Parser.packageObject(event));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		
+		ElevatorArrivalEvent event = null;
+        if (shutDown) {
+            event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
+                    parentElevator.ID, parentElevator.getCurrentDirection(), true);         
+        }
+        
+        event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
+                    parentElevator.ID, parentElevator.getCurrentDirection(), false);         
+       
+        // Send the event to the appropriate consumer.
+        try {
+            sendSocket.send(Parser.packageObject(event));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        
 		// Create and send an elevator movement event to the scheduler.
-		ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState());
-		try {
+		ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
+		
+		
+		try {		   
 			sendSocket.send(Parser.packageObject(elevatorMovementEvent));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -103,7 +120,8 @@ public class ElevatorSubsystem implements Runnable {
 				parentElevator.getMotor().moveElevator(direction);
 				
 				// Create and send an elevator movement event to the scheduler.
-				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState());
+				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
+				
 				try {
 					sendSocket.send(Parser.packageObject(elevatorMovementEvent));
 				} catch (IOException e) {
@@ -128,14 +146,42 @@ public class ElevatorSubsystem implements Runnable {
 		}
 	}
 	
+	/**
+	 * Shuts down an elevator
+	 */
+	public void shutDownElevator() {
+	    shutDown = true;
+	    stopElevator();
+	}
+	
+	/**
+	 * Stops an elevator and makes it sleep due to a soft failure
+	 * 
+	 * @param duration The duration an elevator is down
+	 */
+	public void handleSoftFailure(long duration) {
+	    
+	    stopElevator();
+	    try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {            
+            e.printStackTrace();
+        }
+	    
+	}
+	
+	public void wakeUpElevator() {  
+	}
+
 	@Override
 	public void run() {
 		destinationUpdateEventConsumer.start();
 		elevatorButtonPressEventConsumer.start();
+
 		hardFailureEventConsumer.start();
 		softFailureEventConsumer.start();
 		
-		while(true) {
+		while(!isShutDown()) {
 			if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor())
 				moveElevator(Direction.DOWN);
 			if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor())
@@ -143,7 +189,7 @@ public class ElevatorSubsystem implements Runnable {
 			if (parentElevator.getCurrentDestination() == parentElevator.getCurrentFloor() && parentElevator.isMoving())
 				stopElevator();
 		}
-		
+		System.out.println("Elevator " + parentElevator.getID() + " has been shut down.");
 	}
 	
 	// Get and set methods:
@@ -152,5 +198,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	public long getTime() {
 		return System.currentTimeMillis() - startTime;
+	}
+	public boolean isShutDown() {
+	    return shutDown;
 	}
 }

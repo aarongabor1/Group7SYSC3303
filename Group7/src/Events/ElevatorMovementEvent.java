@@ -17,8 +17,9 @@ public class ElevatorMovementEvent implements Serializable {
 	public long time;
 	public int elevatorID;
 	public ElevatorState elevatorState;
+	public boolean shutDown;
 	
-	public ElevatorMovementEvent(long time, int id, ElevatorState state) {
+	public ElevatorMovementEvent(long time, int id, ElevatorState state, boolean shutDown) {
 		if (state.getFloor() < Floor.MINIMUM_FLOOR_NUM || state.getFloor() > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("The current floor cannot be outside of the building!");
 		if (state.getDestination() < Floor.MINIMUM_FLOOR_NUM || state.getDestination() > Settings.NUMBER_OF_FLOORS)
@@ -27,6 +28,7 @@ public class ElevatorMovementEvent implements Serializable {
 		this.time = time;
 		elevatorID = id;
 		elevatorState = state;
+		this.shutDown = shutDown;
 	}
 	
 	public ElevatorState getElevatorState() {

@@ -125,9 +125,14 @@ public class Scheduler implements Runnable {
 	 * Method to send a failure event to its corresponding subsystem.
 	 * @param failureEvent
 	 */
-	public void SendFailure(FailureEvent failureEvent) {
-		// run Diana&Lynn's method?
+	public void sendFailure(FailureEvent failureEvent) {
 		
+	    if (failureEvent instanceof HardFailureEvent) {
+	        handleHardFailure(failureEvent.getElevator());
+	    } else if (failureEvent instanceof SoftFailureEvent) {
+	        handleSoftFailure(failureEvent);
+	    }
+	    
 		// Send the event to the appropriate consumer.
 		try {
 			sendSocket.send(Parser.packageObject(failureEvent));
@@ -135,9 +140,31 @@ public class Scheduler implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
 	}
 	
 	/**
+     * A method that handles an elevator's hard failure
+     */
+    public void handleHardFailure(int elevatorID) {    
+        transferFloorEvents(elevatorID);
+        elevatorDestinations.remove(elevatorID);
+    }
+    
+	/**
+	 * Waits for an elevator to stop before causing a soft failure
+	 * 
+	 * @param failureEvent
+	 */
+	private void handleSoftFailure(FailureEvent failureEvent) {  
+        ElevatorState elevatorWithFailure = elevatorStates.get(failureEvent.getElevator());
+	    
+        while (elevatorWithFailure.getDirection()!=Direction.STATIONARY)  
+            ;
+            
+    }
+
+    /**
 	 * Method to get the best elevator to service a new floor request
 	 * 
 	 * @param fe A new floor button press event (new floor request)
@@ -296,6 +323,30 @@ public class Scheduler implements Runnable {
 		elevatorDestinations.put(newElevator.ID, new LinkedList<Integer>());
 		
 		elevatorCount++;
+	}
+	
+	/**
+	 * Transfers an elevator's floor events to the most convenient elevator
+	 */
+	public void transferFloorEvents(int elevatorID) {
+	    Map.Entry<Integer,List<Integer>> leastDestinations = null;
+	    List<Integer> destinations = elevatorDestinations.get(elevatorID);
+	    
+	    for (Map.Entry<Integer,List<Integer>> entry : elevatorDestinations.entrySet()) {
+	        
+	        if (leastDestinations == null) {
+	            leastDestinations = entry;
+	        }
+	        
+	        if (entry.getValue().size() < leastDestinations.getValue().size()) {
+	            leastDestinations =  entry;
+	        }
+	    }
+	    	    
+	    for (Integer i : destinations) {
+	        addDestination(leastDestinations.getKey(), i);
+	    }
+	   
 	}
 	
 	@Override

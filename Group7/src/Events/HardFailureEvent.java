@@ -19,4 +19,6 @@ public class HardFailureEvent extends FailureEvent implements Serializable {
     public String getWhatHappened() {
     	return whatHappened;
     }
+    
+    
 }

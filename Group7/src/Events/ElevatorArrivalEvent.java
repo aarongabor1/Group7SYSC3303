@@ -17,8 +17,9 @@ public class ElevatorArrivalEvent implements Serializable {
 	public int floorNumber;
 	public int elevatorID;
 	public Direction goingInDirection;
+	public boolean shutDown;
 	
-	public ElevatorArrivalEvent(long time, int floor, int elevator, Direction direction) {
+	public ElevatorArrivalEvent(long time, int floor, int elevator, Direction direction, boolean shutDown) {
 		if (floor < Floor.MINIMUM_FLOOR_NUM || floor > Settings.NUMBER_OF_FLOORS)
 			throw new IllegalArgumentException("An elevator cannot arrive at an invalid floor!");
 		
@@ -26,5 +27,6 @@ public class ElevatorArrivalEvent implements Serializable {
 		floorNumber = floor;
 		elevatorID = elevator;
 		goingInDirection = direction;
+		this.shutDown = shutDown;
 	}
 }

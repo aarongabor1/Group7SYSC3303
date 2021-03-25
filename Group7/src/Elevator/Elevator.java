@@ -105,6 +105,12 @@ public class Elevator implements Serializable {
 		state.updateFloor(state.getFloor()+1);
 	}
 	
+	/*
+	 * Changes elevator state to shut down if hard failure
+	 */
+	public void shutDown() {
+	    state.shutDown();
+	}
 	/**
 	 * Determines whether the elevator is currently moving or not.
 	 * @return

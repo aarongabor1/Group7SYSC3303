@@ -35,13 +35,17 @@ public class SoftFailureEventConsumer implements Runnable {
 	 * @param destinationUpdateEvent
 	 */
 	public void consume(SoftFailureEvent softFailureEvent) {
-		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is stuck!");
-		// Add function call to the elevator to shut it down?
+		// Waiting for Lynn to work on this
+	    
+	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " is stuck!");
+		parent.handleSoftFailure(softFailureEvent.getDuration());
+		
 		try {
 			Thread.sleep(softFailureEvent.getDuration());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		// Wake up elevator
 		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is back online!");
 	}
 	
