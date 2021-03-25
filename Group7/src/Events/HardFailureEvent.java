@@ -15,4 +15,6 @@ public class HardFailureEvent implements Serializable {
     public HardFailureEvent(String whatHappened) {
         System.out.println("HardFailureEvent raised due to " + whatHappened);
     }
+    
+    
 }

@@ -20,7 +20,10 @@ public class ElevatorSubsystem implements Runnable {
 	private Elevator parentElevator;
 	private Thread destinationUpdateEventConsumer;
 	private Thread elevatorButtonPressEventConsumer;
+	private Thread errorEventConsumer;
 	private DatagramSocket sendSocket;
+	
+	private boolean shutDown;
 	
 	private long startTime;
 	
@@ -29,6 +32,7 @@ public class ElevatorSubsystem implements Runnable {
 		
 		destinationUpdateEventConsumer = new Thread(new DestinationUpdateEventConsumer(this, parent.ID), "Destination update event consumer for elevator " + parent.ID);
 		elevatorButtonPressEventConsumer = new Thread(new ElevatorButtonPressEventConsumer(this, parent.ID), "Elevator button press event consumer");
+		errorEventConsumer = new Thread(new ErrorEventConsumer(this, parent.ID), "Error event consumer");
 		
 		startTime = System.currentTimeMillis();
 
@@ -47,6 +51,8 @@ public class ElevatorSubsystem implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
+		this.shutDown = false;
 	}
 	
 	/**
@@ -126,12 +132,20 @@ public class ElevatorSubsystem implements Runnable {
 		}
 	}
 	
+	/*
+	 * Shuts down an elevator
+	 */
+	public void shutDownElevator() {
+	    shutDown = true;
+	}
+
 	@Override
 	public void run() {
 		destinationUpdateEventConsumer.start();
 		elevatorButtonPressEventConsumer.start();
+		errorEventConsumer.start();
 		
-		while(true) {
+		while(!isShutDown()) {
 			if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor())
 				moveElevator(Direction.DOWN);
 			if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor())
@@ -139,7 +153,6 @@ public class ElevatorSubsystem implements Runnable {
 			if (parentElevator.getCurrentDestination() == parentElevator.getCurrentFloor() && parentElevator.isMoving())
 				stopElevator();
 		}
-		
 	}
 	
 	// Get and set methods:
@@ -148,5 +161,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	public long getTime() {
 		return System.currentTimeMillis() - startTime;
+	}
+	public boolean isShutDown() {
+	    return shutDown;
 	}
 }

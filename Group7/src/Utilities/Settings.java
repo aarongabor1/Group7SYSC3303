@@ -26,6 +26,7 @@ public class Settings {
 	public static final int ELEVATOR_ARRIVAL_ECP = 6901; // Elevator Arrival Event Consumer Port.
 	public static final int ELEVATOR_MOVEMENT_ECP = 6902; // Elevator Movement Event Consumer Port.
 	public static final int ELEVATOR_REGISTRATION_ECP = 6903; // Elevator Registration Event Consumer Port.
+	public static final int ELEVATOR_ERROR_ECP = 6905; // Hard Failure Event Consumer
 	
 	public static final int ELEVATOR_BUTTON_PRESS_ECP = 6904; // Initial Elevator Button Press Event Consumer Port. (Should allow for as many ports after this as there are elevators, up to 50 currently)
 	public static final int DESTINATION_UPDATE_ECP = 6954; // Initial Destination Update Event Consumer Port. (Should allow for as many ports after this as there are elevators)

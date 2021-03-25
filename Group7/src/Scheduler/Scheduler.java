@@ -282,6 +282,48 @@ public class Scheduler implements Runnable {
 		elevatorCount++;
 	}
 	
+	/*
+	 * A method that tells an elevator to shut down
+	 */
+	public void shutDownElevator(int elevatorID, boolean mode) {
+	    // mode = true ->  hard failure
+	    // mode = false -> soft failure
+	    
+	    ErrorEvent event = new ErrorEvent(elevatorID, mode);
+	    try {
+            sendSocket.send(Parser.packageObject(event));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }	    
+	    
+	    transferFloorEvents(elevatorID);
+	}
+	
+	/*
+	 * Transfers an elevator's floor events to the most convenient elevator
+	 */
+	public void transferFloorEvents(int elevatorID) {
+	    Map.Entry<Integer,List<Integer>> leastDestinations = null;
+	    List<Integer> destinations = elevatorDestinations.get(elevatorID);
+	    
+	    for (Map.Entry<Integer,List<Integer>> entry : elevatorDestinations.entrySet()) {
+	        
+	        if (leastDestinations == null) {
+	            leastDestinations = entry;
+	        }
+	        
+	        if (entry.getValue().size() < leastDestinations.getValue().size()) {
+	            leastDestinations =  entry;
+	        }
+	    }
+	    	    
+	    for (Integer i : destinations) {
+	        addDestination(leastDestinations.getKey(), i);
+	    }
+	   
+	}
+	
 	@Override
 	public void run() {
 		elevatorRegistrationEventConsumer.start();
