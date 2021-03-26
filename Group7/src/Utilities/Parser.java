@@ -83,12 +83,14 @@ public class Parser {
 
 			while (scanner.hasNextLine()) {
 				time = scanner.next().trim();
+				
 				long ms = dateFormat.parse(time).getTime();
 				if (startTime == 0) {
 					startTime = ms;
 					ms = 0;
 				} else {
 					ms = ms - startTime;
+
 				}
 				
 				whatHappened = scanner.next();
@@ -102,7 +104,6 @@ public class Parser {
 					String errorType  = "SoftFailure";
 					int elevatorID = Integer.parseInt(scanner.next());
 					long duration = Integer.parseInt(scanner.next());
-					System.out.println(duration);
 					inputEventsList.add(new FormattedEvent(ms, errorType, whatHappened, elevatorID, duration));
 				} else {
 					currentFloor = whatHappened;
