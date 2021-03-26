@@ -28,7 +28,8 @@ public class Motor implements Serializable {
 	 * @param direction is the direction the motor is commanded to move the elevator
 	 */
 	public void moveElevator(Direction direction)
-	{
+	{  
+	    if (!parentElevator.getState().isShutDown()) {
 		state = direction;
 		parentElevator.changeDirection(direction);
 		try {
@@ -41,7 +42,8 @@ public class Motor implements Serializable {
 		if (direction == Direction.DOWN)
 			parentElevator.moveDown();
 		
-		System.out.println("Elevator current floor: " + parentElevator.getCurrentFloor());
+		System.out.println("Elevator " + parentElevator.getID() + " current floor: " + parentElevator.getCurrentFloor());
+	    }
 	}
 	
 	/**

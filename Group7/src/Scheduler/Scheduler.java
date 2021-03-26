@@ -69,8 +69,11 @@ public class Scheduler implements Runnable {
 		// Grab the current destination of the elevator
 	    List<Integer> currentDestinations = elevatorDestinations.get(bestElevator);
 	    int previousDestination = elevatorStates.get(bestElevator).getDestination();
-	    if (currentDestinations.size() > 0)
-	    	previousDestination = currentDestinations.get(0);
+	    if (currentDestinations!=null) {
+	        if (currentDestinations.size() > 0) {
+	            previousDestination = currentDestinations.get(0);
+	        }
+	    
 	    
 	    // Add the new destination into the elevator's destination queue
 	    addDestination(bestElevator, floorButtonPressEvent.floor);
@@ -91,6 +94,7 @@ public class Scheduler implements Runnable {
 				e.printStackTrace();
 				System.exit(1);
 			}
+	    }
 	    }
 	}
 	
@@ -177,6 +181,7 @@ public class Scheduler implements Runnable {
         for (int i = 1; i <= elevatorStates.size(); i++) {
             ElevatorState currentElevator = elevatorStates.get(i);        
          
+            if (!currentElevator.isShutDown()) {
             if (currentElevator.getDirection() == Direction.STATIONARY) {
                 
                 if (bestElevator == null) {
@@ -235,7 +240,7 @@ public class Scheduler implements Runnable {
             
             //System.out.println("Current best elevator: " + bestElevatorID);    
         }
-        
+        }
        return bestElevatorID;
 	}
 	
@@ -277,6 +282,7 @@ public class Scheduler implements Runnable {
 	private void addDestination(int elevatorID, int destinationFloor) {
 	    List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
 	    
+	    if (currentDestinations!= null) {
 	    if (currentDestinations.size() == 0) {
             currentDestinations.add(destinationFloor);
             return;
@@ -286,31 +292,65 @@ public class Scheduler implements Runnable {
 	    
 		// Loop through the destinations for the elevator, and determine if the new destination is "on the way".
 		int previousDest = elevatorStates.get(elevatorID).getFloor();
+		
 		for (int i = 0; i < currentDestinations.size(); i++) {
 		    
 		    // If the new destination is between the previous destination and the next destination, add it into the list at that location.
             // Return
             
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
-		        if (currentDestinations.get(i) > destinationFloor && destinationFloor > previousDest) {
+		      
+		        if (currentDestinations.size() > 1 && 
+		                currentDestinations.get(i) < destinationFloor && 
+		                destinationFloor > previousDest) {
 		            currentDestinations.add(i++, destinationFloor);
+		            System.out.println(currentDestinations);
+		            return;
+		        }
+		        
+		        if(currentDestinations.size() == 1 
+		                && destinationFloor < currentDestinations.get(i)) {
+		            currentDestinations.add(0, destinationFloor);
 		            return;
 		        }
 		    }
 		    
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
-		        if (currentDestinations.get(i) < destinationFloor && destinationFloor < previousDest) {
+		        if (currentDestinations.size() > 1 &&
+		                currentDestinations.get(i) > destinationFloor && 
+		                destinationFloor < previousDest) {
 		            currentDestinations.add(i++, destinationFloor);
 		            return;
 		        }
+		       
+		        if(currentDestinations.size() == 1 
+		                && destinationFloor > currentDestinations.get(i)) {
+                    currentDestinations.add(0, destinationFloor);
+                    return;
+                }
 		    }
+		    
+		    if (elevatorStates.get(elevatorID).getDirection() == Direction.STATIONARY) {
+	            if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor) {
+	                
+	                if (currentDestinations.size() == 1) {
+	                    currentDestinations.add(0, destinationFloor);
+	                    return;
+	                } else {
+	                    currentDestinations.add(i-1, destinationFloor); 
+	                    return;
+	                }
+	                
+	            }
+	        }
 		    
 		    // Set previousDest to nextDest.
 		    previousDest = currentDestinations.get(i);
 		}
 		
-		// If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.
+		// If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.		
 		currentDestinations.add(destinationFloor);
+	    }
 	}
 	
 	/**
@@ -349,9 +389,10 @@ public class Scheduler implements Runnable {
             // If the current floor of the stuck elevator is not in the destination list of
             // the chosen elevator, add to destination list
             if (!elevatorDestinations.get(leastDestinations.getKey())
-                    .contains(elevatorStates.get(elevatorID).getFloor())) {
-                // addDestination(leastDestinations.getKey(),
-                // elevatorStates.get(elevatorID).getFloor());
+                    .contains(elevatorStates.get(elevatorID).getFloor()) 
+                    && elevatorStates.get(elevatorID).getFloor() != elevatorStates.get(leastDestinations.getKey()).getFloor()) {
+                addDestination(leastDestinations.getKey(),
+                        elevatorStates.get(elevatorID).getFloor());
             }
 
             // Transfer floor events
@@ -360,20 +401,23 @@ public class Scheduler implements Runnable {
                     addDestination(leastDestinations.getKey(), i);
                 }
             }
-
-            if (elevatorDestinations.get(leastDestinations.getKey()).size() != 0) {
-                DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), leastDestinations.getKey(),
-                        elevatorDestinations.get(leastDestinations.getKey()).get(0));
-                try {
-                    sendSocket.send(Parser.packageObject(event));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            }
-
+            //System.out.println(elevatorDestinations.get(leastDestinations.getKey()));
+            routeElevator(leastDestinations.getKey());
         }
 	   
+	}
+	
+	public void routeElevator(int elevatorID) {
+	    if (elevatorDestinations.get(elevatorID).size() != 0) {
+            DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID,
+                    elevatorDestinations.get(elevatorID).get(0));
+            try {
+                sendSocket.send(Parser.packageObject(event));
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
 	}
 	
 	@Override
@@ -417,7 +461,7 @@ public class Scheduler implements Runnable {
                 System.exit(1);
             }
         } else {
-            System.out.println(elevatorID);
+            //System.out.println(elevatorID);
             handleHardFailure(elevatorID);
             elevatorDestinations.remove(elevatorID);
         }
