@@ -16,7 +16,7 @@ import Utilities.Settings;
  */
 public class SoftFailureEventConsumer implements Runnable {
 	private ElevatorSubsystem parent;
-	
+	private ElevatorState currentState;
 	private DatagramSocket receiveSocket;
 	
 	public SoftFailureEventConsumer(ElevatorSubsystem elevatorSubsystem, int elevatorID) {
@@ -32,21 +32,23 @@ public class SoftFailureEventConsumer implements Runnable {
 	
 	/**
 	 * Function to consume the destination update event from the scheduler.
-	 * @param destinationUpdateEvent
+	 * @param
 	 */
 	public void consume(SoftFailureEvent softFailureEvent) {
-		// Waiting for Lynn to work on this
-	    
-	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " is stuck!");
-		parent.handleSoftFailure(softFailureEvent.getDuration());
-		
-		try {
-			Thread.sleep(softFailureEvent.getDuration());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+
+		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is stuck!");
+		currentState = parent.getElevator().getState();
+		long start = System.currentTimeMillis();
+		long end = start + softFailureEvent.getDuration();
+		while (System.currentTimeMillis() < end){
+			parent.shutDownElevator();
 		}
+		parent.getElevator().setState(currentState);
+
+		//parent.handleSoftFailure(softFailureEvent.getDuration());
 		// Wake up elevator
 		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is back online!");
+		parent.moveElevator(currentState.getDirection());
 	}
 	
 	@Override
