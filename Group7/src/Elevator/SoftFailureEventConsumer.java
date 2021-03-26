@@ -45,6 +45,7 @@ public class SoftFailureEventConsumer implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
 		// Wake up elevator
 		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is back online!");
 	}

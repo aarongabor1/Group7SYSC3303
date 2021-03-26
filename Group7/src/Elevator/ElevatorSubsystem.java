@@ -186,6 +186,7 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	
 	public void wakeUpElevator() {  
+	    
 	}
 
 	@Override
@@ -197,7 +198,6 @@ public class ElevatorSubsystem implements Runnable {
 		softFailureEventConsumer.start();
 		
         while (!shutDown) {
-
             if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor() && !isShutDown())
                 moveElevator(Direction.DOWN);
             if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor() && !isShutDown())

@@ -87,8 +87,9 @@ public class Parser {
 				if (startTime == 0) {
 					startTime = ms;
 					ms = 0;
-				} else
+				} else {
 					ms = ms - startTime;
+				}
 				
 				whatHappened = scanner.next();
 				if ((whatHappened.equals("floorSensorFailure")) || (whatHappened.equals("elevatorStuckFailure"))) {

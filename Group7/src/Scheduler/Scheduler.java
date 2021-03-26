@@ -361,7 +361,7 @@ public class Scheduler implements Runnable {
                 }
             }
 
-            if (elevatorDestinations.get(leastDestinations.getKey()) != null) {
+            if (elevatorDestinations.get(leastDestinations.getKey()).size() != 0) {
                 DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), leastDestinations.getKey(),
                         elevatorDestinations.get(leastDestinations.getKey()).get(0));
                 try {

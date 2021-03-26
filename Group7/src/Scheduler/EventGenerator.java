@@ -112,7 +112,9 @@ public class EventGenerator implements Runnable {
 			// Check if any of the current elevator states satisfy the requirements to fire the elevator button press event:
 			for (Map.Entry<Integer, ElevatorState> elevatorStates : parent.getElevatorStates().entrySet()) {
 				ElevatorState stateToCheck = (ElevatorState) elevatorStates.getValue();
+				System.out.println("hereruirwe");
 				if (stateToCheck.triggersElevatorButtonEvent(requiredState)) {
+				    
 					// Update the elevator button press event to make sure it's coming from the right elevator:
 					elevatorEvent.getValue().updateElevatorID(elevatorStates.getKey());
 					
@@ -137,6 +139,7 @@ public class EventGenerator implements Runnable {
 			failureEvent = iterator.next();
 			
 			if (parent.getTime() >= failureEvent.getTime()) {
+			
 				parent.sendFailure(failureEvent);
 				iterator.remove();
 			}
