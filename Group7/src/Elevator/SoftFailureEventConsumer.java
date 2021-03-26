@@ -35,7 +35,7 @@ public class SoftFailureEventConsumer implements Runnable {
 	 * @param
 	 */
 	public void consume(SoftFailureEvent softFailureEvent) {
-	      System.out.println("Elevator #" + softFailureEvent.getElevator() + " is stuck!");
+	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " is stuck!");
 		currentState = parent.getElevator().getState();
 		long start = System.currentTimeMillis();
 		long end = start + softFailureEvent.getDuration();
