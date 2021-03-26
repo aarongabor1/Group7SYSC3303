@@ -19,7 +19,7 @@ public class FormattedEvent {
 	public boolean isError;
 	private String errorOccurred;
 	private String errorType;
-	private long errorDuration;
+	private long errorDuration = 0;
 	private int failingElevator;
 	
 	/**
@@ -49,6 +49,7 @@ public class FormattedEvent {
 	public FormattedEvent(long time, String errorType, String errorOccurred, int elevatorID)
 	{
 		isError = true;
+		this.time = time;
 		this.errorOccurred = errorOccurred;
 		this.errorType = errorType;
 		failingElevator = elevatorID;
@@ -61,6 +62,7 @@ public class FormattedEvent {
 	public FormattedEvent(long time, String errorType, String errorOccurred, int elevatorID, long errorDuration)
 	{
 		isError = true;
+		this.time = time;
 		this.errorOccurred = errorOccurred;
 		this.errorType = errorType;
 		failingElevator = elevatorID;
@@ -142,6 +144,12 @@ public class FormattedEvent {
 	 * @return string containing all information.
 	 */
 	public String toString() {
-		return time + ": " + currentFloor + " " + direction + " " + carButton;
+		if (isError) {
+			String result = time + ": " + errorType + " " + errorOccurred + " " + failingElevator;
+			if (errorDuration > 0)
+				result += " " + errorDuration;
+			return result;
+		} else
+			return time + ": " + currentFloor + " " + direction + " " + carButton;
 	}
 }

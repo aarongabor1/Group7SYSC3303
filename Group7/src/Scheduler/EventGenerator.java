@@ -50,7 +50,7 @@ public class EventGenerator implements Runnable {
 		} catch (ParseException pe) {
 			throw pe;
 		}
-		
+				
 		if (currentEventFromInput.isError) {
 			long time = currentEventFromInput.getTime();
 			String errorOccurred = currentEventFromInput.getErrorOccurred();
