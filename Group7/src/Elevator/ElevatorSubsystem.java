@@ -23,7 +23,7 @@ public class ElevatorSubsystem implements Runnable {
 	private Thread softFailureEventConsumer;
 	private DatagramSocket sendSocket;
 	
-	private boolean shutDown;
+	private volatile boolean shutDown;
 	
 	private long startTime;
 	
@@ -63,25 +63,22 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param direction
 	 */
 	public void moveElevator(Direction direction) {
+	    if (!isShutDown()) {
 		handleDoor(false);
 		handleMotor(direction);
+	    }
 	}
 	
 	/**
 	 * Moves motor, stops elevator and opens doors.
 	 */
 	public void stopElevator() {
+	    if (!isShutDown()) {
 		handleMotor(Direction.STATIONARY);
 		handleDoor(true);
 		
-		ElevatorArrivalEvent event = null;
-        if (shutDown) {
-            event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
-                    parentElevator.ID, parentElevator.getCurrentDirection(), true);         
-        }
-        
-        event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
-                    parentElevator.ID, parentElevator.getCurrentDirection(), false);         
+		ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
+                    parentElevator.ID, parentElevator.getCurrentDirection());         
        
         // Send the event to the appropriate consumer.
         try {
@@ -91,8 +88,9 @@ public class ElevatorSubsystem implements Runnable {
             System.exit(1);
         }
         
-		// Create and send an elevator movement event to the scheduler.
-		ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
+    
+ 		// Create and send an elevator movement event to the scheduler.
+        ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
 		
 		
 		try {		   
@@ -103,6 +101,7 @@ public class ElevatorSubsystem implements Runnable {
 		}
 				
 		parentElevator.turnOffLamp(parentElevator.getCurrentFloor());
+	    }
 	}
 	
 	/**
@@ -111,7 +110,8 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param direction, the direction to move the elevator
 	 */
 	public void handleMotor(Direction direction) {
-		System.out.println("ElevatorSubsystem: Handling Motor: " + direction);
+	    if (!isShutDown()) {
+		System.out.println("ElevatorSubsystem " + parentElevator.getID() + ": Handling Motor: " + direction);
 
 		if (direction == Direction.STATIONARY)
 			parentElevator.getMotor().stopElevator();
@@ -131,6 +131,7 @@ public class ElevatorSubsystem implements Runnable {
 			} else
 				System.out.println("DOOR NOT OPERATING"); // Iter4 - Will need to throw some sort of error here! Do not want the elevator to start moving if the doors are open!
 		}
+	    }
 	}
 
 	/**
@@ -149,9 +150,23 @@ public class ElevatorSubsystem implements Runnable {
 	/**
 	 * Shuts down an elevator
 	 */
-	public void shutDownElevator() {
+	public synchronized void shutDownElevator() {
+	    handleMotor(Direction.STATIONARY);
+	    handleDoor(false);
 	    shutDown = true;
-	    stopElevator();
+	    
+        ElevatorMovementEvent elevatorMovementEvent = null;
+        parentElevator.shutDown();           
+        
+        // Create and send an elevator movement event to the scheduler.
+        elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
+        
+        try {          
+            sendSocket.send(Parser.packageObject(elevatorMovementEvent));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 	}
 	
 	/**
@@ -181,14 +196,17 @@ public class ElevatorSubsystem implements Runnable {
 		hardFailureEventConsumer.start();
 		softFailureEventConsumer.start();
 		
-		while(!isShutDown()) {
-			if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor())
-				moveElevator(Direction.DOWN);
-			if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor())
-				moveElevator(Direction.UP);
-			if (parentElevator.getCurrentDestination() == parentElevator.getCurrentFloor() && parentElevator.isMoving())
-				stopElevator();
-		}
+        while (!shutDown) {
+
+            if (parentElevator.getCurrentDestination() < parentElevator.getCurrentFloor() && !isShutDown())
+                moveElevator(Direction.DOWN);
+            if (parentElevator.getCurrentDestination() > parentElevator.getCurrentFloor() && !isShutDown())
+                moveElevator(Direction.UP);
+            if (parentElevator.getCurrentDestination() == parentElevator.getCurrentFloor() && parentElevator.isMoving())
+                stopElevator();
+
+        }
+		
 		System.out.println("Elevator " + parentElevator.getID() + " has been shut down.");
 	}
 	
@@ -199,7 +217,7 @@ public class ElevatorSubsystem implements Runnable {
 	public long getTime() {
 		return System.currentTimeMillis() - startTime;
 	}
-	public boolean isShutDown() {
+	public synchronized boolean isShutDown() {
 	    return shutDown;
 	}
 }

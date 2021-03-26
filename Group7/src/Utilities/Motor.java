@@ -49,7 +49,7 @@ public class Motor implements Serializable {
 	 */
 	public void stopElevator()
 	{
-		System.out.println("Elevator stopped at floor " + parentElevator.getCurrentDestination());
+		System.out.println("Elevator " + parentElevator.getID() + " stopped at floor " + parentElevator.getCurrentFloor());
 		state = Direction.STATIONARY;
 		parentElevator.changeDirection(Direction.STATIONARY);
 	}

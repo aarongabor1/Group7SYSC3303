@@ -14,7 +14,7 @@ public class ElevatorState implements Serializable {
 	private int currentFloor;
 	private Direction currentDirection;
 	private int currentDestination;
-	private boolean shutDown;
+	private volatile boolean shutDown;
 	
 	public ElevatorState(int floor, Direction direction, int destination) {
 		currentFloor = floor;
@@ -40,7 +40,7 @@ public class ElevatorState implements Serializable {
 	public int getDestination() {
 		return currentDestination;
 	}
-	public boolean isShutDown() {
+	public synchronized boolean isShutDown() {
 	    return shutDown;
 	}
 
@@ -53,7 +53,7 @@ public class ElevatorState implements Serializable {
 	public void updateDestination(int destination) {
 		currentDestination = destination;
 	}	
-	public void shutDown() {
+	public synchronized void shutDown() {
 	    shutDown = true;
 	}
 	

@@ -80,7 +80,7 @@ public class Scheduler implements Runnable {
 	    if (currentDestinations.size() > 0)
 	    	newDestination = currentDestinations.get(0);
 	    
-	    if (newDestination != previousDestination) {
+	    if (newDestination != previousDestination && !elevatorStates.get(bestElevator).isShutDown()) {
 	    	// The current destination for the elevator should change, so generate a new DestinationUpdateEvent
 			DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), bestElevator, newDestination);
 			
@@ -107,7 +107,7 @@ public class Scheduler implements Runnable {
 		addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
 	    	    		
 		int newDestination = elevatorDestinations.get(elevatorID).get(0);
-	    if (newDestination != previousDestination) {
+	    if (newDestination != previousDestination && !elevatorStates.get(elevatorID).isShutDown()) {
 	    	// The current destination for the elevator should change, so generate a new DestinationUpdateEvent
 			DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID, newDestination);
 			
@@ -126,20 +126,19 @@ public class Scheduler implements Runnable {
 	 * @param failureEvent
 	 */
 	public void sendFailure(FailureEvent failureEvent) {
+
+        if (failureEvent instanceof SoftFailureEvent) {
+            handleSoftFailure(failureEvent);
+        }   // ->  Waits for elevator to stop, and then sends the door failure event
+        
 		
-	    if (failureEvent instanceof HardFailureEvent) {
-	        handleHardFailure(failureEvent.getElevator());
-	    } else if (failureEvent instanceof SoftFailureEvent) {
-	        handleSoftFailure(failureEvent);
-	    }
-	    
-		// Send the event to the appropriate consumer.
 		try {
 			sendSocket.send(Parser.packageObject(failureEvent));
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
 		
 	}
 	
@@ -148,7 +147,7 @@ public class Scheduler implements Runnable {
      */
     public void handleHardFailure(int elevatorID) {    
         transferFloorEvents(elevatorID);
-        elevatorDestinations.remove(elevatorID);
+       
     }
     
 	/**
@@ -327,25 +326,53 @@ public class Scheduler implements Runnable {
 	
 	/**
 	 * Transfers an elevator's floor events to the most convenient elevator
+	 * @param elevatorID The ID of the elevator with the hard fault
 	 */
 	public void transferFloorEvents(int elevatorID) {
-	    Map.Entry<Integer,List<Integer>> leastDestinations = null;
-	    List<Integer> destinations = elevatorDestinations.get(elevatorID);
-	    
-	    for (Map.Entry<Integer,List<Integer>> entry : elevatorDestinations.entrySet()) {
-	        
-	        if (leastDestinations == null) {
-	            leastDestinations = entry;
-	        }
-	        
-	        if (entry.getValue().size() < leastDestinations.getValue().size()) {
-	            leastDestinations =  entry;
-	        }
-	    }
-	    	    
-	    for (Integer i : destinations) {
-	        addDestination(leastDestinations.getKey(), i);
-	    }
+        Map.Entry<Integer, List<Integer>> leastDestinations = null;
+
+        if (elevatorDestinations.get(elevatorID) != null) {
+            List<Integer> destinations = elevatorDestinations.get(elevatorID);
+            // Choose elevator with least destinations
+            for (Map.Entry<Integer, List<Integer>> entry : elevatorDestinations.entrySet()) {
+                if (!elevatorStates.get(entry.getKey()).isShutDown()) {
+                    if (leastDestinations == null) {
+                        leastDestinations = entry;
+                    }
+
+                    if (entry.getValue().size() < leastDestinations.getValue().size()) {
+                        leastDestinations = entry;
+                    }
+                }
+            }
+
+            // If the current floor of the stuck elevator is not in the destination list of
+            // the chosen elevator, add to destination list
+            if (!elevatorDestinations.get(leastDestinations.getKey())
+                    .contains(elevatorStates.get(elevatorID).getFloor())) {
+                // addDestination(leastDestinations.getKey(),
+                // elevatorStates.get(elevatorID).getFloor());
+            }
+
+            // Transfer floor events
+            for (Integer i : destinations) {
+                if (!leastDestinations.getValue().contains(i)) {
+                    addDestination(leastDestinations.getKey(), i);
+                }
+            }
+
+            if (elevatorDestinations.get(leastDestinations.getKey()) != null) {
+                DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), leastDestinations.getKey(),
+                        elevatorDestinations.get(leastDestinations.getKey()).get(0));
+                try {
+                    sendSocket.send(Parser.packageObject(event));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
+
+        }
 	   
 	}
 	
@@ -363,28 +390,37 @@ public class Scheduler implements Runnable {
 	 * @param currentLocation, the floor that the elevator has moved to
 	 */
 	public void updateElevatorState(int elevatorID, ElevatorState state) {
+	    
 		elevatorStates.put(elevatorID, state);
 		
-		// If the elevator has nowhere to go, we don't need to update its destination.
-		if (elevatorDestinations.get(elevatorID).size() <= 0)
-			return;
-		
-		// If the elevator is at its current destination, update the elevator's destination.
-		if (elevatorDestinations.get(elevatorID).get(0) == state.getFloor())
-			elevatorDestinations.get(elevatorID).remove(0);
-		
-		if (elevatorDestinations.get(elevatorID).size() <= 0)
-			return;
-		
-		DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID, elevatorDestinations.get(elevatorID).get(0));
-		
-		// Send the event to the appropriate consumer.
-		try {
-			sendSocket.send(Parser.packageObject(event));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+        if (!state.isShutDown()) {
+            // If the elevator has nowhere to go, we don't need to update its destination.
+            if (elevatorDestinations.get(elevatorID).size() <= 0)
+                return;
+
+            // If the elevator is at its current destination, update the elevator's
+            // destination.
+            if (elevatorDestinations.get(elevatorID).get(0) == state.getFloor())
+                elevatorDestinations.get(elevatorID).remove(0);
+
+            if (elevatorDestinations.get(elevatorID).size() <= 0)
+                return;
+
+            DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID,
+                    elevatorDestinations.get(elevatorID).get(0));
+
+            // Send the event to the appropriate consumer.
+            try {
+                sendSocket.send(Parser.packageObject(event));
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        } else {
+            System.out.println(elevatorID);
+            handleHardFailure(elevatorID);
+            elevatorDestinations.remove(elevatorID);
+        }
 	}
 	
 	// Get and set methods:
