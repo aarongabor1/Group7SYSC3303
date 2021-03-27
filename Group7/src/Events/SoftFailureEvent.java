@@ -18,6 +18,7 @@ public class SoftFailureEvent extends FailureEvent implements Serializable {
     	this.duration = duration;
     }
     
+    // get methods
     public String getWhatHappened() {
     	return whatHappened;
     }

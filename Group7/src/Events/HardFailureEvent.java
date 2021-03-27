@@ -16,6 +16,7 @@ public class HardFailureEvent extends FailureEvent implements Serializable {
     	this.whatHappened = whatHappened;
     }
     
+    // get methods
     public String getWhatHappened() {
     	return whatHappened;
     }

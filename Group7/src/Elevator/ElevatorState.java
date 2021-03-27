@@ -44,7 +44,6 @@ public class ElevatorState implements Serializable {
 	public synchronized boolean isShutDown() {
 	    return shutDown;
 	}
-
 	public void updateFloor(int floor) {
 		currentFloor = floor;
 	}
@@ -57,7 +56,6 @@ public class ElevatorState implements Serializable {
 	public synchronized void shutDown() {
 	    shutDown = true;
 	}
-	
 	public String toString() {
 		return "State: " + currentFloor + ", " + currentDirection.toString() + ", " + currentDestination;
 	}

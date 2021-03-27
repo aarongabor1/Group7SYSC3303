@@ -389,6 +389,11 @@ public class Scheduler implements Runnable {
 	   
 	}
 	
+	/**
+	 * Moves the elevator to where the elevator (with hard failure) is at
+	 * 
+	 * @param elevatorID
+	 */
 	public void routeElevator(int elevatorID) {
 	    if (elevatorDestinations.get(elevatorID).size() != 0) {
             DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID,

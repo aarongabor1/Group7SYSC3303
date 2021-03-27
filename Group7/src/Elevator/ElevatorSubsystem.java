@@ -69,8 +69,8 @@ public class ElevatorSubsystem implements Runnable {
 	 */
 	public void moveElevator(Direction direction) {
 	    if (!isShutDown()) {
-		handleDoor(false);
-		handleMotor(direction);
+	        handleDoor(false);
+	        handleMotor(direction);
 	    }
 	}
 	
@@ -80,10 +80,11 @@ public class ElevatorSubsystem implements Runnable {
 	public void stopElevator() {
 	    if (!isShutDown()) {
 	        handleMotor(Direction.STATIONARY);
-		
+	        
+	        // Section that handles an elevator's door being stuck
 	        if (doorStuck) {
 	            try {
-	                Thread.sleep(duration);
+	                Thread.sleep(duration);    // Let the elevator be offline for some duration
 	            } catch (InterruptedException e) {
 	                
 	            }
@@ -125,28 +126,31 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param direction, the direction to move the elevator
 	 */
 	public void handleMotor(Direction direction) {
-	    if (!isShutDown()) {
-		System.out.println("ElevatorSubsystem " + parentElevator.getID() + ": Handling Motor: " + direction);
+        if (!isShutDown()) {
+            System.out.println("ElevatorSubsystem " + parentElevator.getID() + ": Handling Motor: " + direction);
 
-		if (direction == Direction.STATIONARY)
-			parentElevator.getMotor().stopElevator();
-		else {
-			if (!parentElevator.getDoor().isOpen()) {
-				parentElevator.getMotor().moveElevator(direction);
-				
-				// Create and send an elevator movement event to the scheduler.
-				ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
-				
-				try {
-					sendSocket.send(Parser.packageObject(elevatorMovementEvent));
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.exit(1);
-				}
-			} else
-				System.out.println("DOOR NOT OPERATING"); // Iter4 - Will need to throw some sort of error here! Do not want the elevator to start moving if the doors are open!
-		}
-	    }
+            if (direction == Direction.STATIONARY)
+                parentElevator.getMotor().stopElevator();
+            else {
+                if (!parentElevator.getDoor().isOpen()) {
+                    parentElevator.getMotor().moveElevator(direction);
+
+                    // Create and send an elevator movement event to the scheduler.
+                    ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(),
+                            parentElevator.ID, parentElevator.getState(), shutDown);
+
+                    try {
+                        sendSocket.send(Parser.packageObject(elevatorMovementEvent));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.exit(1);
+                    }
+                } else {
+                    System.out.println("DOOR NOT OPENING"); // Iter4 - Will need to throw some sort of error here! Do
+                }                                             // not want the elevator to start moving if the doors are
+                                                              // open!
+            }
+        }
 	}
 
 	/**
@@ -176,6 +180,7 @@ public class ElevatorSubsystem implements Runnable {
         // Create and send an elevator movement event to the scheduler.
         elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
         
+        // Let Scheduler know that elevator has been shut down
         try {          
             sendSocket.send(Parser.packageObject(elevatorMovementEvent));
         } catch (IOException e) {
@@ -194,6 +199,7 @@ public class ElevatorSubsystem implements Runnable {
 	    doorStuck = true;
 	    duration = dur;
 	    
+	    // Checks if the elevator is not stationary, if not then stop it
 	    if (parentElevator.getCurrentDirection() != Direction.STATIONARY) {
 	        stopElevator();
 	    }    

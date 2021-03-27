@@ -140,6 +140,7 @@ public class Elevator implements Serializable {
 		return state;
 	}
 	public void setState(ElevatorState state){this.state = state;}
+	
 	public int getCurrentFloor() {
 		return state.getFloor();
 	}
