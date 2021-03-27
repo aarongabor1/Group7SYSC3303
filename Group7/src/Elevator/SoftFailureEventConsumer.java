@@ -49,7 +49,7 @@ public class SoftFailureEventConsumer implements Runnable {
 		while (System.currentTimeMillis() < end){
 			parent.shutDownElevator();
 		}*/
-	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " door is stuck!");
+	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " door is stuck! Elevator is now offline");
 		parent.handleSoftFailure(softFailureEvent.getElevator());
 
 		//parent.getElevator().setState(currentState);
