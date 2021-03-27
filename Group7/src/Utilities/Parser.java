@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * get sent to the corresponding event listeners in the correct subsystems.
  * 
  * @author lynnmehyou, Aaron Gabor, Marc Angers
- * @version 1.1
+ * @version 1.2
  */
 public class Parser {
 	private File file;
@@ -81,6 +81,7 @@ public class Parser {
 			int carButton1;
 			DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss.mmm");
 
+			// Store all the events contained within the input file into memory
 			while (scanner.hasNextLine()) {
 				time = scanner.next().trim();
 				
@@ -106,6 +107,7 @@ public class Parser {
 					long duration = Integer.parseInt(scanner.next());
 					inputEventsList.add(new FormattedEvent(ms, errorType, whatHappened, elevatorID, duration));
 				} else {
+					// raise a normal event
 					currentFloor = whatHappened;
 					direction = scanner.next();
 					carButton = scanner.next();
@@ -116,14 +118,15 @@ public class Parser {
 					inputEventsList.add(new FormattedEvent(ms, currentFloor1, direction1, carButton1));
 				}
 			}
-				scanner.close();
-
-
+			
+			scanner.close();
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
-		/**
+	
+	/**
 	 * parseFile send back one FormattedEvent object from the input file.
 	 * 
 	 * @return FormattedEvent object containing the next command
@@ -144,6 +147,7 @@ public class Parser {
 	 * Method to wrap an object (specifically the event objects within the system) in a datagrampacket that can be sent over the network.
 	 */
 	public static DatagramPacket packageObject(Object obj) {
+		// Find out what type of event needs to be packaged.
 		String eventType = getEventType(obj);
 		
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream(8191);
@@ -158,6 +162,7 @@ public class Parser {
 		
 		byte[] data = byteStream.toByteArray();
 		
+		// Package the event and send it to the appropriate system and port.
 		DatagramPacket packet;
 		switch (eventType) {
 		case "FBP":
@@ -218,6 +223,7 @@ public class Parser {
 		}
 		
 		// Might want to throw some sort of error here
+		System.out.println("Could not read object from datagrampacket!");
 		return new Object();
 	}
 	
@@ -227,6 +233,7 @@ public class Parser {
 	 * @return the type of the event
 	 */
 	private static String getEventType(Object obj) {
+		// Create test events
 		FloorButtonPressEvent tempFBPEvent = new FloorButtonPressEvent(System.currentTimeMillis(), 1, Direction.UP);
 		ElevatorButtonPressEvent tempEBPEvent = new ElevatorButtonPressEvent(System.currentTimeMillis(), 1, 1);
 		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(System.currentTimeMillis(), 1, 1);
@@ -236,6 +243,7 @@ public class Parser {
 		HardFailureEvent tempHFEvent = new HardFailureEvent(System.currentTimeMillis(), "temp", 1);
 		SoftFailureEvent tempSFEvent = new SoftFailureEvent(System.currentTimeMillis(), "temp", 1, 1);
 		
+		// Determine what type of event was passed to the method.
 		if (obj.getClass() == tempFBPEvent.getClass())
 			return "FBP";
 		if (obj.getClass() == tempEBPEvent.getClass())

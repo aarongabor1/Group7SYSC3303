@@ -27,9 +27,6 @@ public class Elevator implements Serializable {
 	private Map<Integer, ElevatorButton> elevatorButtons;
 	
 	public Elevator(int elevatorID) {
-		if (Settings.NUMBER_OF_FLOORS <= Floor.MINIMUM_FLOOR_NUM)
-			throw new IllegalArgumentException("Your building must have more than 1 floor to use an elevator!");
-		
 		this.motor = new Motor(this);
 		this.door = new Door(false);
 		this.elevatorButtons = new HashMap<Integer, ElevatorButton>();

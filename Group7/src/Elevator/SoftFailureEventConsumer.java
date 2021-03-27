@@ -17,7 +17,6 @@ import Utilities.Settings;
  */
 public class SoftFailureEventConsumer implements Runnable {
 	private ElevatorSubsystem parent;
-	private ElevatorState currentState;
 	private DatagramSocket receiveSocket;
 	
 	public SoftFailureEventConsumer(ElevatorSubsystem elevatorSubsystem, int elevatorID) {
@@ -41,21 +40,9 @@ public class SoftFailureEventConsumer implements Runnable {
 	    while(parent.getElevator().getState().getDirection()!=Direction.STATIONARY) 
 	        ;
 	    
-	    /*
-	    currentState = parent.getElevator().getState();
-		long start = System.currentTimeMillis();
-		long end = start + softFailureEvent.getDuration();
-		
-		while (System.currentTimeMillis() < end){
-			parent.shutDownElevator();
-		}*/
-	    
 	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " door is stuck! Elevator is now offline");
 		parent.handleSoftFailure(softFailureEvent.getElevator());
 
-		//parent.getElevator().setState(currentState);
-
-		//parent.handleSoftFailure(softFailureEvent.getDuration());
 		try {
 		    Thread.sleep(softFailureEvent.getDuration());
 		} catch (InterruptedException e) {
@@ -65,6 +52,7 @@ public class SoftFailureEventConsumer implements Runnable {
 		// Waits for elevator fix soft failure
 		while(parent.getElevator().getState().getDirection()==Direction.STATIONARY) 
             ;
+		
 		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is back online!");
 	}
 	
