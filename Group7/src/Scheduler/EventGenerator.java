@@ -138,8 +138,7 @@ public class EventGenerator implements Runnable {
 		while (iterator.hasNext()) {
 			failureEvent = iterator.next();
 			
-			if (parent.getTime() >= failureEvent.getTime()) {
-			
+			if (parent.getTime() >= failureEvent.getTime()) {		
 				parent.sendFailure(failureEvent);
 				iterator.remove();
 			}

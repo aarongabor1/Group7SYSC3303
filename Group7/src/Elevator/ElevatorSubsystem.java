@@ -24,6 +24,9 @@ public class ElevatorSubsystem implements Runnable {
 	private DatagramSocket sendSocket;
 	
 	private volatile boolean shutDown;
+	private volatile boolean doorStuck;
+	
+	private long duration;
 	
 	private long startTime;
 	
@@ -55,6 +58,8 @@ public class ElevatorSubsystem implements Runnable {
 		}
 		
 		this.shutDown = false;
+		this.doorStuck = false;
+		this.duration = 0;
 	}
 	
 	/**
@@ -74,36 +79,46 @@ public class ElevatorSubsystem implements Runnable {
 	 */
 	public void stopElevator() {
 	    if (!isShutDown()) {
-		handleMotor(Direction.STATIONARY);
-		handleDoor(true);
+	        handleMotor(Direction.STATIONARY);
 		
-		ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
+	        if (doorStuck) {
+	            try {
+	                Thread.sleep(duration);
+	            } catch (InterruptedException e) {
+	                
+	            }
+	        }
+		
+	        handleDoor(true);
+		
+	        ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
                     parentElevator.ID, parentElevator.getCurrentDirection());         
        
-        // Send the event to the appropriate consumer.
-        try {
-            sendSocket.send(Parser.packageObject(event));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+	        // Send the event to the appropriate consumer.
+	        try {
+	            sendSocket.send(Parser.packageObject(event));
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            System.exit(1);
+	        }
         
     
- 		// Create and send an elevator movement event to the scheduler.
-        ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
+	        // Create and send an elevator movement event to the scheduler.
+	        ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
 		
 		
-		try {		   
-			sendSocket.send(Parser.packageObject(elevatorMovementEvent));
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+	        try {		   
+	            sendSocket.send(Parser.packageObject(elevatorMovementEvent));
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            System.exit(1);
+	        }
 				
-		parentElevator.turnOffLamp(parentElevator.getCurrentFloor());
-	    }
+	        parentElevator.turnOffLamp(parentElevator.getCurrentFloor());
+	        
+	        }
 	}
-	
+
 	/**
 	 * Moves elevator in the appropriate direction
 	 * 
@@ -174,19 +189,14 @@ public class ElevatorSubsystem implements Runnable {
 	 * 
 	 * @param duration The duration an elevator is down
 	 */
-	public void handleSoftFailure(long duration) {
+	public synchronized void handleSoftFailure(long dur) {
 	    
-	    stopElevator();
-	    try {
-            Thread.sleep(duration);
-        } catch (InterruptedException e) {            
-            e.printStackTrace();
-        }
+	    doorStuck = true;
+	    duration = dur;
 	    
-	}
-	
-	public void wakeUpElevator() {  
-	    
+	    if (parentElevator.getCurrentDirection() != Direction.STATIONARY) {
+	        stopElevator();
+	    }    
 	}
 
 	@Override

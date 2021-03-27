@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 import Events.SoftFailureEvent;
+import Utilities.Direction;
 import Utilities.Parser;
 import Utilities.Settings;
 
@@ -35,15 +36,23 @@ public class SoftFailureEventConsumer implements Runnable {
 	 * @param
 	 */
 	public void consume(SoftFailureEvent softFailureEvent) {
-	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " is stuck!");
-		currentState = parent.getElevator().getState();
+		
+	    // Wait until elevator stops to get failure
+	    while(parent.getElevator().getState().getDirection()!=Direction.STATIONARY) 
+	        ;
+	    
+	    /*
+	    currentState = parent.getElevator().getState();
 		long start = System.currentTimeMillis();
 		long end = start + softFailureEvent.getDuration();
+		
 		while (System.currentTimeMillis() < end){
 			parent.shutDownElevator();
-		}
+		}*/
+	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " door is stuck!");
+		parent.handleSoftFailure(softFailureEvent.getElevator());
 
-		parent.getElevator().setState(currentState);
+		//parent.getElevator().setState(currentState);
 
 		//parent.handleSoftFailure(softFailureEvent.getDuration());
 		try {
@@ -51,9 +60,11 @@ public class SoftFailureEventConsumer implements Runnable {
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}
-		// Wake up elevator
+		
+		// Waits for elevator fix soft failure
+		while(parent.getElevator().getState().getDirection()==Direction.STATIONARY) 
+            ;
 		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is back online!");
-		parent.moveElevator(currentState.getDirection());
 	}
 	
 	@Override

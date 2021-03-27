@@ -187,17 +187,17 @@ public class Parser {
 			int hf_ecp = Settings.HARD_FAILURE_ECP + hardFailureEvent.getElevator();
 			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, hf_ecp);
 			break;
-		case "SF":
+		case "SF":		    
 			SoftFailureEvent softFailureEvent = (SoftFailureEvent) obj;
 			int sf_ecp = Settings.SOFT_FAILURE_ECP + softFailureEvent.getElevator();
 			packet = new DatagramPacket(data, data.length, Settings.ELEVATOR_SYSTEM_ADDRESS, sf_ecp);
+			break;	
 		default:
 			// Might want to throw an error here or something idk.
 			System.out.println("Could not determine the type of packet to be sent!");
 			packet = new DatagramPacket(data, data.length);
 			break;
 		}
-		
 		return packet;
 	}
 	

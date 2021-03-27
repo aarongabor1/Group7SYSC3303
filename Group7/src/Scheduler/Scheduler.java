@@ -130,19 +130,13 @@ public class Scheduler implements Runnable {
 	 * @param failureEvent
 	 */
 	public void sendFailure(FailureEvent failureEvent) {
-
-        if (failureEvent instanceof SoftFailureEvent) {
-            handleSoftFailure(failureEvent);
-        }   // ->  Waits for elevator to stop, and then sends the door failure event
-        
-		
+	   
 		try {
 			sendSocket.send(Parser.packageObject(failureEvent));
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
 		
 	}
 	
@@ -151,22 +145,8 @@ public class Scheduler implements Runnable {
      */
     public void handleHardFailure(int elevatorID) {    
         transferFloorEvents(elevatorID);
-       
     }
-    
-	/**
-	 * Waits for an elevator to stop before causing a soft failure
-	 * 
-	 * @param failureEvent
-	 */
-	private void handleSoftFailure(FailureEvent failureEvent) {  
-        ElevatorState elevatorWithFailure = elevatorStates.get(failureEvent.getElevator());
-	    
-        while (elevatorWithFailure.getDirection()!=Direction.STATIONARY)  
-            ;
-            
-    }
-
+   
     /**
 	 * Method to get the best elevator to service a new floor request
 	 * 
@@ -280,9 +260,9 @@ public class Scheduler implements Runnable {
 	 * @param destinationFloor
 	 */
 	private void addDestination(int elevatorID, int destinationFloor) {
+	    
 	    List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
 	    
-	    if (currentDestinations!= null) {
 	    if (currentDestinations.size() == 0) {
             currentDestinations.add(destinationFloor);
             return;
@@ -351,7 +331,9 @@ public class Scheduler implements Runnable {
 		// If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.		
 		currentDestinations.add(destinationFloor);
 	    }
-	}
+	    
+	   
+	
 	
 	/**
 	 * Method to add a new elevator to the elevatorStates and elevatorDestinations maps.
@@ -401,7 +383,7 @@ public class Scheduler implements Runnable {
                     addDestination(leastDestinations.getKey(), i);
                 }
             }
-            //System.out.println(elevatorDestinations.get(leastDestinations.getKey()));
+            
             routeElevator(leastDestinations.getKey());
         }
 	   

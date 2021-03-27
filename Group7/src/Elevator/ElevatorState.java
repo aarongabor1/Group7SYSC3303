@@ -35,7 +35,7 @@ public class ElevatorState implements Serializable {
 	public int getFloor() {
 		return currentFloor;
 	}
-	public Direction getDirection() {
+	public synchronized Direction getDirection() {
 		return currentDirection;
 	}
 	public int getDestination() {
@@ -48,7 +48,7 @@ public class ElevatorState implements Serializable {
 	public void updateFloor(int floor) {
 		currentFloor = floor;
 	}
-	public void updateDirection(Direction direction) {
+	public synchronized void updateDirection(Direction direction) {
 		currentDirection = direction;
 	}
 	public void updateDestination(int destination) {
