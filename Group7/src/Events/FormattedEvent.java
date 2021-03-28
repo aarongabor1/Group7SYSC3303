@@ -8,7 +8,7 @@ import Utilities.*;
  * each elevator request.
  * 
  * @author Aaron Gabor, Marc Angers, Momin Mushataha
- * @version 1.0.2
+ * @version 1.2
  */
 public class FormattedEvent {
 	private long time;

@@ -159,7 +159,7 @@ public class EventGenerator implements Runnable {
 		// Wait for the elevators to be registered in the system before firing events.
 		while (parent.getElevatorCount() < Settings.NUMBER_OF_ELEVATORS) {
 			try {
-				Thread.sleep(500); // Might want to find a better way of making sure that all of the elevators are registered...
+				Thread.sleep(500);
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
 			}

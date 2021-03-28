@@ -12,7 +12,7 @@ import Events.*;
  * ElevatorSubsystem is a class that controls one elevator
  * 
  * @author Diana Miraflor, Marc Angers
- * @version 1.2
+ * @version 1.3
  */
 public class ElevatorSubsystem implements Runnable {	
 	private Elevator parentElevator;
@@ -84,7 +84,7 @@ public class ElevatorSubsystem implements Runnable {
 	        // Section that handles an elevator's door being stuck
 	        if (doorStuck) {
 	            try {
-	                Thread.sleep(duration);    // Let the elevator be offline for some duration
+	                Thread.sleep(duration); // Let the elevator be offline for some duration
 	            } catch (InterruptedException e) {
 	                e.printStackTrace();
 	            }
@@ -102,11 +102,9 @@ public class ElevatorSubsystem implements Runnable {
 	            e.printStackTrace();
 	            System.exit(1);
 	        }
-        
     
 	        // Create and send an elevator movement event to the scheduler.
 	        ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(), parentElevator.ID, parentElevator.getState(), shutDown);
-		
 		
 	        try {		   
 	            sendSocket.send(Parser.packageObject(elevatorMovementEvent));
@@ -116,9 +114,10 @@ public class ElevatorSubsystem implements Runnable {
 	        }
 				
 	        parentElevator.turnOffLamp(parentElevator.getCurrentFloor());
-	        
 	   }
+
 	}
+	
 
 	/**
 	 * Moves elevator in the appropriate direction
@@ -146,9 +145,8 @@ public class ElevatorSubsystem implements Runnable {
                         System.exit(1);
                     }
                 } else {
-                    System.out.println("DOOR NOT OPENING"); // Iter4 - Will need to throw some sort of error here! Do
-                }                                             // not want the elevator to start moving if the doors are
-                                                              // open!
+                    System.out.println("DOOR NOT OPENING");
+                }
             }
         }
 	}
