@@ -86,7 +86,7 @@ public class ElevatorSubsystem implements Runnable {
 	            try {
 	                Thread.sleep(duration);    // Let the elevator be offline for some duration
 	            } catch (InterruptedException e) {
-	                
+	                e.printStackTrace();
 	            }
 	        }
 		
@@ -117,7 +117,7 @@ public class ElevatorSubsystem implements Runnable {
 				
 	        parentElevator.turnOffLamp(parentElevator.getCurrentFloor());
 	        
-	        }
+	   }
 	}
 
 	/**
