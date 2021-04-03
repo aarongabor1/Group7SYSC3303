@@ -13,6 +13,7 @@ import Elevator.ElevatorState;
 import Events.*;
 import Utilities.Direction;
 import Utilities.Parser;
+import Utilities.GUI;
 
 /** 
  * The scheduler class is the connection point of the whole project. All of the information that each
@@ -33,6 +34,8 @@ public class Scheduler implements Runnable {
 	private long startTime;
 	private int elevatorCount;
 	
+	private GUI gui;
+	
 	/**
 	 * Constructor that will create the Network object.
 	 */
@@ -41,6 +44,7 @@ public class Scheduler implements Runnable {
 		elevatorRegistrationEventConsumer = new Thread(new ElevatorRegistrationEventConsumer(this), "Elevator registration event consumer");
 		elevatorMovementEventConsumer = new Thread(new ElevatorMovementEventConsumer(this), "Elevator movement event consumer");
 		eventGenerator = new Thread(new EventGenerator(this), "Event generator");
+		gui = new GUI();
 		
 		try {
 			sendSocket = new DatagramSocket();
@@ -136,6 +140,7 @@ public class Scheduler implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		gui.setElevatorError(failureEvent.getElevator(), failureEvent.toString());
 	}
    
     /**
@@ -420,12 +425,12 @@ public class Scheduler implements Runnable {
                 e.printStackTrace();
                 System.exit(1);
             }
-            
         } else {
         	// Hard failure event has occurred and the elevator must be shut down. So transfer any upcoming floor requests to a different elevator.
             transferFloorEvents(elevatorID);
             elevatorDestinations.remove(elevatorID);
         }
+        gui.updateState(elevatorID, state);
 	}
 	
 	@Override
