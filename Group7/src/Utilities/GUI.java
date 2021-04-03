@@ -7,7 +7,7 @@ import Elevator.ElevatorState;
  * GUI is a class that creates and updates the graphical interface for the buildings elevator system.
  * 
  * @author Aaron Gabor
- * @version 1.2
+ * @version 1.3
  */
 public class GUI 
 {	
@@ -45,10 +45,12 @@ public class GUI
 		{
 			this.textArea[i] = new JTextArea(10, 20);
 			this.textArea[i].setEditable(false);
+			this.textArea[i].setLineWrap(true);
 			this.pane[i] = new JScrollPane(this.textArea[i]);
 			this.frame.add(this.pane[i]);
 		}
-		this.frame.setSize(1000, 600);
+		//Changes these values to make the window bigger or smaller on startup.
+		this.frame.setSize(1000, 600); 
 		this.frame.setVisible(true);	
 	}
 	
