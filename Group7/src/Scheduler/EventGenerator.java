@@ -123,6 +123,8 @@ public class EventGenerator implements Runnable {
 					
 					// Remove the elevator button press event:
 					iterator.remove();
+					
+					break;
 				}	
 			}
 		}

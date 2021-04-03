@@ -21,5 +21,7 @@ public class HardFailureEvent extends FailureEvent implements Serializable {
     	return whatHappened;
     }
     
-    
+    public String toString() {
+    	return "Hard Failure: " + whatHappened + ".";
+    }
 }

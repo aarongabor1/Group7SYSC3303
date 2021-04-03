@@ -19,6 +19,10 @@ public class SoftFailureEvent extends FailureEvent implements Serializable {
     }
     
     // get methods
+    public String toString() {
+    	return "Soft Failure: " + whatHappened + " for " + (duration/1000) + " seconds.";
+    }
+    
     public String getWhatHappened() {
     	return whatHappened;
     }

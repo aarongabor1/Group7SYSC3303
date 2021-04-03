@@ -65,7 +65,7 @@ public class Scheduler implements Runnable {
 	 * Method to organize the button press events and find the optimal elevator schedule.
 	 * Once the optimal schedule is found, the elevators will be notified of updates to their destinations.
 	 */
-	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 			
+	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 
 	    // Find the best elevator to serve the floor request
 		int bestElevator = mostConvenientElevator(floorButtonPressEvent);
 		System.out.println("Best Elevator: " + bestElevator);
@@ -300,7 +300,7 @@ public class Scheduler implements Runnable {
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.STATIONARY) {
 	            if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor) {
 	                
-	                if (currentDestinations.size() == 1) {
+	                if (currentDestinations.size() == 1 || i == 0) {
 	                    currentDestinations.add(0, destinationFloor);
 	                    return;
 	                } else {
