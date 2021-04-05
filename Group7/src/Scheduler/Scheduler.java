@@ -73,6 +73,7 @@ public class Scheduler implements Runnable {
 		// Grab the current destination of the elevator
 	    List<Integer> currentDestinations = elevatorDestinations.get(bestElevator);
 	    int previousDestination = elevatorStates.get(bestElevator).getDestination();
+	    
 	    if (currentDestinations!=null) {
 	        if (currentDestinations.size() > 0) {
 	            previousDestination = currentDestinations.get(0);
@@ -89,6 +90,8 @@ public class Scheduler implements Runnable {
 	    	newDestination = currentDestinations.get(0);
 	    
 	    if (newDestination != previousDestination && !elevatorStates.get(bestElevator).isShutDown()) {
+	        //System.out.println(bestElevator + ": " + floorButtonPressEvent.getFloor());
+	        
 	    	// The current destination for the elevator should change, so generate a new DestinationUpdateEvent
 			DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), bestElevator, newDestination);
 			

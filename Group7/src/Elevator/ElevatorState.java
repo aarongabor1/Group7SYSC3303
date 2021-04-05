@@ -27,7 +27,7 @@ public class ElevatorState implements Serializable {
 	
 	public boolean triggersElevatorButtonEvent(ElevatorState requiredState) {
 		boolean satisfiesCurrentFloor = (currentFloor == requiredState.getFloor());
-		boolean satisfiesCurrentDirection = (currentDirection == requiredState.getDirection() 
+		boolean satisfiesCurrentDirection = (currentDirection == requiredState.getDirection()
 		        || currentDirection == Direction.STATIONARY);
 		        // currentDirection is needed because of elevators at ground floor
 		

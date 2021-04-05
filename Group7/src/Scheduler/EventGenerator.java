@@ -127,8 +127,7 @@ public class EventGenerator implements Runnable {
 					iterator.remove();
 					
 					break;
-				} 			
-				
+				} 							
 			}
 		}
 	}
