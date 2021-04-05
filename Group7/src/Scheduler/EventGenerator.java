@@ -28,6 +28,7 @@ public class EventGenerator implements Runnable {
 	private List<FloorButtonPressEvent> floorEvents;
 	private List<FailureEvent> failureEvents;
 	
+	
 	public EventGenerator(Scheduler scheduler) {
 		parent = scheduler;
 		parser = new Parser();

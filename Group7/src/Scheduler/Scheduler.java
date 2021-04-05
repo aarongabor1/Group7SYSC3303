@@ -105,6 +105,7 @@ public class Scheduler implements Runnable {
 				System.exit(1);
 			}
 	    }
+	    System.out.println("Floor event: " + bestElevator + ": " + elevatorDestinations.get(bestElevator));
 	    }
 
 	
@@ -114,11 +115,13 @@ public class Scheduler implements Runnable {
 	 * @param elevatorID
 	 */
 	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) { 
-		int previousDestination = -1;
+		
+	    int previousDestination = -1;
 		if (elevatorDestinations.get(elevatorID).size() > 0)
 	    	previousDestination = elevatorDestinations.get(elevatorID).get(0);
 		
 		addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
+		System.out.println("Elevator button event: " + elevatorID + ": " + elevatorDestinations.get(elevatorID));
 	    	    		
 		int newDestination = elevatorDestinations.get(elevatorID).get(0);
 	    if (newDestination != previousDestination && !elevatorStates.get(elevatorID).isShutDown()) {
@@ -163,6 +166,7 @@ public class Scheduler implements Runnable {
             ElevatorState currentElevator = elevatorStates.get(i);        
          
             if (!currentElevator.isShutDown()) {
+                
 	            if (currentElevator.getDirection() == Direction.STATIONARY) {
 	                
 	                if (bestElevator == null) {
@@ -258,91 +262,127 @@ public class Scheduler implements Runnable {
 	 * @param destinationFloor
 	 */
 	private void addDestination(int elevatorID, int destinationFloor) {
-	    
-	    List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
-	    
-	    if (currentDestinations.size() == 0) {
+	    boolean highestDestFloor = true;
+        
+        List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
+        
+        if (currentDestinations.size() == 0) {
             currentDestinations.add(destinationFloor);
             return;
-	    }
-	    
-		// Loop through the destinations for the elevator, and determine if the new destination is "on the way".
-		int previousDest = elevatorStates.get(elevatorID).getFloor();
-		
-		for (int i = 0; i < currentDestinations.size(); i++) {
-		    if (!currentDestinations.contains(destinationFloor)) {
-	              
-		    // If the new destination is between the previous destination and the next destination, add it into the list at that location.            
-		    if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
-		      
-		        if (currentDestinations.size() > 1 && 
-		                currentDestinations.get(i) < destinationFloor && 
-		                destinationFloor > previousDest) {
-		            currentDestinations.add(i++, destinationFloor);
-		            //System.out.println(elevatorID + " current destinations: " +  currentDestinations);
-		            return;
-		        }
-		        
-		        
-		        if (currentDestinations.size() == 1 
-		                && destinationFloor < currentDestinations.get(i)
-		                && !currentDestinations.contains(destinationFloor)) {
-		            currentDestinations.add(0, destinationFloor);
-		            return;
-		        }
-		        
-		       
-		    }
-		    
-		    if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
-		        if (currentDestinations.size() > 1 &&
-		                currentDestinations.get(i) > destinationFloor && 
-		                destinationFloor < previousDest) {
-		            currentDestinations.add(i++, destinationFloor);
-		            return;
-		        }
-		       
-		        
-		        if (currentDestinations.size() == 1 
-		                && destinationFloor > currentDestinations.get(i)) {
+        }
+        
+        for (Integer i : currentDestinations) {
+            if (i > destinationFloor) {
+                highestDestFloor = false;
+            }      
+        }
+        
+        // Loop through the destinations for the elevator, and determine if the new destination is "on the way".
+        int previousDest = elevatorStates.get(elevatorID).getFloor();
+        
+        for (int i = 0; i < currentDestinations.size(); i++) {
+            if (!currentDestinations.contains(destinationFloor)) {
+                
+                  
+            // If the new destination is between the previous destination and the next destination, add it into the list at that location.            
+            if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
+              
+                if (currentDestinations.size() > 1 && 
+                        currentDestinations.get(i) < destinationFloor && 
+                        destinationFloor > previousDest &&
+                        !highestDestFloor) {
+                    currentDestinations.add(i++, destinationFloor);
+                   
+                    //System.out.println(elevatorID + " current destinations: " +  currentDestinations);
+                    return;
+                }   
+                
+                if (currentDestinations.size() == 1 
+                        && destinationFloor > currentDestinations.get(i)
+                        && previousDest < destinationFloor
+                        && elevatorStates.get(elevatorID).getDestination() > destinationFloor){
                     currentDestinations.add(0, destinationFloor);
                     return;
                 }
                 
-		        
-		    }
-		    
-		    if (elevatorStates.get(elevatorID).getDirection() == Direction.STATIONARY) {
-		        
-	            if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
-	                    && !currentDestinations.contains(destinationFloor)) {
-	                
-	                if (currentDestinations.size() == 1 || i == 0) {
-	                    currentDestinations.add(0, destinationFloor);
-	                    return;
-	                } else {
-	                    currentDestinations.add(i-1, destinationFloor); 
-	                    return;
-	                }
-	                
-	            }
-	        }
-		    
-		    // Set previousDest to nextDest.
-		    if (currentDestinations.size()!=0) {
-		        previousDest = currentDestinations.get(i);
-		    }
-		    }
-		}
-		
-		if (!currentDestinations.contains(destinationFloor)) {
-		// If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.		
-		currentDestinations.add(destinationFloor);
-		}
-	}
+                if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
+                        && !currentDestinations.contains(destinationFloor)) {
+                    currentDestinations.add(i, destinationFloor); 
+                   
+                    return;
+                }
+               
+            }
+            
+            if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
+                if (currentDestinations.size() > 1 &&
+                        currentDestinations.get(i) > destinationFloor && 
+                        destinationFloor < previousDest &&
+                        !highestDestFloor) {
+                    currentDestinations.add(i++, destinationFloor);
+                    return;
+                }
+               
+                
+                if (currentDestinations.size() == 1 
+                        && destinationFloor < currentDestinations.get(i)
+                        && destinationFloor < previousDest
+                        && elevatorStates.get(elevatorID).getDestination() < destinationFloor) {
+                    currentDestinations.add(0, destinationFloor);
+                    return;
+                }
+                
+                if (previousDest > destinationFloor && currentDestinations.get(i) < destinationFloor
+                        && !currentDestinations.contains(destinationFloor)) {
+                    currentDestinations.add(i, destinationFloor); 
+                    return;
+                }
+                
+                
+            }
+            
+            if (elevatorStates.get(elevatorID).getDirection() == Direction.STATIONARY) {
+                
+                if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
+                        && !currentDestinations.contains(destinationFloor)) {
+                    
+                    if (currentDestinations.size() == 1 || i == 0) {
+                        currentDestinations.add(0, destinationFloor);
+                        return;
+                    } else {
+                        currentDestinations.add(i, destinationFloor); // IDK
+                        return;
+                    }
+                    
+                }
+                
+                if (previousDest > destinationFloor && currentDestinations.get(i) < destinationFloor
+                        && !currentDestinations.contains(destinationFloor)) {
+                    
+                    if (currentDestinations.size() == 1 || i == 0) {
+                        currentDestinations.add(0, destinationFloor);
+                        return;
+                    } else {
+                        currentDestinations.add(i, destinationFloor); 
+                        return;
+                    }
+                    
+                }
+            }
+            
+            // Set previousDest to nextDest.
+            if (currentDestinations.size()!=0) {
+                previousDest = currentDestinations.get(i);
+            }
+            }
+        }
+        
+        if (!currentDestinations.contains(destinationFloor)) {
+        // If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.      
+        currentDestinations.add(destinationFloor);
+        }
+    }
 	    
-	   
-	
 	
 	/**
 	 * Method to add a new elevator to the elevatorStates and elevatorDestinations maps.
@@ -374,6 +414,12 @@ public class Scheduler implements Runnable {
                     if (entry.getValue().size() < leastDestinations.getValue().size()) {
                         leastDestinations = entry;
                     }
+                    
+                    if (entry.getValue().size() == leastDestinations.getValue().size()) {
+                        if (highestDestinationFloor(entry.getValue()) < highestDestinationFloor(leastDestinations.getValue())) {
+                            leastDestinations = entry;
+                        }
+                    }
                 }
             }
 
@@ -382,20 +428,35 @@ public class Scheduler implements Runnable {
             if (!elevatorDestinations.get(leastDestinations.getKey())
                     .contains(elevatorStates.get(elevatorID).getFloor()) 
                     && elevatorStates.get(elevatorID).getFloor() != elevatorStates.get(leastDestinations.getKey()).getFloor()) {
-                addDestination(leastDestinations.getKey(),
-                        elevatorStates.get(elevatorID).getFloor());
+                elevatorDestinations.get(leastDestinations.getKey()).add(elevatorStates.get(elevatorID).getFloor());
             }
 
             // Transfer floor events
             for (Integer i : destinations) {
                 if (!leastDestinations.getValue().contains(i)) {
-                    addDestination(leastDestinations.getKey(), i);
+                    elevatorDestinations.get(leastDestinations.getKey()).add(i);
                 }
             }
-            
+                  
             routeElevator(leastDestinations.getKey());
         }
 	   
+	}
+	
+	/**
+	 * Returns the highest destination in a destination list
+	 * 
+	 * @param destList
+	 * @return
+	 */
+	public int highestDestinationFloor(List<Integer> destList) {
+	    int max = 0;
+	    for (int i = 0; i < destList.size(); i++) {
+           if (destList.get(i) > max) {
+               max = destList.get(i);
+           }
+        }
+	    return max;
 	}
 	
 	/**
@@ -429,7 +490,7 @@ public class Scheduler implements Runnable {
 		elevatorStates.put(elevatorID, state);
 		gui.updateState(elevatorID, elevatorStates.get(elevatorID), softFailure);
 		
-		 if (!state.isShutDown()) {
+		 if (!state.isShutDown()) {     
             // If the elevator has nowhere to go, we don't need to update its destination.
             if (elevatorDestinations.get(elevatorID).size() <= 0)
                 return;
