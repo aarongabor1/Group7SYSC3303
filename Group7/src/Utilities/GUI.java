@@ -76,7 +76,7 @@ public class GUI
 	 * @param elevatorNumber is an integer value for the elevator.
 	 * @param state is a ElevatorState object with the information to be updated.
 	 */
-	public void updateState(int elevatorNumber, ElevatorState state)
+	public void updateState(int elevatorNumber, ElevatorState state, boolean softFailure)
 	{
 		this.textArea[elevatorNumber-1].append("Current floor: " + state.getFloor() + "\n");
 		this.textArea[elevatorNumber-1].append("Current direction: " + state.getDirection() + "\n" + "\n");
@@ -89,6 +89,10 @@ public class GUI
 		{
 			this.offPanel[elevatorNumber-1].setVisible(false);
 			this.onPanel[elevatorNumber-1].setVisible(true);
+		}
+		
+		if (softFailure) {
+		    setElevatorError(elevatorNumber, "Door stuck");
 		}
 		this.textArea[elevatorNumber-1].setCaretPosition(this.textArea[elevatorNumber-1].getDocument().getLength());
 	}

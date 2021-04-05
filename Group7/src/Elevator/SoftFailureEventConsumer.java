@@ -36,8 +36,10 @@ public class SoftFailureEventConsumer implements Runnable {
 	 */
 	public void consume(SoftFailureEvent softFailureEvent) {
 		
-	    // Wait until elevator stops to get failure
-	    while(parent.getElevator().getState().getDirection()!=Direction.STATIONARY) 
+	    // Wait until elevator stops to get failure. numRequests is for elevator 4 - it waits
+	    // until an elevator has a request to service in order to generate a soft failure event.
+	    while(parent.getElevator().getState().getDirection()!=Direction.STATIONARY 
+	            || parent.getElevator().getState().getNumRequests() == 0) 
 	        ;
 	    
 	    System.out.println("Elevator #" + softFailureEvent.getElevator() + " door is stuck! Elevator is now offline");

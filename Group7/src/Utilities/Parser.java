@@ -238,7 +238,7 @@ public class Parser {
 		ElevatorButtonPressEvent tempEBPEvent = new ElevatorButtonPressEvent(System.currentTimeMillis(), 1, 1);
 		DestinationUpdateEvent tempDUEvent = new DestinationUpdateEvent(System.currentTimeMillis(), 1, 1);
 		ElevatorArrivalEvent tempEAEvent = new ElevatorArrivalEvent(System.currentTimeMillis(), 1, 1, Direction.UP);
-		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(System.currentTimeMillis(), 1, new ElevatorState(1, Direction.UP, 1), false);
+		ElevatorMovementEvent tempEMEvent = new ElevatorMovementEvent(System.currentTimeMillis(), 1, new ElevatorState(1, Direction.UP, 1), false, false);
 		ElevatorRegistrationEvent tempEREvent = new ElevatorRegistrationEvent(System.currentTimeMillis(), new Elevator());
 		HardFailureEvent tempHFEvent = new HardFailureEvent(System.currentTimeMillis(), "temp", 1);
 		SoftFailureEvent tempSFEvent = new SoftFailureEvent(System.currentTimeMillis(), "temp", 1, 1);

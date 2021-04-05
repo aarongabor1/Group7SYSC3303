@@ -82,7 +82,9 @@ public class Scheduler implements Runnable {
 	    
 	    
 	    // Add the new destination into the elevator's destination queue
-	    addDestination(bestElevator, floorButtonPressEvent.floor);
+	    if (elevatorStates.get(bestElevator).getFloor()!=floorButtonPressEvent.floor) {
+	        addDestination(bestElevator, floorButtonPressEvent.floor);
+	    }
 	    
 	    currentDestinations = elevatorDestinations.get(bestElevator);
 	    int newDestination = elevatorStates.get(bestElevator).getDestination();
@@ -144,7 +146,7 @@ public class Scheduler implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		gui.setElevatorError(failureEvent.getElevator(), failureEvent.toString());
+		//gui.setElevatorError(failureEvent.getElevator(), failureEvent.toString());
 	}
    
     /**
@@ -268,18 +270,19 @@ public class Scheduler implements Runnable {
 		int previousDest = elevatorStates.get(elevatorID).getFloor();
 		
 		for (int i = 0; i < currentDestinations.size(); i++) {
-		    
+		    if (!currentDestinations.contains(destinationFloor)) {
+	              
 		    // If the new destination is between the previous destination and the next destination, add it into the list at that location.            
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
 		      
 		        if (currentDestinations.size() > 1 && 
 		                currentDestinations.get(i) < destinationFloor && 
-		                destinationFloor > previousDest &&
-		                !currentDestinations.contains(destinationFloor)) {
+		                destinationFloor > previousDest) {
 		            currentDestinations.add(i++, destinationFloor);
 		            //System.out.println(elevatorID + " current destinations: " +  currentDestinations);
 		            return;
 		        }
+		        
 		        
 		        if (currentDestinations.size() == 1 
 		                && destinationFloor < currentDestinations.get(i)
@@ -287,26 +290,30 @@ public class Scheduler implements Runnable {
 		            currentDestinations.add(0, destinationFloor);
 		            return;
 		        }
+		        
+		       
 		    }
 		    
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
 		        if (currentDestinations.size() > 1 &&
 		                currentDestinations.get(i) > destinationFloor && 
-		                destinationFloor < previousDest && 
-		                !currentDestinations.contains(destinationFloor)) {
+		                destinationFloor < previousDest) {
 		            currentDestinations.add(i++, destinationFloor);
 		            return;
 		        }
 		       
+		        
 		        if (currentDestinations.size() == 1 
-		                && destinationFloor > currentDestinations.get(i)
-		                && !currentDestinations.contains(destinationFloor)) {
+		                && destinationFloor > currentDestinations.get(i)) {
                     currentDestinations.add(0, destinationFloor);
                     return;
                 }
+                
+		        
 		    }
 		    
 		    if (elevatorStates.get(elevatorID).getDirection() == Direction.STATIONARY) {
+		        
 	            if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
 	                    && !currentDestinations.contains(destinationFloor)) {
 	                
@@ -322,11 +329,16 @@ public class Scheduler implements Runnable {
 	        }
 		    
 		    // Set previousDest to nextDest.
-		    previousDest = currentDestinations.get(i);
+		    if (currentDestinations.size()!=0) {
+		        previousDest = currentDestinations.get(i);
+		    }
+		    }
 		}
 		
+		if (!currentDestinations.contains(destinationFloor)) {
 		// If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.		
 		currentDestinations.add(destinationFloor);
+		}
 	}
 	    
 	   
@@ -412,11 +424,12 @@ public class Scheduler implements Runnable {
 	 * @param elevatorID, the elevator's location to update
 	 * @param currentLocation, the floor that the elevator has moved to
 	 */
-	public void updateElevatorState(int elevatorID, ElevatorState state) {
-	    
+	public void updateElevatorState(int elevatorID, ElevatorState state, boolean softFailure) {
+	    System.out.println(elevatorID + ": " + elevatorDestinations.get(elevatorID));
 		elevatorStates.put(elevatorID, state);
+		gui.updateState(elevatorID, elevatorStates.get(elevatorID), softFailure);
 		
-        if (!state.isShutDown()) {
+		 if (!state.isShutDown()) {
             // If the elevator has nowhere to go, we don't need to update its destination.
             if (elevatorDestinations.get(elevatorID).size() <= 0)
                 return;
@@ -444,7 +457,7 @@ public class Scheduler implements Runnable {
             transferFloorEvents(elevatorID);
             elevatorDestinations.remove(elevatorID);
         }
-        gui.updateState(elevatorID, state);
+        //gui.updateState(elevatorID, elevatorStates.get(elevatorID), softFailure);
 	}
 	
 	@Override

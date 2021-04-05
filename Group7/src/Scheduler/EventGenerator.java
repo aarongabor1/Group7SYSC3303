@@ -110,25 +110,28 @@ public class EventGenerator implements Runnable {
 			ElevatorState requiredState = (ElevatorState) elevatorEvent.getKey();
 			ElevatorButtonPressEvent pressEvent = (ElevatorButtonPressEvent) elevatorEvent.getValue();
 			
-			// Check if any of the current elevator states satisfy the requirements to fire the elevator button press event:
-			for (Map.Entry<Integer, ElevatorState> elevatorStates : parent.getElevatorStates().entrySet()) {
-				ElevatorState stateToCheck = (ElevatorState) elevatorStates.getValue();
-				
-				if (stateToCheck.triggersElevatorButtonEvent(requiredState)) {
-				    
-					// Update the elevator button press event to make sure it's coming from the right elevator:
-					elevatorEvent.getValue().updateElevatorID(elevatorStates.getKey());
-					
-					// Fire the elevator button press event:
-					parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());
-					System.out.println("Elevator floor " + requiredState.getFloor() + " Button pressed " + pressEvent.buttonNumber);
-					
-					// Remove the elevator button press event:
-					iterator.remove();
-					
-					break;
-				} 							
-			}
+			// Check if it is time that the elevator button press event may be fired:
+            if (parent.getTime() >= elevatorEvent.getValue().time) {
+                // Check if any of the current elevator states satisfy the requirements to fire the elevator button press event:
+                for (Map.Entry<Integer, ElevatorState> elevatorStates : parent.getElevatorStates().entrySet()) {
+                    ElevatorState stateToCheck = (ElevatorState) elevatorStates.getValue();
+                    
+                    if (stateToCheck.triggersElevatorButtonEvent(requiredState)) {
+                        
+                        // Update the elevator button press event to make sure it's coming from the right elevator:
+                        elevatorEvent.getValue().updateElevatorID(elevatorStates.getKey());
+                        
+                        // Fire the elevator button press event:
+                        parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());
+                        System.out.println("Elevator floor " + requiredState.getFloor() + " Button pressed " + pressEvent.buttonNumber);
+                        
+                        // Remove the elevator button press event:
+                        iterator.remove();
+                        
+                        break;
+                    }   
+                }
+            }
 		}
 	}
 	
