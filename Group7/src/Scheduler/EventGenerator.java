@@ -108,6 +108,7 @@ public class EventGenerator implements Runnable {
 		while (iterator.hasNext()) {
 			elevatorEvent = (Map.Entry<ElevatorState, ElevatorButtonPressEvent>) iterator.next();
 			ElevatorState requiredState = (ElevatorState) elevatorEvent.getKey();
+			ElevatorButtonPressEvent pressEvent = (ElevatorButtonPressEvent) elevatorEvent.getValue();
 			
 			// Check if any of the current elevator states satisfy the requirements to fire the elevator button press event:
 			for (Map.Entry<Integer, ElevatorState> elevatorStates : parent.getElevatorStates().entrySet()) {
@@ -120,12 +121,14 @@ public class EventGenerator implements Runnable {
 					
 					// Fire the elevator button press event:
 					parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());
+					System.out.println("Elevator floor " + requiredState.getFloor() + " Button pressed " + pressEvent.buttonNumber);
 					
 					// Remove the elevator button press event:
 					iterator.remove();
 					
 					break;
-				}	
+				} 			
+				
 			}
 		}
 	}

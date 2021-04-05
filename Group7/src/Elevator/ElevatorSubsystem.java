@@ -89,7 +89,8 @@ public class ElevatorSubsystem implements Runnable {
 	                e.printStackTrace();
 	            }
 	        }
-		
+	        
+	        doorStuck = false;
 	        handleDoor(true);
 		
 	        ElevatorArrivalEvent event = new ElevatorArrivalEvent(getTime(), parentElevator.getCurrentFloor(),
@@ -193,14 +194,9 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param duration The duration an elevator is down
 	 */
 	public synchronized void handleSoftFailure(long dur) {
-	    
 	    doorStuck = true;
 	    duration = dur;
-	    
-	    // Checks if the elevator is not stationary, if not then stop it
-	    if (parentElevator.getCurrentDirection() != Direction.STATIONARY) {
-	        stopElevator();
-	    }    
+	    stopElevator();   
 	}
 
 	@Override
@@ -218,7 +214,6 @@ public class ElevatorSubsystem implements Runnable {
                 moveElevator(Direction.UP);
             if (parentElevator.getCurrentDestination() == parentElevator.getCurrentFloor() && parentElevator.isMoving())
                 stopElevator();
-
         }
 		
 		System.out.println("Elevator " + parentElevator.getID() + " has been shut down.");
@@ -233,5 +228,8 @@ public class ElevatorSubsystem implements Runnable {
 	}
 	public synchronized boolean isShutDown() {
 	    return shutDown;
+	}
+	public synchronized boolean isDoorStuck() {
+	    return doorStuck;
 	}
 }

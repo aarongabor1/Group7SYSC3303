@@ -35,7 +35,7 @@ public class DestinationUpdateEventConsumer implements Runnable {
 	 * @param destinationUpdateEvent
 	 */
 	public void consume(DestinationUpdateEvent destinationUpdateEvent) {
-		System.out.println("Elevator #" + destinationUpdateEvent.elevatorID + " destination: " + destinationUpdateEvent.destinationFloor);
+		System.out.println("Elevator #" + destinationUpdateEvent.elevatorID + " destination updated: " + destinationUpdateEvent.destinationFloor);
 		parent.getElevator().updateDestination(destinationUpdateEvent.destinationFloor);
 	}
 	

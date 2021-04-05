@@ -15,17 +15,22 @@ public class ElevatorState implements Serializable {
 	private Direction currentDirection;
 	private int currentDestination;
 	private volatile boolean shutDown;
+	private int numRequests;
 	
 	public ElevatorState(int floor, Direction direction, int destination) {
 		currentFloor = floor;
 		currentDirection = direction; 
 		currentDestination = destination;
 		shutDown = false;
+		numRequests = 0;
 	}
 	
 	public boolean triggersElevatorButtonEvent(ElevatorState requiredState) {
 		boolean satisfiesCurrentFloor = (currentFloor == requiredState.getFloor());
-		boolean satisfiesCurrentDirection = (currentDirection == requiredState.getDirection() || currentDirection == Direction.STATIONARY);
+		boolean satisfiesCurrentDirection = (currentDirection == requiredState.getDirection() 
+		        || currentDirection == Direction.STATIONARY);
+		        // currentDirection is needed because of elevators at ground floor
+		
 		boolean satisfiesStillAlive = shutDown == false;
 		
 		return satisfiesCurrentFloor && satisfiesCurrentDirection && satisfiesStillAlive;
@@ -52,7 +57,14 @@ public class ElevatorState implements Serializable {
 	}
 	public void updateDestination(int destination) {
 		currentDestination = destination;
+		numRequests++;
 	}	
+	public void addNumRequest() {
+	    numRequests++;
+	}
+	public int getNumRequests() {
+	    return numRequests;
+	}
 	public synchronized void shutDown() {
 	    shutDown = true;
 	}

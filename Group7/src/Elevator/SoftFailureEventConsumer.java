@@ -50,7 +50,7 @@ public class SoftFailureEventConsumer implements Runnable {
 		}
 		
 		// Waits for elevator fix soft failure
-		while(parent.getElevator().getState().getDirection()==Direction.STATIONARY) 
+		while(parent.isDoorStuck() == true) 
             ;
 		
 		System.out.println("Elevator #" + softFailureEvent.getElevator() + " is back online!");
