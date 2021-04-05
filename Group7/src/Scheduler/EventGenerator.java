@@ -109,23 +109,26 @@ public class EventGenerator implements Runnable {
 			elevatorEvent = (Map.Entry<ElevatorState, ElevatorButtonPressEvent>) iterator.next();
 			ElevatorState requiredState = (ElevatorState) elevatorEvent.getKey();
 			
-			// Check if any of the current elevator states satisfy the requirements to fire the elevator button press event:
-			for (Map.Entry<Integer, ElevatorState> elevatorStates : parent.getElevatorStates().entrySet()) {
-				ElevatorState stateToCheck = (ElevatorState) elevatorStates.getValue();
-				
-				if (stateToCheck.triggersElevatorButtonEvent(requiredState)) {
-				    
-					// Update the elevator button press event to make sure it's coming from the right elevator:
-					elevatorEvent.getValue().updateElevatorID(elevatorStates.getKey());
+			// Check if it is time that the elevator button press event may be fired:
+			if (parent.getTime() >= elevatorEvent.getValue().time) {
+				// Check if any of the current elevator states satisfy the requirements to fire the elevator button press event:
+				for (Map.Entry<Integer, ElevatorState> elevatorStates : parent.getElevatorStates().entrySet()) {
+					ElevatorState stateToCheck = (ElevatorState) elevatorStates.getValue();
 					
-					// Fire the elevator button press event:
-					parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());
-					
-					// Remove the elevator button press event:
-					iterator.remove();
-					
-					break;
-				}	
+					if (stateToCheck.triggersElevatorButtonEvent(requiredState)) {
+					    
+						// Update the elevator button press event to make sure it's coming from the right elevator:
+						elevatorEvent.getValue().updateElevatorID(elevatorStates.getKey());
+						
+						// Fire the elevator button press event:
+						parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());
+						
+						// Remove the elevator button press event:
+						iterator.remove();
+						
+						break;
+					}	
+				}
 			}
 		}
 	}
