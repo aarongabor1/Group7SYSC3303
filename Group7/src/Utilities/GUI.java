@@ -7,7 +7,7 @@ import Elevator.ElevatorState;
  * GUI is a class that creates and updates the graphical interface for the buildings elevator system.
  * 
  * @author Aaron Gabor
- * @version 1.3
+ * @version 1.4
  */
 public class GUI 
 {	
@@ -118,9 +118,12 @@ public class GUI
 		{
 			this.topPartPanel[i] = new JPanel();
 			this.topPartPanel[i].setLayout(new GridLayout(2, 1));
+			this.topPartPanel[i].setBackground(Color.white);
+			this.topPartPanel[i].setBorder(BorderFactory.createLineBorder(Color.lightGray, 1));
 			this.topPartPanel[i].setVisible(true);
 			
 			this.onorOffPanel[i] = new JPanel();
+			this.onorOffPanel[i].setBackground(Color.white);
 			this.onorOffPanel[i].setVisible(true);
 			
 			this.labels[i].setFont(font1);
@@ -145,7 +148,7 @@ public class GUI
 			
 			this.onorOffPanel[i].add(this.onPanel[i]);
 			this.onorOffPanel[i].add(this.offPanel[i]);
-			
+
 			this.frame.add(this.topPartPanel[i]);
 		}
 	}
