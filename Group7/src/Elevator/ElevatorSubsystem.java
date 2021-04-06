@@ -118,25 +118,32 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param direction, the direction to move the elevator
 	 */
 	public void handleMotor(Direction direction) {
+	    ElevatorMovementEvent elevatorMovementEvent;
         if (!isShutDown()) {
             System.out.println("ElevatorSubsystem " + parentElevator.getID() + ": Handling Motor: " + direction);
 
-            if (direction == Direction.STATIONARY)
+            if (direction == Direction.STATIONARY) {
                 parentElevator.getMotor().stopElevator();
-            else {
+            } else {
                 if (!parentElevator.getDoor().isOpen()) {
+                    if (parentElevator.getCurrentDestination() != parentElevator.getCurrentFloor()) {
                    
+                    System.out.println("Current dest: " + parentElevator.getCurrentDestination()) ;
+                    System.out.println("Current floor: " + parentElevator.getCurrentFloor()) ;
+                    System.out.println(parentElevator.getState());
+                        
                     parentElevator.getMotor().moveElevator(direction);
-
+                    
                     // Create and send an elevator movement event to the scheduler.
-                    ElevatorMovementEvent elevatorMovementEvent = new ElevatorMovementEvent(getTime(),
-                            parentElevator.ID, parentElevator.getState(), shutDown, doorStuck);
-
+                    elevatorMovementEvent = new ElevatorMovementEvent(getTime(),
+                            parentElevator.ID, parentElevator.getState(), shutDown, doorStuck);                   
+                    
                     try {
                         sendSocket.send(Parser.packageObject(elevatorMovementEvent));
                     } catch (IOException e) {
                         e.printStackTrace();
                         System.exit(1);
+                    }
                     }
                 } else {
                     System.out.println("DOOR NOT OPENING");

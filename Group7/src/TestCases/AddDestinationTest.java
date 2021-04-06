@@ -23,7 +23,7 @@ public class AddDestinationTest {
         elevatorDestinations = new HashMap<>();
         elevatorStates = new HashMap<>();
         
-        ElevatorState e1state = new ElevatorState(2, Direction.UP, 7);
+        ElevatorState e1state = new ElevatorState(7, Direction.UP, 7);
         ElevatorState e2state = new ElevatorState(5, Direction.UP, 10);
         ElevatorState e3state  = new ElevatorState(16, Direction.STATIONARY, 20);
         
@@ -37,8 +37,8 @@ public class AddDestinationTest {
         LinkedList<Integer> elevator3dest = new LinkedList<>();
         LinkedList<Integer> elevator4dest = new LinkedList<>();
         
-        elevator1dest.add(4);
-        elevator1dest.add(7);
+        elevator1dest.add(1);
+        elevator1dest.add(18);
         
         elevator2dest.add(10);
         
@@ -53,8 +53,8 @@ public class AddDestinationTest {
 
     @Test
     public void test() {
-        addDestination(3, 1);
-        System.out.println(elevatorDestinations.get(3));
+        addDestination(1, 6);
+        System.out.println(elevatorDestinations.get(1));
     }
     
 private void addDestination(int elevatorID, int destinationFloor) {
@@ -158,9 +158,11 @@ private void addDestination(int elevatorID, int destinationFloor) {
                     
                     if (currentDestinations.size() == 1 || i == 0) {
                         currentDestinations.add(0, destinationFloor);
+                        System.out.println("yo3");
                         return;
                     } else {
                         currentDestinations.add(i, destinationFloor); 
+                        System.out.println("yo4");
                         return;
                     }
                     
