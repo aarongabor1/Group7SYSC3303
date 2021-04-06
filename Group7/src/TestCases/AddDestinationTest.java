@@ -25,7 +25,7 @@ public class AddDestinationTest {
         
         ElevatorState e1state = new ElevatorState(2, Direction.UP, 7);
         ElevatorState e2state = new ElevatorState(5, Direction.UP, 10);
-        ElevatorState e3state  = new ElevatorState(21, Direction.STATIONARY, 22);
+        ElevatorState e3state  = new ElevatorState(16, Direction.STATIONARY, 20);
         
         elevatorStates.put(1, e1state);
         elevatorStates.put(2, e2state);
@@ -42,8 +42,9 @@ public class AddDestinationTest {
         
         elevator2dest.add(10);
         
+        elevator3dest.add(20);
+        elevator3dest.add(21);
         elevator3dest.add(22);
-        elevator3dest.add(1);
           
         elevatorDestinations.put(1, elevator1dest);
         elevatorDestinations.put(2, elevator2dest);
@@ -52,7 +53,7 @@ public class AddDestinationTest {
 
     @Test
     public void test() {
-        addDestination(3, 2);
+        addDestination(3, 1);
         System.out.println(elevatorDestinations.get(3));
     }
     
