@@ -578,8 +578,8 @@ public class Scheduler implements Runnable {
 	}
 	public boolean checkIfStationary()
 	{
-		if ((elevatorStates.get(1).getDirection() == STATIONARY) && (elevatorStates.get(2).getDirection() == STATIONARY)
-				&& (elevatorStates.get(3).getDirection() == STATIONARY) && (elevatorStates.get(4).getDirection() == STATIONARY))
+		if ((elevatorStates.get(1).getDirection() == Direction.STATIONARY) && (elevatorStates.get(2).getDirection() == Direction.STATIONARY)
+				&& (elevatorStates.get(3).getDirection() == Direction.STATIONARY) && (elevatorStates.get(4).getDirection() == Direction.STATIONARY))
 		{
 			return true;
 		}
