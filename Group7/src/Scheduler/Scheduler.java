@@ -576,4 +576,13 @@ public class Scheduler implements Runnable {
 	public Map<Integer, List<Integer>> getElevatorDestinations() {
 	    return elevatorDestinations;
 	}
+	public boolean checkIfStationary()
+	{
+		if ((elevatorStates.get(1).getDirection() == STATIONARY) && (elevatorStates.get(2).getDirection() == STATIONARY)
+				&& (elevatorStates.get(3).getDirection() == STATIONARY) && (elevatorStates.get(4).getDirection() == STATIONARY))
+		{
+			return true;
+		}
+		return false;
+	}
 }
