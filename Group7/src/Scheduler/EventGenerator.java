@@ -178,6 +178,13 @@ public class EventGenerator implements Runnable {
 			checkForFloorButtonEvent();
 			checkForElevatorButtonEvent();
 			checkForFailureEvent();
+			if(parent.checkIfStationary()) {
+				if (elevatorEvents.isEmpty()) {
+					System.out.println("The simulation execution is finished in " + parent.getTime());
+					System.exit(0);
+				}
+
+			}
 		}
 	}
 }
