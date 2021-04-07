@@ -117,11 +117,7 @@ public class ElevatorSubsystem implements Runnable {
                 parentElevator.getMotor().stopElevator();
             } else {
                 if (!parentElevator.getDoor().isOpen()) {
-                    if (parentElevator.getCurrentDestination() != parentElevator.getCurrentFloor()) {
-                   
-                    System.out.println("Current dest: " + parentElevator.getCurrentDestination()) ;
-                    System.out.println("Current floor: " + parentElevator.getCurrentFloor()) ;
-                    System.out.println(parentElevator.getState());
+                    if (parentElevator.getCurrentDestination() != parentElevator.getCurrentFloor()) {                  
                         
                     parentElevator.getMotor().moveElevator(direction);
                     

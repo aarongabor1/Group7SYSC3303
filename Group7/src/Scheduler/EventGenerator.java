@@ -123,9 +123,7 @@ public class EventGenerator implements Runnable {
                         elevatorEvent.getValue().updateElevatorID(elevatorStates.getKey());
                         
                         // Fire the elevator button press event:
-                        parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());
-                        System.out.println("Elevator floor " + requiredState.getFloor() + " Button pressed " + pressEvent.buttonNumber);
-                        
+                        parent.scheduleEvent((ElevatorButtonPressEvent) elevatorEvent.getValue(), (int) elevatorStates.getKey());          
                         // Remove the elevator button press event:
                         iterator.remove();
                         
@@ -164,6 +162,7 @@ public class EventGenerator implements Runnable {
 				break;
 			}
 		}
+		
 		// Wait for the elevators to be registered in the system before firing events.
 		while (parent.getElevatorCount() < Settings.NUMBER_OF_ELEVATORS) {
 			try {
@@ -180,10 +179,9 @@ public class EventGenerator implements Runnable {
 			checkForFailureEvent();
 			if(parent.checkIfStationary()) {
 				if (elevatorEvents.isEmpty()) {
-					System.out.println("The simulation execution is finished in " + parent.getTime());
-					System.exit(0);
+					System.out.println("The simulation execution is finished in " + parent.getTime());		
+					return;
 				}
-
 			}
 		}
 	}

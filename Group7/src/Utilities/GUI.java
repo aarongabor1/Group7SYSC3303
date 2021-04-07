@@ -82,8 +82,12 @@ public class GUI
 		this.textArea[elevatorNumber-1].append("Current direction: " + state.getDirection() + "\n" + "\n");
 		if(state.isShutDown())
 		{
+		    String error = "Elevator " + elevatorNumber +  " has been shut down.";
+		    setElevatorError(elevatorNumber, error);
+		    /*
 			this.onPanel[elevatorNumber-1].setVisible(false);
 			this.offPanel[elevatorNumber-1].setVisible(true);
+			*/
 		}
 		else
 		{
@@ -94,6 +98,7 @@ public class GUI
 		if (softFailure) {
 		    setElevatorError(elevatorNumber, "Door stuck");
 		}
+		
 		this.textArea[elevatorNumber-1].setCaretPosition(this.textArea[elevatorNumber-1].getDocument().getLength());
 	}
 	
