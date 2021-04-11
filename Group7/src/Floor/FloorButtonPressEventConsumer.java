@@ -11,6 +11,7 @@ import Utilities.Settings;
 
 /**
  * Class to consume the floor button press events that are provided by the scheduler.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

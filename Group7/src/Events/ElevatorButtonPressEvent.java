@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 /**
  * Event class to notify the scheduler that a button was pressed within an elevator.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

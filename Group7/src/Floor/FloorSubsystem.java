@@ -6,6 +6,7 @@ import java.util.Map;
 
 /***
  * The Floor Subsystem acts as the controller for the floors of the building. Information from the scheduler is passed through this class to the individual floors.
+ * 
  * @author lynnmehyou, Marc Angers
  * @version 1.2
  */
@@ -28,7 +29,7 @@ public class FloorSubsystem implements Runnable {
 	}
 	
 	/**
-	 * generates floors depending on the number of floors specified in the settings file. 
+	 * Generates floors depending on the number of floors specified in the settings file. 
 	 */
 	public void generateFloors() {
 		for (int i = 1; i <= Settings.NUMBER_OF_FLOORS; i++) {

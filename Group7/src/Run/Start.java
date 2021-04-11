@@ -28,14 +28,16 @@ public class Start {
 		    elevatorList.add(new Elevator(i));
 		}
 		
+		// Generate a thread for each elevator in the system
 		for (Elevator e : elevatorList) {
 		    elevatorSubsystemList.add(new Thread(e.getElevatorSubsystem(), "Elevator Subsystem #" + e.getID()));
 		}
 		
-		// Generate threads for each subsystem
+		// Generate threads for the other subsystems
 		floorSubsystem = new Thread(new FloorSubsystem(), "Floor Subsystem");
 		schedulerThread = new Thread(scheduler, "Scheduler");
 		
+		// Run all the threads
 		floorSubsystem.start();
 		
 		for (Thread e : elevatorSubsystemList) {

@@ -12,7 +12,7 @@ import java.util.Map;
  * Elevator class is for the ElevatorSubsytem class to control.
  * 
  * @author Diana Miraflor, Marc Angers
- * @version 1.2
+ * @version 1.3
  *
  */
 public class Elevator implements Serializable {	
@@ -102,12 +102,13 @@ public class Elevator implements Serializable {
 		state.updateFloor(state.getFloor()+1);
 	}
 	
-	/*
-	 * Changes elevator state to shut down if hard failure
+	/**
+	 * Changes elevator state to shut down if a hard failure occurs
 	 */
 	public synchronized void shutDown() {
 	    state.shutDown();
 	}
+	
 	/**
 	 * Determines whether the elevator is currently moving or not.
 	 * @return

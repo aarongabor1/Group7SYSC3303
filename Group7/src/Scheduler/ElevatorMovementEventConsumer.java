@@ -11,6 +11,7 @@ import Utilities.Settings;
 
 /**
  * Class to update the elevator's location within the scheduler by consuming the ElevatorMovementEvents.
+ * 
  * @author Marc Angers
  * @version 1.0
  */

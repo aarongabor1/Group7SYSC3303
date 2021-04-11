@@ -36,9 +36,6 @@ public class Scheduler implements Runnable {
 	
 	private GUI gui;
 	
-	/**
-	 * Constructor that will create the Network object.
-	 */
 	public Scheduler()
 	{
 		elevatorRegistrationEventConsumer = new Thread(new ElevatorRegistrationEventConsumer(this), "Elevator registration event consumer");
@@ -60,9 +57,9 @@ public class Scheduler implements Runnable {
 		startTime = System.currentTimeMillis();
 	}
 	
-	// The main scheduling method.
 	/**
-	 * Method to organize the button press events and find the optimal elevator schedule.
+	 * The main scheduling method.
+	 * Organizes the button press events and finds the optimal elevator to schedule.
 	 * Once the optimal schedule is found, the elevators will be notified of updates to their destinations.
 	 */
 	public void scheduleEvent(FloorButtonPressEvent floorButtonPressEvent) { 
@@ -79,8 +76,7 @@ public class Scheduler implements Runnable {
 	            previousDestination = currentDestinations.get(0);
 	        }
 	    }
-	    
-	    
+	        
 	    // Add the new destination into the elevator's destination queue
 	    if (elevatorStates.get(bestElevator).getFloor()!=floorButtonPressEvent.floor) {
 	              
@@ -92,9 +88,7 @@ public class Scheduler implements Runnable {
 	    if (currentDestinations.size() > 0)
 	    	newDestination = currentDestinations.get(0);
 	    
-	    if (newDestination != previousDestination && !elevatorStates.get(bestElevator).isShutDown()) {
-	        //System.out.println(bestElevator + ": " + floorButtonPressEvent.getFloor());
-	        
+	    if (newDestination != previousDestination && !elevatorStates.get(bestElevator).isShutDown()) {	        
 	    	// The current destination for the elevator should change, so generate a new DestinationUpdateEvent
 			DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), bestElevator, newDestination);
 			
@@ -106,24 +100,19 @@ public class Scheduler implements Runnable {
 				System.exit(1);
 			}
 	    }
-	    //System.out.println("Floor event: " + bestElevator + ": " + elevatorDestinations.get(bestElevator));
-	    }
-
+	}
 	
 	/**
 	 * Overload of the scheduling method to deal with elevator button presses.
 	 * @param elevatorButtonPressEvent
 	 * @param elevatorID
 	 */
-	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) { 
-		
-	    
+	public void scheduleEvent(ElevatorButtonPressEvent elevatorButtonPressEvent, int elevatorID) {   
 	    int previousDestination = -1;
 		if (elevatorDestinations.get(elevatorID).size() > 0)
 	    	previousDestination = elevatorDestinations.get(elevatorID).get(0);
 		
 		addDestination(elevatorID, elevatorButtonPressEvent.buttonNumber);
-		//System.out.println("Elevator button event: " + elevatorID + ": " + elevatorDestinations.get(elevatorID)); - DEBUGGING
 	    	    		
 		int newDestination = elevatorDestinations.get(elevatorID).get(0);
 	    if (newDestination != previousDestination && !elevatorStates.get(elevatorID).isShutDown()) {
@@ -151,12 +140,10 @@ public class Scheduler implements Runnable {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		//gui.setElevatorError(failureEvent.getElevator(), failureEvent.toString());
 	}
    
     /**
-	 * Method to get the best elevator to service a new floor request
-	 * 
+	 * Method to get the best elevator to service a new floor request.
 	 * @param fe, A new floor button press event (new floor request)
 	 * @return The ID of the best elevator
 	 */
@@ -241,8 +228,7 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * Checks if all the elevators are currently above the requested floor
-	 * 
+	 * Checks if all the elevators are currently above the requested floor.
 	 * @param fe, the new floor request.
 	 * @return whether or not all the elevators are currently above the new floor request.
 	 */
@@ -256,8 +242,7 @@ public class Scheduler implements Runnable {
 	 }
 	
 	/**
-	 * Checks if all the elevators are currently below the requested floor
-	 * 
+	 * Checks if all the elevators are currently below the requested floor.
 	 * @param fe, the new floor request.
 	 * @return whether or not all the elevators are currently below the new floor request.
 	 */
@@ -306,8 +291,6 @@ public class Scheduler implements Runnable {
                         destinationFloor > previousDest &&
                         !highestDestFloor) {
                     currentDestinations.add(i++, destinationFloor);
-                    
-                    //System.out.println(elevatorID + " current destinations: " +  currentDestinations);
                     return;
                 }   
                 
@@ -405,8 +388,8 @@ public class Scheduler implements Runnable {
         }
         
         if (!currentDestinations.contains(destinationFloor)) {
-        // If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.      
-        currentDestinations.add(destinationFloor);
+	        // If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.      
+	        currentDestinations.add(destinationFloor);
         }
 	    }
     }
@@ -472,10 +455,8 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * Returns the highest destination in a destination list
-	 * 
+	 * Returns the highest destination in a destination list.
 	 * @param destList
-	 * @return
 	 */
 	public int highestDestinationFloor(List<Integer> destList) {
 	    int max = 0;
@@ -488,13 +469,10 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * Moves the elevator to where the elevator (with hard failure) is at
-	 * 
+	 * Moves the elevator to where the elevator with hard failure is currently.
 	 * @param elevatorID
 	 */
 	public void routeElevator(int elevatorID) {
-	    
-	    // FIX THIS.
 	    if (elevatorDestinations.get(elevatorID).size() != 0) {
             DestinationUpdateEvent event = new DestinationUpdateEvent(getTime(), elevatorID,
                     elevatorDestinations.get(elevatorID).get(0));
@@ -514,8 +492,6 @@ public class Scheduler implements Runnable {
 	 * @param currentLocation, the floor that the elevator has moved to
 	 */
 	public void updateElevatorState(int elevatorID, ElevatorState state, boolean softFailure) {
-	    //Debugging - System.out.println(elevatorID + ": " + elevatorDestinations.get(elevatorID));
-
 	    elevatorStates.put(elevatorID, state);
 		
 		gui.updateState(elevatorID, elevatorStates.get(elevatorID), softFailure);
@@ -525,9 +501,8 @@ public class Scheduler implements Runnable {
             if (elevatorDestinations.get(elevatorID).size() <= 0)
                 return;
             
-            synchronized (elevatorDestinations) { // Should it be the Map or the List in the map
-            // If the elevator is at its current destination, update the elevator's
-            // destination.
+            synchronized (elevatorDestinations) { 
+            // If the elevator is at its current destination, update the elevator's destination.
             if (elevatorDestinations.get(elevatorID).get(0) == state.getFloor())
                 elevatorDestinations.get(elevatorID).remove(0);
                 elevatorDestinations.notifyAll(); // Do you need this?
@@ -551,7 +526,6 @@ public class Scheduler implements Runnable {
             transferFloorEvents(elevatorID);
             elevatorDestinations.remove(elevatorID);
         }
-        //gui.updateState(elevatorID, elevatorStates.get(elevatorID), softFailure);
 	}
 	
 	@Override

@@ -11,6 +11,7 @@ import Utilities.Settings;
 
 /**
  * Class to consume the elevator arrival events provided by the scheduler.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

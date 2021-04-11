@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 /**
  * Event class to notify the floor subsystem when an elevator has reached a floor.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

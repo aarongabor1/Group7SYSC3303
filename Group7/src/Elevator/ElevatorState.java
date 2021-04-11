@@ -6,6 +6,7 @@ import Utilities.Direction;
 
 /**
  * Class containing information about the state of an elevator.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

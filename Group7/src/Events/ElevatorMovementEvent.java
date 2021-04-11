@@ -9,6 +9,7 @@ import Elevator.ElevatorState;
 
 /**
  * Event class to notify an elevator that its destination floor has changed.
+ * 
  * @author Marc Angers
  * @vertion 1.0
  */

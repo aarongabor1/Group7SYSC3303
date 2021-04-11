@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 /**
  * Event class to notify the scheduler when a button on a floor is pressed.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

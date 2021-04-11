@@ -3,9 +3,10 @@ package Floor;
 import Utilities.*;
 
 /**
+ * Class to simulate a button on a floor
  * 
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class FloorButton extends Button {
 	private static final long serialVersionUID = -2696214633708647490L;
@@ -19,16 +20,4 @@ public class FloorButton extends Button {
 	public Direction getDirection() {
 		return direction;
 	}
-	
-	/**
-	public void press() {
-		super.press();
-		System.out.println("Floor lamp " + direction + " is off");
-	}
-	
-	public void unPress() {
-		super.unPress();
-		System.out.println("Floor lamp " + direction + " is off");
-	}
-	*/
 }

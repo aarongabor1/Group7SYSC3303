@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * Generic failure event class that will contain soft and hard failure events.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

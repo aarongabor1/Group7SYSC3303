@@ -11,6 +11,7 @@ import Utilities.Settings;
 
 /**
  * Class to update the elevator's destination by consuming the DestinationUpdateEvents provided by the scheduler.
+ * 
  * @author Marc Angers
  * @version 1.1
  */

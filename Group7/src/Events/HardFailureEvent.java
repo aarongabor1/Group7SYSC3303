@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 /**
  * Event class to notify when a HardFailure occurs and specifies it's cause
+ * 
  * @author Momin Mushtaha
- * @vertion 1.1
+ * @version 1.1
  */
 public class HardFailureEvent extends FailureEvent implements Serializable {
     private static final long serialVersionUID = -2277432317605146712L;
@@ -16,7 +17,6 @@ public class HardFailureEvent extends FailureEvent implements Serializable {
     	this.whatHappened = whatHappened;
     }
     
-    // get methods
     public String getWhatHappened() {
     	return whatHappened;
     }

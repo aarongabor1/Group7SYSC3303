@@ -12,6 +12,7 @@ import Utilities.Settings;
 
 /**
  * Class to update the elevator's destination by consuming the DestinationUpdateEvents provided by the scheduler.
+ * 
  * @author Marc Angers
  * @version 1.1
  */
@@ -35,9 +36,7 @@ public class SoftFailureEventConsumer implements Runnable {
 	 * @param
 	 */
 	public void consume(SoftFailureEvent softFailureEvent) {
-		
-	    // Wait until elevator stops to get failure. numRequests is for elevator 4 - it waits
-	    // until an elevator has a request to service in order to generate a soft failure event.
+	    // Wait until elevator stops to get failure until an elevator has a request to service in order to generate a soft failure event.
 	    while(parent.getElevator().getState().getDirection()!=Direction.STATIONARY 
 	            || parent.getElevator().getState().getNumRequests() == 0) 
 	        ;

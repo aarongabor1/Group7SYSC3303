@@ -23,7 +23,7 @@ public class Door implements Serializable {
 	}
 	
 	/**
-	 * method closeDoor commands the door to close
+	 * Method closeDoor commands the door to close
 	 */
 	public void closeDoor()
 	{
@@ -36,7 +36,7 @@ public class Door implements Serializable {
 	}
 	
 	/**
-	 * method openDoor commands the door to open
+	 * Method openDoor commands the door to open
 	 */
 	public void openDoor()
 	{	
@@ -50,7 +50,6 @@ public class Door implements Serializable {
 	
 	/**
 	 * Method to tell if the door is currently open
-	 * @return
 	 */
 	public boolean isOpen() {
 		return state;

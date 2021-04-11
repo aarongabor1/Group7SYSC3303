@@ -8,19 +8,15 @@ import Elevator.*;
  * The Motor class is responsible for moving the elevator when a request has been made
  *
  * @author Momin Mushtaha, Marc Angers
- * @version 1.1
+ * @version 1.2
  */
 public class Motor implements Serializable {
 	private static final long serialVersionUID = -4732599232139952812L;
 	private Elevator parentElevator;
-	private Direction state;
-	
-	
 	
 	public Motor(Elevator parent)
 	{
 		this.parentElevator = parent;
-		this.state = Direction.STATIONARY;
 	}
 	
 	/**
@@ -30,7 +26,6 @@ public class Motor implements Serializable {
 	public void moveElevator(Direction direction)
 	{  
 	    if (!parentElevator.getState().isShutDown()) {
-		state = direction;
 		parentElevator.changeDirection(direction);
 		try {
 			Thread.sleep(Settings.TIME_TO_TRAVEL_BETWEEN_FLOORS);
@@ -52,12 +47,6 @@ public class Motor implements Serializable {
 	public void stopElevator()
 	{
 		System.out.println("Elevator #" + parentElevator.getID() + " stopped at floor " + parentElevator.getCurrentFloor());
-		state = Direction.STATIONARY;
 		parentElevator.changeDirection(Direction.STATIONARY);
-	}
-	
-	// Get and set methods:
-	public Direction getState() {
-		return state;
 	}
 }

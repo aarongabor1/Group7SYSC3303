@@ -5,9 +5,10 @@ import java.io.Serializable;
 import Utilities.*;
 
 /**
+ * Class to represent a button within an elevator
  * 
  * @author Marc Angers
- * @version 1.0.0
+ * @version 1.1
  */
 public class ElevatorButton extends Button implements Serializable {
 	private static final long serialVersionUID = 343582785192439130L;
