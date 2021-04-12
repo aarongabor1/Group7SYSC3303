@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import Elevator.Elevator;
 import Elevator.ElevatorState;
@@ -548,6 +550,7 @@ public class Scheduler implements Runnable {
 	public Map<Integer, List<Integer>> getElevatorDestinations() {
 	    return elevatorDestinations;
 	}
+	
 	public boolean checkIfStationary()
 	{
 		if ((elevatorStates.get(1).getDirection() == Direction.STATIONARY) && (elevatorStates.get(2).getDirection() == Direction.STATIONARY)
@@ -556,5 +559,19 @@ public class Scheduler implements Runnable {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean isDestinationListEmpty() {
+	    Iterator<Entry<Integer, List<Integer>>> iterator = elevatorDestinations.entrySet().iterator();
+	    Map.Entry<Integer, List<Integer>> elevatorDestList;
+	    
+	    while (iterator.hasNext()) {
+	        elevatorDestList = (Map.Entry<Integer, List<Integer>>) iterator.next();
+	        
+	        if (!elevatorDestList.getValue().isEmpty()) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 }

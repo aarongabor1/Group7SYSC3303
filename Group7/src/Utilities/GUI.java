@@ -82,7 +82,7 @@ public class GUI
 		this.textArea[elevatorNumber-1].append("Current direction: " + state.getDirection() + "\n" + "\n");
 		if(state.isShutDown())
 		{
-		    String error = "Elevator " + elevatorNumber +  " has been shut down.";
+		    String error = "Elevator " + elevatorNumber +  " is stuck.";
 		    setElevatorError(elevatorNumber, error);
 		    /*
 			this.onPanel[elevatorNumber-1].setVisible(false);
