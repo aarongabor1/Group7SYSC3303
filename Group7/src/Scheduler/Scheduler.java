@@ -369,7 +369,7 @@ public class Scheduler implements Runnable {
                         && !currentDestinations.contains(destinationFloor)) {
                     
                     // Add in front if size is 1
-                    if (currentDestinations.size() == 1) {
+                    if (currentDestinations.size() == 1||i==0) {
                         currentDestinations.add(0, destinationFloor); 
                         return;
                     } else {
@@ -385,7 +385,7 @@ public class Scheduler implements Runnable {
                         && !currentDestinations.contains(destinationFloor)) {
                     
                     // Add in front if size is 1
-                    if (currentDestinations.size() == 1 || i==0) {
+                    if (currentDestinations.size() == 1) {
                         currentDestinations.add(0, destinationFloor);
                         return;
                     } else {
