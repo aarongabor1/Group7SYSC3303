@@ -12,7 +12,13 @@ import org.junit.Test;
 
 import Elevator.ElevatorState;
 import Utilities.Direction;
-
+/**
+ * A test class to see if a destination floor has been properly added to an elevator's
+ * destination list.
+ * 
+ * @author Diana Miraflor
+ *
+ */
 public class AddDestinationTest {
     
     private Map<Integer, List<Integer>> elevatorDestinations;
@@ -57,9 +63,15 @@ public class AddDestinationTest {
         System.out.println(elevatorDestinations.get(1));
     }
     
-private void addDestination(int elevatorID, int destinationFloor) {
+    /**
+     * Algorithm to add destination floor to correct position
+     * @param elevatorID
+     * @param destinationFloor
+     */
+    private void addDestination(int elevatorID, int destinationFloor) {
         boolean highestDestFloor = true;
         
+        synchronized (elevatorDestinations.get(elevatorID)) {
         List<Integer> currentDestinations = elevatorDestinations.get(elevatorID);
         
         if (currentDestinations.size() == 0) {
@@ -77,93 +89,117 @@ private void addDestination(int elevatorID, int destinationFloor) {
         int previousDest = elevatorStates.get(elevatorID).getFloor();
         
         for (int i = 0; i < currentDestinations.size(); i++) {
-            if (!currentDestinations.contains(destinationFloor)) {
-                
+            if (!currentDestinations.contains(destinationFloor)) {             
                   
-            // If the new destination is between the previous destination and the next destination, add it into the list at that location.            
+            // CASE 1: Elevator going up         
             if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
               
+                // If list size is greater than 1 and floor being added is 
+                // not in between the elevator's current floor
+                // and the next destination floor add floor after last highest destination floor
                 if (currentDestinations.size() > 1 && 
                         currentDestinations.get(i) < destinationFloor && 
                         destinationFloor > previousDest &&
                         !highestDestFloor) {
                     currentDestinations.add(i++, destinationFloor);
-                    System.out.println("Here");
-                    //System.out.println(elevatorID + " current destinations: " +  currentDestinations);
                     return;
                 }   
                 
+                // If list is 1 and if current floor is between elevator current floor and
+                // next dest in the list, add in front of list
                 if (currentDestinations.size() == 1 
                         && destinationFloor > currentDestinations.get(i)
                         && previousDest < destinationFloor
-                        && elevatorStates.get(elevatorID).getDestination() > destinationFloor) {
+                        && elevatorStates.get(elevatorID).getDestination() > destinationFloor){
                     currentDestinations.add(0, destinationFloor);
-                    System.out.println("Here2");
+                   
                     return;
                 }
                 
+                // If in between, add in between
                 if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     currentDestinations.add(i, destinationFloor); 
-                    System.out.println("Here3");
                     return;
                 }
                
             }
             
+           
+            // CASE 1: Elevator going down         
             if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
+                // If list size is greater than 1 and floor being added is 
+                // not in between the elevator's current floor
+                // and the next destination floor add floor after last lowest destination floor
                 if (currentDestinations.size() > 1 &&
                         currentDestinations.get(i) > destinationFloor && 
-                        destinationFloor < previousDest) {
+                        destinationFloor < previousDest &&
+                        !highestDestFloor) {
                     currentDestinations.add(i++, destinationFloor);
+                   
                     return;
                 }
                
                 
+                // If list is 1 and if current floor is between elevator current floor and
+                // next dest in the list, add in front of list
                 if (currentDestinations.size() == 1 
                         && destinationFloor < currentDestinations.get(i)
-                        && destinationFloor < previousDest) {
+                        && destinationFloor < previousDest
+                        && elevatorStates.get(elevatorID).getDestination() < destinationFloor) {
                     currentDestinations.add(0, destinationFloor);
+                    
                     return;
                 }
                 
+                // If in between, add in between
                 if (previousDest > destinationFloor && currentDestinations.get(i) < destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     currentDestinations.add(i, destinationFloor); 
+                    
                     return;
                 }
                 
                 
             }
             
+            // CASE 3: Stationary
             if (elevatorStates.get(elevatorID).getDirection() == Direction.STATIONARY) {
                 
+                // Dest in list is above current floor
                 if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     
-                    if (currentDestinations.size() == 1 || i == 0) {
-                        currentDestinations.add(0, destinationFloor);
-                        System.out.println("yo");
+                    // Add in front if size is 1
+                    if (currentDestinations.size() == 1) {
+                        currentDestinations.add(0, destinationFloor); 
                         return;
                     } else {
-                        currentDestinations.add(i-1, destinationFloor); 
-                        System.out.println("yo2");
+                        // Add in between
+                        currentDestinations.add(i, destinationFloor); 
                         return;
                     }
                     
                 }
                 
+                // Dest in list is below current floor
                 if (previousDest > destinationFloor && currentDestinations.get(i) < destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     
-                    if (currentDestinations.size() == 1 || i == 0) {
+                    // Add in front if size is 1
+                    if (currentDestinations.size() == 1) {
                         currentDestinations.add(0, destinationFloor);
-                        System.out.println("yo3");
                         return;
                     } else {
-                        currentDestinations.add(i, destinationFloor); 
-                        System.out.println("yo4");
-                        return;
+                        if (i!=0) {
+                            //Add in front if current index is not 0
+                            currentDestinations.add(i--, destinationFloor); 
+                            return;
+                        } else {
+                            // Add in between
+                            currentDestinations.add(i, destinationFloor);                         
+                            return;
+                        }
                     }
                     
                 }
@@ -177,9 +213,9 @@ private void addDestination(int elevatorID, int destinationFloor) {
         }
         
         if (!currentDestinations.contains(destinationFloor)) {
-        // If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.      
-        currentDestinations.add(destinationFloor);
+            // If we have gotten to this point, there is nowhere that the new destination fits well, so add it at the end of the list.      
+            currentDestinations.add(destinationFloor);
+        }
         }
     }
-
-}
+    }

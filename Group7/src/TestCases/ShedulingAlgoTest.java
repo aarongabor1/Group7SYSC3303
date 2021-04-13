@@ -48,16 +48,14 @@ class ShedulingAlgoTest {
      
         FloorButtonPressEvent fe = new FloorButtonPressEvent(1000, 1, Direction.UP);      
         int bestElevator = mostConvenientElevator(fe);   
-        System.out.println(bestElevator);
-        //assertEquals(3, bestElevator);
-        /*
+        assertEquals(3, bestElevator);
         FloorButtonPressEvent fe2 = new FloorButtonPressEvent(1000, 5, Direction.DOWN);      
         bestElevator = mostConvenientElevator(fe2);        
         assertEquals(1, bestElevator);
         FloorButtonPressEvent fe3 = new FloorButtonPressEvent(1000, 5, Direction.UP);      
         bestElevator = mostConvenientElevator(fe3);        
         assertEquals(2, bestElevator);
-        */
+        
         
     }
     
