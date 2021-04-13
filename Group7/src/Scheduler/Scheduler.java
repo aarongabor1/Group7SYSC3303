@@ -186,6 +186,7 @@ public class Scheduler implements Runnable {
 	                  
 	                }
 	                
+	                // If elevator going down and floor request is between current floor and dest floor
 	                else if (currentElevator.getFloor() > fe.getFloor() && currentElevator.getDirection() == Direction.DOWN) {              
 	                        if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
 	                            bestElevator = currentElevator;
@@ -194,6 +195,7 @@ public class Scheduler implements Runnable {
 	                        }                          
 	                }
 	                
+	                // If elevator going up and floor request is between current floor and dest floor
 	                else if (currentElevator.getFloor() < fe.getFloor() && currentElevator.getDirection() == Direction.UP) {             
 	                    if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
 	                        bestElevator = currentElevator;
@@ -202,9 +204,11 @@ public class Scheduler implements Runnable {
 	                    }   
 	                }
 	                
+	                /*
 	                else if (elevatorDestinations.get(i).contains(fe.getFloor())) {
 	                    return i;
 	                }
+	                */
 	            } 
 	            
 	            // Checks the case where all the elevators are above or below the current floor
@@ -285,9 +289,12 @@ public class Scheduler implements Runnable {
         for (int i = 0; i < currentDestinations.size(); i++) {
             if (!currentDestinations.contains(destinationFloor)) {             
                   
-            // If the new destination is between the previous destination and the next destination, add it into the list at that location.            
+            // CASE 1: Elevator going up         
             if (elevatorStates.get(elevatorID).getDirection() == Direction.UP) {
               
+                // If list size is greater than 1 and floor being added is 
+                // not in between the elevator's current floor
+                // and the next destination floor add floor after last highest destination floor
                 if (currentDestinations.size() > 1 && 
                         currentDestinations.get(i) < destinationFloor && 
                         destinationFloor > previousDest &&
@@ -296,6 +303,8 @@ public class Scheduler implements Runnable {
                     return;
                 }   
                 
+                // If list is 1 and if current floor is between elevator current floor and
+                // next dest in the list, add in front of list
                 if (currentDestinations.size() == 1 
                         && destinationFloor > currentDestinations.get(i)
                         && previousDest < destinationFloor
@@ -305,16 +314,21 @@ public class Scheduler implements Runnable {
                     return;
                 }
                 
+                // If in between, add in between
                 if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     currentDestinations.add(i, destinationFloor); 
-                    
                     return;
                 }
                
             }
             
+           
+            // CASE 1: Elevator going down         
             if (elevatorStates.get(elevatorID).getDirection() == Direction.DOWN) {
+                // If list size is greater than 1 and floor being added is 
+                // not in between the elevator's current floor
+                // and the next destination floor add floor after last lowest destination floor
                 if (currentDestinations.size() > 1 &&
                         currentDestinations.get(i) > destinationFloor && 
                         destinationFloor < previousDest &&
@@ -325,6 +339,8 @@ public class Scheduler implements Runnable {
                 }
                
                 
+                // If list is 1 and if current floor is between elevator current floor and
+                // next dest in the list, add in front of list
                 if (currentDestinations.size() == 1 
                         && destinationFloor < currentDestinations.get(i)
                         && destinationFloor < previousDest
@@ -334,6 +350,7 @@ public class Scheduler implements Runnable {
                     return;
                 }
                 
+                // If in between, add in between
                 if (previousDest > destinationFloor && currentDestinations.get(i) < destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     currentDestinations.add(i, destinationFloor); 
@@ -344,36 +361,40 @@ public class Scheduler implements Runnable {
                 
             }
             
+            // CASE 3: Stationary
             if (elevatorStates.get(elevatorID).getDirection() == Direction.STATIONARY) {
                 
+                // Dest in list is above current floor
                 if (previousDest < destinationFloor && currentDestinations.get(i) > destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     
-                    if (currentDestinations.size() == 1 || i == 0) {
-                        currentDestinations.add(0, destinationFloor);
-                     
+                    // Add in front if size is 1
+                    if (currentDestinations.size() == 1||i==0) {
+                        currentDestinations.add(0, destinationFloor); 
                         return;
                     } else {
+                        // Add in between
                         currentDestinations.add(i, destinationFloor); 
-                      
                         return;
                     }
                     
                 }
                 
+                // Dest in list is below current floor
                 if (previousDest > destinationFloor && currentDestinations.get(i) < destinationFloor
                         && !currentDestinations.contains(destinationFloor)) {
                     
+                    // Add in front if size is 1
                     if (currentDestinations.size() == 1) {
                         currentDestinations.add(0, destinationFloor);
-                
                         return;
                     } else {
                         if (i!=0) {
+                            //Add in front if current index is not 0
                             currentDestinations.add(i--, destinationFloor); 
-                       
                             return;
                         } else {
+                            // Add in between
                             currentDestinations.add(i, destinationFloor);                         
                             return;
                         }
@@ -494,7 +515,7 @@ public class Scheduler implements Runnable {
 	 * @param currentLocation, the floor that the elevator has moved to
 	 */
 	public void updateElevatorState(int elevatorID, ElevatorState state, boolean softFailure) {
-	    elevatorStates.put(elevatorID, state);
+	    elevatorStates.put(elevatorID, state); // Update list
 		
 		gui.updateState(elevatorID, elevatorStates.get(elevatorID), softFailure);
 		
@@ -551,6 +572,11 @@ public class Scheduler implements Runnable {
 	    return elevatorDestinations;
 	}
 	
+	/**
+	 * Checks if all elevators have stopped for measurements
+	 * 
+	 * @return boolean
+	 */
 	public boolean checkIfStationary()
 	{
 		if ((elevatorStates.get(1).getDirection() == Direction.STATIONARY) && (elevatorStates.get(2).getDirection() == Direction.STATIONARY)
@@ -561,6 +587,11 @@ public class Scheduler implements Runnable {
 		return false;
 	}
 	
+	/**
+	 * Checks if elevators have fulfilled their floor requests
+	 * 
+	 * @return boolean
+	 */ 
 	public boolean isDestinationListEmpty() {
 	    Iterator<Entry<Integer, List<Integer>>> iterator = elevatorDestinations.entrySet().iterator();
 	    Map.Entry<Integer, List<Integer>> elevatorDestList;
