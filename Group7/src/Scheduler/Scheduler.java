@@ -200,15 +200,8 @@ public class Scheduler implements Runnable {
 	                    if (Math.abs(currentElevator.getFloor() - fe.getFloor()) < Math.abs(bestElevator.getFloor() - fe.getFloor())) {
 	                        bestElevator = currentElevator;
 	                        bestElevatorID = i;
-	                 
 	                    }   
 	                }
-	                
-	                /*
-	                else if (elevatorDestinations.get(i).contains(fe.getFloor())) {
-	                    return i;
-	                }
-	                */
 	            } 
 	            
 	            // Checks the case where all the elevators are above or below the current floor

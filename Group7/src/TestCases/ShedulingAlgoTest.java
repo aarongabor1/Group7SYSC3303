@@ -32,12 +32,9 @@ class ShedulingAlgoTest {
         
         ElevatorState e1 = new ElevatorState(4, Direction.UP, 7);
         ElevatorState e2 = new ElevatorState(11, Direction.STATIONARY, 15);
-        //ElevatorState e3 = new ElevatorState(3, Direction.UP, 5);
-    
         
         elevatorStates.put(1, e1);
         elevatorStates.put(2, e2);
-        //elevatorStates.put(3, e3);
     }
 
     /**

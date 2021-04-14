@@ -84,10 +84,6 @@ public class GUI
 		{
 		    String error = "Elevator " + elevatorNumber +  " is stuck.";
 		    setElevatorError(elevatorNumber, error);
-		    /*
-			this.onPanel[elevatorNumber-1].setVisible(false);
-			this.offPanel[elevatorNumber-1].setVisible(true);
-			*/
 		}
 		else
 		{

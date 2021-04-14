@@ -109,7 +109,6 @@ public class ElevatorSubsystem implements Runnable {
 	 * @param direction, the direction to move the elevator
 	 */
 	public void handleMotor(Direction direction) {
-	    //ElevatorMovementEvent elevatorMovementEvent;
         if (!isShutDown()) {
             System.out.println("ElevatorSubsystem " + parentElevator.getID() + ": Handling Motor: " + direction);
 
@@ -151,7 +150,6 @@ public class ElevatorSubsystem implements Runnable {
 	    handleDoor(false);
 	    shutDown = true;
 	    
-        //ElevatorMovementEvent elevatorMovementEvent = null;
         parentElevator.shutDown();           
         
         schedulerSend(getTime(), shutDown, doorStuck, parentElevator.getState());
