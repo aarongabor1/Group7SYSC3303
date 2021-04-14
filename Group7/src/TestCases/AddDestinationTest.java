@@ -2,6 +2,7 @@ package TestCases;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +62,8 @@ public class AddDestinationTest {
     public void test() {
         addDestination(1, 6);
         System.out.println(elevatorDestinations.get(1));
+        List<Integer> correctList = Arrays.asList(1, 6, 18);
+        assertEquals(elevatorDestinations.get(1), correctList);
     }
     
     /**

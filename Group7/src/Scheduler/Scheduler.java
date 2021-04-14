@@ -204,11 +204,6 @@ public class Scheduler implements Runnable {
 	                    }   
 	                }
 	                
-	                /*
-	                else if (elevatorDestinations.get(i).contains(fe.getFloor())) {
-	                    return i;
-	                }
-	                */
 	            } 
 	            
 	            // Checks the case where all the elevators are above or below the current floor
